@@ -30,32 +30,41 @@ import tkinter as tk
 
 # # session.close()
 
+# UI Initialization
 root = tk.Tk()
-root.title('Library Portal')
+root.title('ALS')
 root.geometry('1000x1000')
 root.option_add("*font", "SF\ Pro 14")
 
+# Frame Definition
+Root_frame = tk.Frame(root)
 Mem_frame = tk.Frame(root)
-Mem_create_frame = tk.Frame(root)
-Mem_delete_frame = tk.Frame(root)
+Book_frame = tk.Frame(root)
+Loan_frame = tk.Frame(root)
+Res_frame = tk.Frame(root)
+Fine_frame = tk.Frame(root)
+Rep_frame = tk.Frame(root)
 
-def Mem_to_Mem_create():
-    Mem_frame.pack_forget()
-    Mem_create_frame.pack() 
+# Frame Control Function
+def change_frame(from_frame, to_frame):
+    from_frame.pack_forget()
+    to_frame.pack()
 
-Mem_create_button = tk.Button(Mem_frame, text = "Membership Creation", fg = 'black', command = Mem_to_Mem_create)
-Mem_delete_button = tk.Button(Mem_frame, text = "Membership Deletion", fg = 'black')
-Mem_create_button.pack()
-Mem_delete_button.pack()
+# Root frame object
+Mem_button = tk.Button(Root_frame, text = "Memberships", fg = 'black', command = lambda: change_frame(Root_frame, Mem_frame))
+Mem_button.pack()
+Book_frame = tk.Button(Root_frame, text = "Books", fg = 'black', command = lambda: change_frame(Root_frame, Book_frame))
+Book_frame.pack()
+Loan_frame = tk.Button(Root_frame, text = "Loans", fg = 'black', command = lambda: change_frame(Root_frame, Loan_frame))
+Loan_frame.pack()
+Res_frame = tk.Button(Root_frame, text = "Reservations", fg = 'black', command = lambda: change_frame(Root_frame, Res_frame))
+Res_frame.pack()
+Fine_frame = tk.Button(Root_frame, text = "Fines", fg = 'black', command = lambda: change_frame(Root_frame, Fine_frame))
+Fine_frame.pack()
+Rep_frame = tk.Button(Root_frame, text = "Reports", fg = 'black', command = lambda: change_frame(Root_frame, Rep_frame))
+Rep_frame.pack()
 
-Mem_ID_label = tk.Label(Mem_create_frame, text='Membership ID', fg = 'black')
-Mem_ID_label.pack()
-Name_label = tk.Label(Mem_create_frame, text='Name', fg = 'black')
-Name_label.pack()
-Faculty_label = tk.Label(Mem_create_frame, text='Faculty', fg = 'black')
-Faculty_label.pack()
-
-Mem_frame.pack()
-
+# Root Frame Application
+Root_frame.pack()
 if __name__ == "__main__":
     root.mainloop()
