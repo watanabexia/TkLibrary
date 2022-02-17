@@ -60,5 +60,3 @@ Mem_frame.pack()
 if __name__ == "__main__":
     root.mainloop()
 
-# xxxxx
-# trying to publish
