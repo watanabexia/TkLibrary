@@ -96,7 +96,7 @@ Books_on_Loan_to_Member__button.pack()
 # bottom buttom
 Back_to_Main = tk.Button(Rep_frame, text = "Back to Main Menu", 
 bg = 'red' , fg = 'white', width=15, height=1, command = lambda: change_frame(Rep_frame, Root_frame))
-Back_to_Main.pack()
+Back_to_Main.pack(side = tk.RIGHT, padx=20, pady=20)
 
 # Book search frame
 # top word 
@@ -112,7 +112,7 @@ top_word.pack()
 # back to report menu buttom
 Back_to_Report_Main = tk.Button(Book_search_frame, text = "Back to Reports Menu", 
 bg = 'red' , fg = 'white', width=20, height=1, command = lambda: change_frame(Book_search_frame, Rep_frame))
-Back_to_Report_Main.pack()
+Back_to_Report_Main.pack(side = tk.RIGHT, padx=20, pady=20)
 
 
 # Books on Loan to Member frame
@@ -124,7 +124,7 @@ top_word.pack()
 # back to report menu buttom
 Back_to_Report_Main = tk.Button(Books_on_Loan_to_Member__frame, text = "Back to Reports Menu", 
 bg = 'red' , fg = 'white', width=20, height=1, command = lambda: change_frame(Books_on_Loan_to_Member__frame, Rep_frame))
-Back_to_Report_Main.pack()
+Back_to_Report_Main.pack(side = tk.RIGHT, padx=20, pady=20)
 
 
 # Root Frame Application
