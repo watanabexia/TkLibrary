@@ -34,7 +34,11 @@ import tkinter.messagebox
 # UI Initialization
 root = tk.Tk()
 root.title('ALS')
-root.geometry('1000x1000')
+
+win_w = 1000
+win_h = 1000
+
+root.geometry(str(win_w) + "x" + str(win_h))
 root.option_add("*font", "SF\ Pro 14")
 
 # Frame Definition
@@ -42,7 +46,7 @@ Root_frame = tk.Frame(root)
 Mem_frame = tk.Frame(root)
 Book_frame = tk.Frame(root)
 Loan_frame = tk.Frame(root)
-Res_frame = tk.Frame(root)
+Res_frame = tk.Frame(root, height = win_h, width = win_w)
 Fine_frame = tk.Frame(root)
 Rep_frame = tk.Frame(root)
 
@@ -65,20 +69,36 @@ Fine_button.pack()
 Rep_button = tk.Button(Root_frame, text = "Reports", fg = 'black', command = lambda: change_frame(Root_frame, Rep_frame))
 Rep_button.pack()
 
+
 #Book frame object
-Acq_frame = tk.Frame(root)
-Withd_frame = tk.Frame(root)
-top_text = tk.Label(Book_frame, text='Select One Of The Options Below', bg='cyan', width=30, height=2, font=('Helvatical bold',20))
-top_text.pack()
-Acq_button = tk.Button(Book_frame, text = "4. Book Acquisition", fg = 'black', height = 10, width = 20, command = lambda: change_frame(Book_frame, Acq_frame))
-Acq_button.pack()
-Withd_button = tk.Button(Book_frame, text = "5. Book Withdrawal", fg = 'black',height = 10, width = 20, command = lambda: change_frame(Book_frame, Withd_frame))
-Withd_button.pack()
-Back_button = tk.Button(Book_frame, text = "Back To Main Menu", fg = 'black', height = 2, width = 50, command = lambda: change_frame(Book_frame, Root_frame))
-Back_button.pack()
+Acq_frame = tk.Frame(root, height = win_h, width = win_w)
+Withd_frame = tk.Frame(root, height = win_h, width = win_w)
+#top_text = tk.Label(Book_frame, text='Select One Of The Options Below', bg='cyan', width=30, height=2, font=('Helvatical bold',20))
+#top_text.pack()
+Acq_label = tk.Label(Book_frame, text = "Book Acquisition", fg = 'black')
+Acq_label.place(x = 50, y = 50, anchor = "nw")
+Acq_button = tk.Button(Book_frame, text = "Acquire A Book", fg = 'black', command = lambda: change_frame(Book_frame, Acq_frame))
+Acq_button.place(x = 300, y = 50, anchor = "nw")
+Withd_label = tk.Label(Book_frame, text = "Book Withdrawal", fg = 'black')
+Withd_label.place(x = 50, y = 100, anchor = "nw")
+Withd_button = tk.Button(Book_frame, text = "Withdraw A Book", fg = 'black', command = lambda: change_frame(Book_frame, Withd_frame))
+Withd_button.place(x = 300, y = 100, anchor = "nw")
+#Back_button = tk.Button(Book_frame, text = "Back To Main Menu", fg = 'black', height = 2, width = 50, command = lambda: change_frame(Book_frame, Root_frame))
+#Back_button.pack()
+
+Res_book_frame = tk.Frame(root, height = win_h, width = win_w)
+Res_cancel_frame = tk.Frame(root, height = win_h, width = win_w)
+
+Res_book_label = tk.Label(Res_frame, text = "Book Reservation", fg = 'black')
+Res_book_label.place(x = 50, y = 50, anchor = "nw")
+Res_book_button = tk.Button(Res_frame, text = "Reserve a Book", fg = 'black', command = lambda: change_frame(Res_frame, Res_book_frame))
+Res_book_button.place(x = 300, y = 50, anchor = "nw")
+Res_cancel_label = tk.Label(Res_frame, text = "Reservation Cancellation", fg = 'black')
+Res_cancel_label.place(x = 50, y = 100, anchor = "nw")
+Res_cancel_button = tk.Button(Res_frame, text = "Cancel Reservation", fg = 'black', command = lambda: change_frame(Res_frame, Res_cancel_frame))
+Res_cancel_button.place(x = 300, y = 100, anchor = "nw")
 
 #Book Acquisition object
-
 def add_new_book():
     tkinter.messagebox.showinfo(title='Success!', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Already Added; Duplicate, Missing or Incomplete fields')
@@ -152,12 +172,6 @@ ID_entry = tk.Entry(Return_frame, show=None, font=('Arial', 10)).pack()
 Empty_text = tk.Label(Return_frame, text='', width=20, height=5).pack()
 Borrow_button = tk.Button(Return_frame, text = "Return Book", fg = 'black', height = 2, width = 15, command = return_book).place(x=0,y=150)
 Back_to_Loan_button = tk.Button(Return_frame, text = "Back To Loans", fg = 'black', height = 2, width = 15, command = lambda: change_frame(Return_frame, Loan_frame)).place(x=500,y=150)
-
-
-
-
-
-
 
 
 
