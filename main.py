@@ -42,13 +42,13 @@ root.geometry(str(win_w) + "x" + str(win_h))
 root.option_add("*font", "SF\ Pro 14")
 
 # Frame Definition
-Root_frame = tk.Frame(root)
-Mem_frame = tk.Frame(root)
-Book_frame = tk.Frame(root)
-Loan_frame = tk.Frame(root)
+Root_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_frame = tk.Frame(root, height = win_h, width = win_w)
+Book_frame = tk.Frame(root, height = win_h, width = win_w)
+Loan_frame = tk.Frame(root, height = win_h, width = win_w)
 Res_frame = tk.Frame(root, height = win_h, width = win_w)
-Fine_frame = tk.Frame(root)
-Rep_frame = tk.Frame(root)
+Fine_frame = tk.Frame(root, height = win_h, width = win_w)
+Rep_frame = tk.Frame(root, height = win_h, width = win_w)
 
 # Frame Control Function
 def change_frame(from_frame, to_frame):
@@ -73,19 +73,171 @@ Rep_button.pack()
 #Book frame object
 Acq_frame = tk.Frame(root, height = win_h, width = win_w)
 Withd_frame = tk.Frame(root, height = win_h, width = win_w)
-#top_text = tk.Label(Book_frame, text='Select One Of The Options Below', bg='cyan', width=30, height=2, font=('Helvatical bold',20))
-#top_text.pack()
+
+top_text = tk.Label(Book_frame, text='Select One Of The Options Below', bg='cyan')
+top_text.place(x = 150, y = 0, anchor = "nw")
+
 Acq_label = tk.Label(Book_frame, text = "Book Acquisition", fg = 'black')
 Acq_label.place(x = 50, y = 50, anchor = "nw")
 Acq_button = tk.Button(Book_frame, text = "Acquire A Book", fg = 'black', command = lambda: change_frame(Book_frame, Acq_frame))
 Acq_button.place(x = 300, y = 50, anchor = "nw")
+
 Withd_label = tk.Label(Book_frame, text = "Book Withdrawal", fg = 'black')
 Withd_label.place(x = 50, y = 100, anchor = "nw")
 Withd_button = tk.Button(Book_frame, text = "Withdraw A Book", fg = 'black', command = lambda: change_frame(Book_frame, Withd_frame))
 Withd_button.place(x = 300, y = 100, anchor = "nw")
-#Back_button = tk.Button(Book_frame, text = "Back To Main Menu", fg = 'black', height = 2, width = 50, command = lambda: change_frame(Book_frame, Root_frame))
-#Back_button.pack()
 
+Back_button = tk.Button(Book_frame, text = "Back To Main Menu", fg = 'black', command = lambda: change_frame(Book_frame, Root_frame))
+Back_button.place(x = 175, y = 150, anchor = "nw")
+
+
+#Book Acquisition object
+def add_new_book():
+    tkinter.messagebox.showinfo(title='Success!', message='New Book Added In Library!')
+    # tkinter.messagebox.showinfo(title='Error!', message='Book Already Added; Duplicate, Missing or Incomplete fields')
+
+top_text = tk.Label(Acq_frame, text='For New Book Acquisition, Please Enter Information Below', bg='cyan')
+top_text.place(x = 50, y = 0, anchor = "nw")
+
+AN_label = tk.Label(Acq_frame, text='Accession Number', fg = 'black')
+AN_label.place(x = 50, y = 50, anchor = "nw")
+AN_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
+AN_entry.insert(0, "Used to identify an instance of book")
+AN_entry.place(x = 300, y = 50, anchor = "nw")
+
+Title_label = tk.Label(Acq_frame, text='Title', fg = 'black')
+Title_label.place(x = 50, y = 100, anchor = "nw")
+Title_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
+Title_entry.insert(0, "Title of the book")
+Title_entry.place(x = 300, y = 100, anchor = "nw")
+
+Author_label = tk.Label(Acq_frame, text='Author', fg = 'black')
+Author_label.place(x = 50, y = 150, anchor = "nw")
+Author_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
+Author_entry.insert(0, "Author of the book")
+Author_entry.place(x = 300, y = 150, anchor = "nw")
+
+ISBN_label = tk.Label(Acq_frame, text='ISBN', fg = 'black')
+ISBN_label.place(x = 50, y = 200, anchor = "nw")
+ISBN_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
+ISBN_entry.insert(0, "ISBN of the book")
+ISBN_entry.place(x = 300, y = 200, anchor = "nw")
+
+Publisher_label = tk.Label(Acq_frame, text='Publisher', fg = 'black')
+Publisher_label.place(x = 50, y = 250, anchor = "nw")
+Publisher_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
+Publisher_entry.insert(0, "Publisher of the book")
+Publisher_entry.place(x = 300, y = 250, anchor = "nw")
+
+Year_label = tk.Label(Acq_frame, text='Year', fg = 'black')
+Year_label.place(x = 50, y = 300, anchor = "nw")
+Year_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
+Year_entry.insert(0, "Year of publishing of the book")
+Year_entry.place(x = 300, y = 300, anchor = "nw")
+
+Add_new_book_button = tk.Button(Acq_frame, text = "Add New Book", fg = 'black', command = add_new_book)
+Add_new_book_button.place(x = 50, y = 350, anchor = "nw")
+Back_to_book_button = tk.Button(Acq_frame, text = "Back To Book", fg = 'black', command = lambda: change_frame(Acq_frame, Book_frame))
+Back_to_book_button.place(x = 700, y = 350, anchor = "nw")
+
+
+#Book Withdrawal object
+def withdraw_book():
+    tkinter.messagebox.askyesno(title='Please Confirm The Details Are Correct', message='New Book Added In Library!')
+    # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently On Loan.')
+    # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently Reserved.')
+
+top_text = tk.Label(Withd_frame, text='To Remove Outdated Books From System, Please Enter Information Below', bg='cyan')
+top_text.place(x = 50, y = 0, anchor = "nw")
+
+AN_label = tk.Label(Withd_frame, text='Accession Number')
+AN_label.place(x = 50, y = 200, anchor = "nw")
+AN_entry = tk.Entry(Withd_frame, fg = 'black', width = 60)
+AN_entry.insert(0, "Used to identify an instance of book")
+AN_entry.place(x = 300, y = 200, anchor = "nw")
+
+Withdraw_book_button = tk.Button(Withd_frame, text = "Withdraw Book", fg = 'black', command = withdraw_book)
+Withdraw_book_button.place(x = 50, y = 350, anchor = "nw")
+Back_to_book_button = tk.Button(Withd_frame, text = "Back To Book", fg = 'black', command = lambda: change_frame(Withd_frame, Book_frame))
+Back_to_book_button.place(x = 700, y = 350, anchor = "nw")
+
+#Loan frame object
+Borrow_frame = tk.Frame(root, height = win_h, width = win_w)
+Return_frame = tk.Frame(root, height = win_h, width = win_w)
+
+top_text = tk.Label(Loan_frame, text='Select One Of The Options Below', bg='cyan')
+top_text.place(x = 150, y = 0, anchor = "nw")
+
+Borrow_label = tk.Label(Loan_frame, text = "Book Borrow", fg = 'black')
+Borrow_label.place(x = 50, y = 50, anchor = "nw")
+Borrow_button = tk.Button(Loan_frame, text = "Borrow A Book", fg = 'black', command = lambda: change_frame(Loan_frame, Borrow_frame))
+Borrow_button.place(x = 300, y = 50, anchor = "nw")
+
+Return_label = tk.Label(Loan_frame, text = "Book Return", fg = 'black')
+Return_label.place(x = 50, y = 100, anchor = "nw")
+Return_button = tk.Button(Loan_frame, text = "Return A Book", fg = 'black', command = lambda: change_frame(Loan_frame, Return_frame))
+Return_button.place(x = 300, y = 100, anchor = "nw")
+
+Back_button = tk.Button(Loan_frame, text = "Back To Main Menu", fg = 'black', command = lambda: change_frame(Loan_frame, Root_frame))
+Back_button.place(x = 175, y = 150, anchor = "nw")
+
+
+
+#Borrow object
+def borrow_book():
+    tkinter.messagebox.askyesno(title='Please Confirm The Loan Details To Be Correct', message='New Book Added In Library!')
+    # tkinter.messagebox.showinfo(title='Error!', message='Book Currently On Loan Until.')
+    # tkinter.messagebox.showinfo(title='Error!', message='Member Loan Quota Exceeded.')
+    # tkinter.messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
+
+top_text = tk.Label(Borrow_frame, text='To Borrow A Book , Please Enter Information Below', bg='cyan')
+top_text.place(x = 50, y = 0, anchor = "nw")
+
+AN_label = tk.Label(Borrow_frame, text='Accession Number')
+AN_label.place(x = 50, y = 100, anchor = "nw")
+AN_entry = tk.Entry(Borrow_frame, fg = 'black', width = 60)
+AN_entry.insert(0, "Used to identify an instance of book")
+AN_entry.place(x = 300, y = 100, anchor = "nw")
+
+ID_label = tk.Label(Borrow_frame, text='Membership ID')
+ID_label.place(x = 50, y = 200, anchor = "nw")
+ID_entry = tk.Entry(Borrow_frame, fg = 'black', width = 60)
+ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+ID_entry.place(x = 300, y = 200, anchor = "nw")
+
+Borrow_book_button = tk.Button(Borrow_frame, text = "Borrow Book", fg = 'black', command = withdraw_book)
+Borrow_book_button.place(x = 50, y = 300, anchor = "nw")
+Back_to_loan_button = tk.Button(Borrow_frame, text = "Back To Loan", fg = 'black', command = lambda: change_frame(Borrow_frame, Loan_frame))
+Back_to_loan_button.place(x = 700, y = 300, anchor = "nw")
+
+#Return object
+def return_book():
+    tkinter.messagebox.askyesno(title='Please Confirm The Return Details To Be Correct', message='New Book Added In Library!')
+    # tkinter.messagebox.showinfo(title='Success!', message='Book Returned Successfully.')
+    # tkinter.messagebox.showinfo(title='Error!', message='Book Returned Successfully. But Has Fines')
+
+top_text = tk.Label(Return_frame, text='To Return A Book , Please Enter Information Below', bg='cyan')
+top_text.place(x = 50, y = 0, anchor = "nw")
+
+AN_label = tk.Label(Return_frame, text='Accession Number')
+AN_label.place(x = 50, y = 100, anchor = "nw")
+AN_entry = tk.Entry(Return_frame, fg = 'black', width = 60)
+AN_entry.insert(0, "Used to identify an instance of book")
+AN_entry.place(x = 300, y = 100, anchor = "nw")
+
+ID_label = tk.Label(Return_frame, text='Membership ID')
+ID_label.place(x = 50, y = 200, anchor = "nw")
+ID_entry = tk.Entry(Return_frame, fg = 'black', width = 60)
+ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+ID_entry.place(x = 300, y = 200, anchor = "nw")
+
+Return_book_button = tk.Button(Return_frame, text = "Return Book", fg = 'black', command = return_book)
+Return_book_button.place(x = 50, y = 300, anchor = "nw")
+Back_to_loan_button = tk.Button(Return_frame, text = "Back To Loan", fg = 'black', command = lambda: change_frame(Return_frame, Loan_frame))
+Back_to_loan_button.place(x = 700, y = 300, anchor = "nw")
+
+
+#Qingyang Code
 Res_book_frame = tk.Frame(root, height = win_h, width = win_w)
 Res_cancel_frame = tk.Frame(root, height = win_h, width = win_w)
 
@@ -98,82 +250,28 @@ Res_cancel_label.place(x = 50, y = 100, anchor = "nw")
 Res_cancel_button = tk.Button(Res_frame, text = "Cancel Reservation", fg = 'black', command = lambda: change_frame(Res_frame, Res_cancel_frame))
 Res_cancel_button.place(x = 300, y = 100, anchor = "nw")
 
-#Book Acquisition object
-def add_new_book():
-    tkinter.messagebox.showinfo(title='Success!', message='New Book Added In Library!')
-    # tkinter.messagebox.showinfo(title='Error!', message='Book Already Added; Duplicate, Missing or Incomplete fields')
+Res_book_title_label = tk.Label(Res_book_frame, text = "To reserve a book, please enter information below:", fg = 'black')
+Res_book_title_label.place(x = 50, y = 0, anchor = "nw")
+Res_book_Acc_number_label = tk.Label(Res_book_frame, text = "Accession Number", fg = 'black')
+Res_book_Acc_number_label.place(x = 50, y = 50, anchor = "nw")
+Res_book_Acc_number_entry = tk.Entry(Res_book_frame, fg = 'black', width = 60)
+Res_book_Acc_number_entry.insert(0, "Used to identify an instance of book")
+Res_book_Acc_number_entry.place(x = 300, y = 50, anchor = "nw")
+Res_book_Mem_ID_label = tk.Label(Res_book_frame, text = "Membership ID", fg = 'black')
+Res_book_Mem_ID_label.place(x = 50, y = 100, anchor = "nw")
+Res_book_Mem_ID_entry = tk.Entry(Res_book_frame, fg = 'black', width = 60)
+Res_book_Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+Res_book_Mem_ID_entry.place(x = 300, y = 100, anchor = "nw")
+Res_book_Res_date_label = tk.Label(Res_book_frame, text = "Reserve date", fg = 'black')
+Res_book_Res_date_label.place(x = 50, y = 150, anchor = "nw")
+Res_book_Res_date_entry = tk.Entry(Res_book_frame, fg = 'black', width = 60)
+Res_book_Res_date_entry.insert(0, "Date of book reservation")
+Res_book_Res_date_entry.place(x = 300, y = 150, anchor = "nw")
 
-top_text = tk.Label(Acq_frame, text='For New Book Acquisition, Please Enter Information Below', bg='cyan', width=50, height=2, font=('Helvatical bold',20))
-top_text.pack()
-AN_text = tk.Label(Acq_frame, text='Accession Number', width=20, height=1, font=('Arial',14)).place(x=100,y=53)
-AN_entry = tk.Entry(Acq_frame, show=None, font=('Arial', 10)).pack()
-Title_text = tk.Label(Acq_frame, text='Title', width=10, height=1, font=('Arial',14)).place(x=180,y=76)
-Title_entry = tk.Entry(Acq_frame, show=None, font=('Arial', 10)).pack()
-Author_text = tk.Label(Acq_frame, text='Author', width=10, height=1, font=('Arial',14)).place(x=180,y=99)
-Author_entry = tk.Entry(Acq_frame, show=None, font=('Arial', 10)).pack()
-ISBN_text = tk.Label(Acq_frame, text='ISBN', width=10, height=1, font=('Arial',14)).place(x=180,y=122)
-ISBN_entry = tk.Entry(Acq_frame, show=None, font=('Arial', 10)).pack()
-Publisher_text = tk.Label(Acq_frame, text='Publisher', width=15, height=1, font=('Arial',14)).place(x=165,y=145)
-Publisher_entry = tk.Entry(Acq_frame, show=None, font=('Arial', 10)).pack()
-Year_text = tk.Label(Acq_frame, text='Year', width=10, height=1, font=('Arial',14)).place(x=180,y=168)
-Year_entry = tk.Entry(Acq_frame, show=None, font=('Arial', 10)).pack()
-Add_new_book_button = tk.Button(Acq_frame, text = "Add New Book", fg = 'black', height = 2, width = 15, command = add_new_book).place(x=0,y=150)
-Back_to_book_button = tk.Button(Acq_frame, text = "Back To Book", fg = 'black', height = 2, width = 15, command = lambda: change_frame(Acq_frame, Book_frame)).place(x=500,y=150)
-
-#Book Withdrawal object
-def withdraw_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Details Are Correct', message='New Book Added In Library!')
-    # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently On Loan.')
-    # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently Reserved.')
-top_text = tk.Label(Withd_frame, text='To Remove Outdated Books From System, Please Enter Information Below', bg='cyan', width=50, height=2, font=('Helvatical bold',20)).pack()
-AN_text = tk.Label(Withd_frame, text='Accession Number', width=20, height=1, font=('Arial',14)).place(x=100,y=90)
-Empty_text = tk.Label(Withd_frame, text='', width=20, height=2).pack()
-AN_entry = tk.Entry(Withd_frame, show=None, font=('Arial', 10)).pack()
-Empty_text = tk.Label(Withd_frame, text='', width=20, height=5).pack()
-Withdraw_button = tk.Button(Withd_frame, text = "Withdraw Book", fg = 'black', height = 2, width = 15, command = withdraw_book).place(x=0,y=150)
-Back_to_book_button = tk.Button(Withd_frame, text = "Back To Book", fg = 'black', height = 2, width = 15, command = lambda: change_frame(Withd_frame, Book_frame)).place(x=500,y=150)
-
-#Loan frame object
-Borrow_frame = tk.Frame(root)
-Return_frame = tk.Frame(root)
-top_text = tk.Label(Loan_frame, text='Select One Of The Options Below', bg='cyan', width=30, height=2, font=('Helvatical bold',20)).pack()
-Borrow_button = tk.Button(Loan_frame, text = "6. Borrow", fg = 'black', height = 10, width = 20, command = lambda: change_frame(Loan_frame, Borrow_frame)).pack()
-Return_button = tk.Button(Loan_frame, text = "7. Return", fg = 'black',height = 10, width = 20, command = lambda: change_frame(Loan_frame, Return_frame)).pack()
-Back_button = tk.Button(Loan_frame, text = "Back To Main Menu", fg = 'black', height = 2, width = 50, command = lambda: change_frame(Loan_frame, Root_frame)).pack()
-
-#Borrow object
-def borrow_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Loan Details To Be Correct', message='New Book Added In Library!')
-    # tkinter.messagebox.showinfo(title='Error!', message='Book Currently On Loan Until.')
-    # tkinter.messagebox.showinfo(title='Error!', message='Member Loan Quota Exceeded.')
-    # tkinter.messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
-
-top_text = tk.Label(Borrow_frame, text='To Borrow A Book , Please Enter Information Below', bg='cyan', width=50, height=2, font=('Helvatical bold',20)).pack()
-AN_text = tk.Label(Borrow_frame, text='Accession Number', width=20, height=1, font=('Arial',14)).place(x=110,y=55)
-ID_text = tk.Label(Borrow_frame, text='Membership ID', width=20, height=1, font=('Arial',14)).place(x=110,y=75)
-AN_entry = tk.Entry(Borrow_frame, show=None, font=('Arial', 10)).pack()
-ID_entry = tk.Entry(Borrow_frame, show=None, font=('Arial', 10)).pack()
-Empty_text = tk.Label(Borrow_frame, text='', width=20, height=5).pack()
-Borrow_button = tk.Button(Borrow_frame, text = "Borrow Book", fg = 'black', height = 2, width = 15, command = borrow_book).place(x=0,y=150)
-Back_to_Loan_button = tk.Button(Borrow_frame, text = "Back To Loans", fg = 'black', height = 2, width = 15, command = lambda: change_frame(Borrow_frame, Loan_frame)).place(x=500,y=150)
-
-
-#Return object
-def return_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Return Details To Be Correct', message='New Book Added In Library!')
-    # tkinter.messagebox.showinfo(title='Success!', message='Book Returned Successfully.')
-    # tkinter.messagebox.showinfo(title='Error!', message='Book Returned Successfully. But Has Fines')
-
-top_text = tk.Label(Return_frame, text='To Return A Book , Please Enter Information Below', bg='cyan', width=50, height=2, font=('Helvatical bold',20)).pack()
-AN_text = tk.Label(Return_frame, text='Accession Number', width=20, height=1, font=('Arial',14)).place(x=110,y=55)
-ID_text = tk.Label(Return_frame, text='Membership ID', width=20, height=1, font=('Arial',14)).place(x=110,y=75)
-AN_entry = tk.Entry(Return_frame, show=None, font=('Arial', 10)).pack()
-ID_entry = tk.Entry(Return_frame, show=None, font=('Arial', 10)).pack()
-Empty_text = tk.Label(Return_frame, text='', width=20, height=5).pack()
-Borrow_button = tk.Button(Return_frame, text = "Return Book", fg = 'black', height = 2, width = 15, command = return_book).place(x=0,y=150)
-Back_to_Loan_button = tk.Button(Return_frame, text = "Back To Loans", fg = 'black', height = 2, width = 15, command = lambda: change_frame(Return_frame, Loan_frame)).place(x=500,y=150)
-
-
+Res_book_Res_button = tk.Button(Res_book_frame, text = "Reserve Book", fg = 'black')
+Res_book_Res_button.place(x = 50, y = 200, anchor = "nw")
+Res_book_Back_button = tk.Button(Res_book_frame, text = "Back to Reservation Menu", fg = 'black', command = lambda: change_frame(Res_book_frame, Res_frame))
+Res_book_Back_button.place(x = 700, y = 200, anchor = "nw")
 
 # Root Frame Application
 Root_frame.pack()
