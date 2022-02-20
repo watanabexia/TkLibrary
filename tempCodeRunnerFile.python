@@ -65,127 +65,6 @@ Fine_button.pack()
 Rep_button = tk.Button(Root_frame, text = "Reports", fg = 'black', command = lambda: change_frame(Root_frame, Rep_frame))
 Rep_button.pack()
 
-# Membership Frame
-Mem_create_frame = tk.Frame(root)
-Mem_delete_frame = tk.Frame(root)
-Mem_update_frame = tk.Frame(root)
-
-def Mem_to_Mem_create():
-    Mem_frame.pack_forget()
-    Mem_create_frame.pack() 
-
-def Mem_to_Mem_delete():
-    Mem_frame.pack_forget()
-    Mem_delete_frame.pack()
-
-def Mem_to_Mem_update():
-    Mem_frame.pack_forget()
-    Mem_update_frame.pack()
-
-
-# Membership menu labels and buttons
-top_word1 = tk.Label(Mem_frame, text='Select one of the Options below:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word1.pack()
-
-Mem_create_button = tk.Button(Mem_frame, text = "Membership Creation", fg = 'black', command = Mem_to_Mem_create)
-Mem_delete_button = tk.Button(Mem_frame, text = "Membership Deletion", fg = 'black', command = Mem_to_Mem_delete)
-Mem_update_button = tk.Button(Mem_frame, text = "Membership Update", fg = 'black', command = Mem_to_Mem_update)
-Back_to_main_menu = tk.Button(Mem_frame, text = "Back To Main Menu ", fg = 'black', command = lambda: change_frame(Mem_frame, Root_frame))
-
-Mem_create_button.pack()
-Mem_delete_button.pack()
-Mem_update_button.pack()
-Back_to_main_menu.pack()
-
-#top_text = tk.Label(Acq_frame, text='For New Book Acquisition, Please Enter Information Below', bg='cyan', width=50, height=2, font=('Helvatical bold',20))
-#top_text.pack()
-#AN_text = tk.Label(Acq_frame, text='Accession Number', width=20, height=1, font=('Arial',14)).place(x=100,y=53)
-#AN_entry = tk.Entry(Acq_frame, show=None, font=('Arial', 10)).pack()
-#Title_text = tk.Label(Acq_frame, text='Title', width=10, height=1, font=('Arial',14)).place(x=180,y=76)
-#Title_entry = tk.Entry(Acq_frame, show=None, font=('Arial', 10)).pack()
-#Author_text = tk.Label(Acq_frame, text='Author', width=10, height=1, font=('Arial',14)).place(x=180,y=99)
-#Author_entry = tk.Entry(Acq_frame, show=None, font=('Arial', 10)).pack()
-#ISBN_text = tk.Label(Acq_frame, text='ISBN', width=10, height=1, font=('Arial',14)).place(x=180,y=122)
-#ISBN_entry = tk.Entry(Acq_frame, show=None, font=('Arial', 10)).pack()
-#Publisher_text = tk.Label(Acq_frame, text='Publisher', width=15, height=1, font=('Arial',14)).place(x=165,y=145)
-#Publisher_entry = tk.Entry(Acq_frame, show=None, font=('Arial', 10)).pack()
-
-# Membership creation labels and buttons
-top_word2 = tk.Label(Mem_create_frame, text='To Create Member, Please Enter Requested Information Below:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word2.pack()
-Mem_ID_label1 = tk.Label(Mem_create_frame, text = 'Membership ID', width=10, height=1, font=('Arial',14)).place(x=100,y=53)
-Mem_ID_entry = tk.Entry(Mem_create_frame, show=None, font=('Arial', 10)).pack()
-Name_label = tk.Label(Mem_create_frame, text = 'Name', width=10, height=1, font=('Arial',14)).place(x=180,y=76)
-Name_entry = tk.Entry(Mem_create_frame, show=None, font=('Arial', 10)).pack()
-Faculty_label = tk.Label(Mem_create_frame, text = 'Faculty', width=10, height=1, font=('Arial',14)).place(x=180,y=99)
-Faculty_entry = tk.Entry(Mem_create_frame, show=None, font=('Arial', 10)).pack()
-Phone_number_label = tk.Label(Mem_create_frame, text = 'Phone Number', width=10, height=1, font=('Arial',14)).place(x=180,y=122)
-Phone_number_entry = tk.Entry(Mem_create_frame, show=None, font=('Arial', 10)).pack()
-Email_Address_label = tk.Label(Mem_create_frame, text = 'Email Address', width=10, height=1, font=('Arial',14)).place(x=165,y=145)
-Email_Address_entry = tk.Entry(Mem_create_frame, show=None, font=('Arial', 10)).pack()
-
-
-Back_to_membership_menu_button_C = tk.Button(Mem_create_frame, text = "Back To Membership Menu ", fg = 'black', command = lambda: change_frame(Mem_create_frame, Mem_frame))
-Back_to_membership_menu_button_C.pack(side = tk.RIGHT, padx=10, pady=60)
-
-# Membership deletion labels and buttons
-top_word3 = tk.Label(Mem_delete_frame, text='To Delete Member, Please Enter Membership ID:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word3.pack()
-Mem_ID_label2 = tk.Label(Mem_delete_frame, text = 'Membership ID', fg = 'black')
-Mem_ID_label2.pack()
-
-Back_to_membership_menu_button_D = tk.Button(Mem_delete_frame, text = "Back To Membership Menu ", fg = 'black', command = lambda: change_frame(Mem_delete_frame, Mem_frame))
-Back_to_membership_menu_button_D.pack()
-
-# Membership update labels and buttons
-top_word4 = tk.Label(Mem_update_frame, text='To Update a Member, Please Enter Membership ID:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word4.pack()
-Mem_ID_label3 = tk.Label(Mem_update_frame, text = 'Membership ID', fg = 'black')
-Mem_ID_label3.pack()
-
-Back_to_membership_menu_button_U = tk.Button(Mem_update_frame, text = "Back To Membership Menu ", fg = 'black', command = lambda: change_frame(Mem_update_frame, Mem_frame))
-Back_to_membership_menu_button_U.pack()
-
-
-# Fine Frame
-
-Fine_frame = tk.Frame(root)
-Fine_payment_frame = tk.Frame(root)
-
-def Fine_to_Fine_payment():
-    Fine_frame.pack_forget()
-    Fine_payment_frame.pack() 
-
-# Fine menu labels and buttons
-top_word5 = tk.Label(Fine_frame, text='Select one of the Options below:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word5.pack()
-
-Fine_payment_button = tk.Button(Fine_frame, text = "Fine Payment", fg = 'black', command = Fine_to_Fine_payment)
-Fine_payment_button.pack()
-Back_to_main_menu1 = tk.Button(Fine_frame, text = "Back To Main Menu ", fg = 'black', command = lambda: change_frame(Fine_frame, Root_frame))
-Back_to_main_menu1.pack()
-
-# Fine payment labels and buttons
-top_word6 = tk.Label(Fine_payment_frame, text='To Pay a Fine, Please Enter Information Below:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word6.pack()
-Mem_ID_label4 = tk.Label(Fine_payment_frame, text = 'Membership ID', fg = 'black')
-Mem_ID_label4.pack()
-Payment_date = tk.Label(Fine_payment_frame, text = 'Payment Date', fg = 'black')
-Payment_date.pack()
-Payment_amount = tk.Label(Fine_payment_frame, text = 'Payment Amount', fg = 'black')
-Payment_amount.pack()
-Back_to_Fine_menu = tk.Button(Fine_payment_frame, text = "Back To Fine Menu ", fg = 'black', command = lambda: change_frame(Fine_payment_frame, Fine_frame))
-Back_to_Fine_menu.pack()
-
-
-
-
 #Book frame object
 Acq_frame = tk.Frame(root)
 Withd_frame = tk.Frame(root)
@@ -275,11 +154,14 @@ Borrow_button = tk.Button(Return_frame, text = "Return Book", fg = 'black', heig
 Back_to_Loan_button = tk.Button(Return_frame, text = "Back To Loans", fg = 'black', height = 2, width = 15, command = lambda: change_frame(Return_frame, Loan_frame)).place(x=500,y=150)
 
 
+
+
+
+
+
+
+
 # Root Frame Application
 Root_frame.pack()
 if __name__ == "__main__":
     root.mainloop()
-
-
-
-
