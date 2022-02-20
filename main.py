@@ -293,6 +293,7 @@ ID_label = tk.Label(Mem_update1_frame, text='Membership ID')
 ID_label.place(x = 50, y = 200, anchor = "nw")
 ID_entry = tk.Entry(Mem_update1_frame, fg = 'black', width = 60)
 ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+ID = ID_entry.get()
 ID_entry.place(x = 300, y = 200, anchor = "nw")
 
 
@@ -305,7 +306,7 @@ Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
 Mem_ID_label1 = tk.Label(Mem_update2_frame, text='Membership ID', fg = 'black')
 Mem_ID_label1.place(x = 50, y = 50, anchor = "nw")
 Mem_ID_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
-Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+Mem_ID_entry.insert(0, ID)
 Mem_ID_entry.place(x = 300, y = 50, anchor = "nw")
 
 Name_label = tk.Label(Mem_update2_frame, text='Name', fg = 'black')
@@ -326,14 +327,20 @@ Phone_number_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
 Phone_number_entry.insert(0, "Update phone number")
 Phone_number_entry.place(x = 300, y = 200, anchor = "nw")
 
-Email_Address_label = tk.Label(Mem_create_frame, text='Email Address', fg = 'black')
+# Deletion Object
+def Mem_update():
+    None
+
+Email_Address_label = tk.Label(Mem_update2_frame, text='Email Address', fg = 'black')
 Email_Address_label.place(x = 50, y = 250, anchor = "nw")
-Email_Address_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Email_Address_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
 Email_Address_entry.insert(0, "Update Email")
 Email_Address_entry.place(x = 300, y = 250, anchor = "nw")
 
-
-
+Mem_update2_button = tk.Button(Mem_update2_frame, text = "Update Member", fg = 'black', command = Mem_update)
+Mem_update2_button.place(x = 50, y = 300, anchor = "nw")
+Back_to_mem_button = tk.Button(Mem_update2_frame, text = "Back To Membership Menu", fg = 'black', command = lambda: change_frame(Mem_update2_frame, Mem_frame))
+Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
 
 
 
