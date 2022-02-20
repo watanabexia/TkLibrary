@@ -77,6 +77,9 @@ Mem_delete_frame = tk.Frame(root, height = win_h, width = win_w)
 Mem_update_frame = tk.Frame(root, height = win_h, width = win_w)
 
 # Membership menu labels and buttons
+top_text = tk.Label(Mem_frame, text='Select One Of The Options Below', bg='cyan')
+top_text.place(x = 150, y = 0, anchor = "nw")
+
 Mem_create_label = tk.Label(Mem_frame, text = "Membership Creation", fg = 'black')
 Mem_create_label.place(x = 50, y = 50, anchor = "nw")
 Mem_create_button = tk.Button(Mem_frame, text = "Create A Member", fg = 'black', command = lambda: change_frame(Mem_frame, Mem_create_frame))
@@ -95,41 +98,49 @@ Mem_update_button.place(x = 300, y = 150, anchor = "nw")
 Back_button = tk.Button(Mem_frame, text = "Back To Main Menu", fg = 'black', command = lambda: change_frame(Mem_frame, Root_frame))
 Back_button.place(x = 175, y = 200, anchor = "nw")
 
-#
-#top_text = tk.Label(Acq_frame, text='For New Book Acquisition, Please Enter Information Below', bg='cyan')
-#top_text.place(x = 50, y = 0, anchor = "nw")
-
-#AN_label = tk.Label(Acq_frame, text='Accession Number', fg = 'black')
-#AN_label.place(x = 50, y = 50, anchor = "nw")
-#AN_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
-#AN_entry.insert(0, "Used to identify an instance of book")
-#AN_entry.place(x = 300, y = 50, anchor = "nw")
-
-
-#Add_new_book_button = tk.Button(Acq_frame, text = "Add New Book", fg = 'black', command = add_new_book)
-#Add_new_book_button.place(x = 50, y = 350, anchor = "nw")
-#Back_to_book_button = tk.Button(Acq_frame, text = "Back To Book", fg = 'black', command = lambda: change_frame(Acq_frame, Book_frame))
-#Back_to_book_button.place(x = 700, y = 350, anchor = "nw")
-
 
 # Membership creation labels and buttons
-top_word2 = tk.Label(Mem_create_frame, text='To Create Member, Please Enter Requested Information Below:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word2.pack()
-Mem_ID_label1 = tk.Label(Mem_create_frame, text = 'Membership ID', width=10, height=1, font=('Arial',14)).place(x=100,y=53)
-Mem_ID_entry = tk.Entry(Mem_create_frame, show=None, font=('Arial', 10)).pack()
-Name_label = tk.Label(Mem_create_frame, text = 'Name', width=10, height=1, font=('Arial',14)).place(x=180,y=76)
-Name_entry = tk.Entry(Mem_create_frame, show=None, font=('Arial', 10)).pack()
-Faculty_label = tk.Label(Mem_create_frame, text = 'Faculty', width=10, height=1, font=('Arial',14)).place(x=180,y=99)
-Faculty_entry = tk.Entry(Mem_create_frame, show=None, font=('Arial', 10)).pack()
-Phone_number_label = tk.Label(Mem_create_frame, text = 'Phone Number', width=10, height=1, font=('Arial',14)).place(x=180,y=122)
-Phone_number_entry = tk.Entry(Mem_create_frame, show=None, font=('Arial', 10)).pack()
-Email_Address_label = tk.Label(Mem_create_frame, text = 'Email Address', width=10, height=1, font=('Arial',14)).place(x=165,y=145)
-Email_Address_entry = tk.Entry(Mem_create_frame, show=None, font=('Arial', 10)).pack()
+def create_new_member():
+    tkinter.messagebox.showinfo(title='Success!', message='ALS Membership Created')
 
+top_text = tk.Label(Mem_create_frame, text='To Create Member, Please Enter Requested Information Below:', bg='cyan')
+top_text.place(x = 50, y = 0, anchor = "nw")
 
-Back_to_membership_menu_button_C = tk.Button(Mem_create_frame, text = "Back To Membership Menu ", fg = 'black', command = lambda: change_frame(Mem_create_frame, Mem_frame))
-Back_to_membership_menu_button_C.pack(side = tk.RIGHT, padx=10, pady=60)
+Mem_ID_label1 = tk.Label(Mem_create_frame, text='Membership ID', fg = 'black')
+Mem_ID_label1.place(x = 50, y = 50, anchor = "nw")
+Mem_ID_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+Mem_ID_entry.place(x = 300, y = 50, anchor = "nw")
+
+Name_label = tk.Label(Mem_create_frame, text='Name', fg = 'black')
+Name_label.place(x = 50, y = 100, anchor = "nw")
+Name_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Name_entry.insert(0, "Enter member’s name")
+Name_entry.place(x = 300, y = 100, anchor = "nw")
+
+Faculty_label = tk.Label(Mem_create_frame, text='Faculty', fg = 'black')
+Faculty_label.place(x = 50, y = 150, anchor = "nw")
+Faculty_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Faculty_entry.insert(0, "e.g., Computing, Engineering, Science, etc.")
+Faculty_entry.place(x = 300, y = 150, anchor = "nw")
+
+Phone_number_label = tk.Label(Mem_create_frame, text='Phone Number', fg = 'black')
+Phone_number_label.place(x = 50, y = 200, anchor = "nw")
+Phone_number_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Phone_number_entry.insert(0, "e.g., 91234567, 81093487, 92054981, etc.")
+Phone_number_entry.place(x = 300, y = 200, anchor = "nw")
+
+Email_Address_label = tk.Label(Mem_create_frame, text='Email Address', fg = 'black')
+Email_Address_label.place(x = 50, y = 250, anchor = "nw")
+Email_Address_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Email_Address_entry.insert(0, "e.g., ALSuser@als.edu")
+Email_Address_entry.place(x = 300, y = 250, anchor = "nw")
+
+Add_new_member_button = tk.Button(Mem_create_frame, text = "Create Member", fg = 'black', command = create_new_member)
+Add_new_member_button.place(x = 50, y = 300, anchor = "nw")
+Back_to_membership_menu_button_C = tk.Button(Mem_create_frame, text = "Back To Membership Menu", fg = 'black', command = lambda: change_frame(Mem_create_frame, Mem_frame))
+Back_to_membership_menu_button_C.place(x = 700, y = 300, anchor = "nw")
+
 
 # Membership deletion labels and buttons
 top_word3 = tk.Label(Mem_delete_frame, text='To Delete Member, Please Enter Membership ID:', 
