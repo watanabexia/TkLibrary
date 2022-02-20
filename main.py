@@ -95,6 +95,22 @@ Mem_update_button.place(x = 300, y = 150, anchor = "nw")
 Back_button = tk.Button(Mem_frame, text = "Back To Main Menu", fg = 'black', command = lambda: change_frame(Mem_frame, Root_frame))
 Back_button.place(x = 175, y = 200, anchor = "nw")
 
+#
+#top_text = tk.Label(Acq_frame, text='For New Book Acquisition, Please Enter Information Below', bg='cyan')
+#top_text.place(x = 50, y = 0, anchor = "nw")
+
+#AN_label = tk.Label(Acq_frame, text='Accession Number', fg = 'black')
+#AN_label.place(x = 50, y = 50, anchor = "nw")
+#AN_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
+#AN_entry.insert(0, "Used to identify an instance of book")
+#AN_entry.place(x = 300, y = 50, anchor = "nw")
+
+
+#Add_new_book_button = tk.Button(Acq_frame, text = "Add New Book", fg = 'black', command = add_new_book)
+#Add_new_book_button.place(x = 50, y = 350, anchor = "nw")
+#Back_to_book_button = tk.Button(Acq_frame, text = "Back To Book", fg = 'black', command = lambda: change_frame(Acq_frame, Book_frame))
+#Back_to_book_button.place(x = 700, y = 350, anchor = "nw")
+
 
 # Membership creation labels and buttons
 top_word2 = tk.Label(Mem_create_frame, text='To Create Member, Please Enter Requested Information Below:', 
