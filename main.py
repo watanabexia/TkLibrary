@@ -75,7 +75,8 @@ Rep_button.pack()
 # Membership Frame Object
 Mem_create_frame = tk.Frame(root, height = win_h, width = win_w)
 Mem_delete_frame = tk.Frame(root, height = win_h, width = win_w)
-Mem_update_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_update1_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_update2_frame = tk.Frame(root, height = win_h, width = win_w)
 
 # Membership menu labels and buttons
 top_text = tk.Label(Mem_frame, text='Select One Of The Options Below', bg='cyan')
@@ -93,7 +94,7 @@ Mem_delete_button.place(x = 300, y = 100, anchor = "nw")
 
 Mem_update_label = tk.Label(Mem_frame, text = "Membership Update", fg = 'black')
 Mem_update_label.place(x = 50, y = 150, anchor = "nw")
-Mem_update_button = tk.Button(Mem_frame, text = "Update A Member", fg = 'black', command = lambda: change_frame(Mem_frame, Mem_update_frame))
+Mem_update_button = tk.Button(Mem_frame, text = "Update A Member", fg = 'black', command = lambda: change_frame(Mem_frame, Mem_update1_frame))
 Mem_update_button.place(x = 300, y = 150, anchor = "nw")
 
 Back_button = tk.Button(Mem_frame, text = "Back To Main Menu", fg = 'black', command = lambda: change_frame(Mem_frame, Root_frame))
@@ -144,59 +145,125 @@ Back_to_membership_menu_button_C.place(x = 700, y = 300, anchor = "nw")
 
 
 # Membership deletion labels and buttons
-top_word3 = tk.Label(Mem_delete_frame, text='To Delete Member, Please Enter Membership ID:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word3.pack()
-Mem_ID_label2 = tk.Label(Mem_delete_frame, text = 'Membership ID', fg = 'black')
-Mem_ID_label2.pack()
+def delete_mem():
+    None
 
-Back_to_membership_menu_button_D = tk.Button(Mem_delete_frame, text = "Back To Membership Menu ", fg = 'black', command = lambda: change_frame(Mem_delete_frame, Mem_frame))
-Back_to_membership_menu_button_D.pack()
+top_text = tk.Label(Mem_delete_frame, text='To Delete A Member, Please Membership ID Below', bg='cyan')
+top_text.place(x = 50, y = 0, anchor = "nw")
 
-# Membership update labels and buttons
-top_word4 = tk.Label(Mem_update_frame, text='To Update a Member, Please Enter Membership ID:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word4.pack()
-Mem_ID_label3 = tk.Label(Mem_update_frame, text = 'Membership ID', fg = 'black')
-Mem_ID_label3.pack()
-
-Back_to_membership_menu_button_U = tk.Button(Mem_update_frame, text = "Back To Membership Menu ", fg = 'black', command = lambda: change_frame(Mem_update_frame, Mem_frame))
-Back_to_membership_menu_button_U.pack()
+ID_label = tk.Label(Mem_delete_frame, text='Membership ID')
+ID_label.place(x = 50, y = 200, anchor = "nw")
+ID_entry = tk.Entry(Mem_delete_frame, fg = 'black', width = 60)
+ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+ID_entry.place(x = 300, y = 200, anchor = "nw")
 
 
-# Fine Frame
+Mem_delete_button = tk.Button(Mem_delete_frame, text = "Delete Member", fg = 'black', command = delete_mem)
+Mem_delete_button.place(x = 50, y = 300, anchor = "nw")
+Back_to_mem_button = tk.Button(Mem_delete_frame, text = "Back To Membership Menu", fg = 'black', command = lambda: change_frame(Mem_delete_frame, Mem_frame))
+Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
 
-Fine_frame = tk.Frame(root)
-Fine_payment_frame = tk.Frame(root)
 
-def Fine_to_Fine_payment():
-    Fine_frame.pack_forget()
-    Fine_payment_frame.pack() 
+# Membership update menu labels and buttons
+top_text = tk.Label(Mem_update1_frame, text='To Update A Member, Please Membership ID Below', bg='cyan')
+top_text.place(x = 50, y = 0, anchor = "nw")
+
+ID_label = tk.Label(Mem_update1_frame, text='Membership ID')
+ID_label.place(x = 50, y = 200, anchor = "nw")
+ID_entry = tk.Entry(Mem_update1_frame, fg = 'black', width = 60)
+ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+ID_entry.place(x = 300, y = 200, anchor = "nw")
+
+
+Mem_update1_button = tk.Button(Mem_update1_frame, text = "Update Member", fg = 'black', command = lambda: change_frame(Mem_update1_frame, Mem_update2_frame))
+Mem_update1_button.place(x = 50, y = 300, anchor = "nw")
+Back_to_mem_button = tk.Button(Mem_update1_frame, text = "Back To Membership Menu", fg = 'black', command = lambda: change_frame(Mem_update1_frame, Mem_frame))
+Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
+
+# Membership update information labels and buttons
+def update_mem():
+    None
+
+Mem_ID_label1 = tk.Label(Mem_update2_frame, text='Membership ID', fg = 'red')
+Mem_ID_label1.place(x = 50, y = 50, anchor = "nw")
+Mem_ID_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+Mem_ID_entry.place(x = 300, y = 50, anchor = "nw")
+
+Name_label = tk.Label(Mem_update2_frame, text='Name', fg = 'black')
+Name_label.place(x = 50, y = 100, anchor = "nw")
+Name_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Name_entry.insert(0, "Update name")
+Name_entry.place(x = 300, y = 100, anchor = "nw")
+
+Faculty_label = tk.Label(Mem_update2_frame, text='Faculty', fg = 'black')
+Faculty_label.place(x = 50, y = 150, anchor = "nw")
+Faculty_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Faculty_entry.insert(0, "Update faculty")
+Faculty_entry.place(x = 300, y = 150, anchor = "nw")
+
+Phone_number_label = tk.Label(Mem_update2_frame, text='Phone Number', fg = 'black')
+Phone_number_label.place(x = 50, y = 200, anchor = "nw")
+Phone_number_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Phone_number_entry.insert(0, "Update phone number")
+Phone_number_entry.place(x = 300, y = 200, anchor = "nw")
+
+Email_Address_label = tk.Label(Mem_update2_frame, text='Email Address', fg = 'black')
+Email_Address_label.place(x = 50, y = 250, anchor = "nw")
+Email_Address_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Email_Address_entry.insert(0, "Update Email")
+Email_Address_entry.place(x = 300, y = 250, anchor = "nw")
+
+Mem_update2_button = tk.Button(Mem_update2_frame, text = "Update Member", fg = 'black', command = lambda: change_frame(Mem_update2_frame, update_mem))
+Mem_update2_button.place(x = 50, y = 300, anchor = "nw")
+Back_to_mem_button = tk.Button(Mem_update2_frame, text = "Back To Previous Membership Menu", fg = 'black', command = lambda: change_frame(Mem_update2_frame, Mem_update1_frame))
+Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
+
 
 # Fine menu labels and buttons
-top_word5 = tk.Label(Fine_frame, text='Select one of the Options below:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word5.pack()
+Fine_payment_frame = tk.Frame(root, height = win_h, width = win_w)
 
-Fine_payment_button = tk.Button(Fine_frame, text = "Fine Payment", fg = 'black', command = Fine_to_Fine_payment)
-Fine_payment_button.pack()
-Back_to_main_menu1 = tk.Button(Fine_frame, text = "Back To Main Menu ", fg = 'black', command = lambda: change_frame(Fine_frame, Root_frame))
-Back_to_main_menu1.pack()
+top_text = tk.Label(Fine_frame, text='Select The Option Below', bg='cyan')
+top_text.place(x = 150, y = 0, anchor = "nw")
+
+Fine_payment_label = tk.Label(Fine_frame, text = "Payment", fg = 'black')
+Fine_payment_label.place(x = 50, y = 50, anchor = "nw")
+Fine_payment_button = tk.Button(Fine_frame, text = "Fine Payment", fg = 'black', command = lambda: change_frame(Fine_frame, Fine_payment_frame))
+Fine_payment_button.place(x = 150, y = 47, anchor = "nw")
+
+Back_to_mem_button = tk.Button(Fine_frame, text = "Back To Main Menu", fg = 'black', command = lambda: change_frame(Fine_frame, Root_frame))
+Back_to_mem_button.place(x = 300, y = 100, anchor = "nw")
+
 
 # Fine payment labels and buttons
-top_word6 = tk.Label(Fine_payment_frame, text='To Pay a Fine, Please Enter Information Below:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word6.pack()
-Mem_ID_label4 = tk.Label(Fine_payment_frame, text = 'Membership ID', fg = 'black')
-Mem_ID_label4.pack()
-Payment_date = tk.Label(Fine_payment_frame, text = 'Payment Date', fg = 'black')
-Payment_date.pack()
-Payment_amount = tk.Label(Fine_payment_frame, text = 'Payment Amount', fg = 'black')
-Payment_amount.pack()
-Back_to_Fine_menu = tk.Button(Fine_payment_frame, text = "Back To Fine Menu ", fg = 'black', command = lambda: change_frame(Fine_payment_frame, Fine_frame))
-Back_to_Fine_menu.pack()
+def pay_fine():
+    None
 
+top_text = tk.Label(Fine_payment_frame, text='To Pay a Fine, Please Enter Information Below:', bg='cyan')
+top_text.place(x = 50, y = 0, anchor = "nw")
 
+ID_label = tk.Label(Fine_payment_frame, text='Membership ID')
+ID_label.place(x = 50, y = 50, anchor = "nw")
+ID_entry = tk.Entry(Fine_payment_frame, fg = 'black', width = 60)
+ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+ID_entry.place(x = 300, y = 50, anchor = "nw")
+
+Payment_date_label = tk.Label(Fine_payment_frame, text='Payment Date')
+Payment_date_label.place(x = 50, y = 100, anchor = "nw")
+Payment_date_entry = tk.Entry(Fine_payment_frame, fg = 'black', width = 60)
+Payment_date_entry.insert(0, "Date Payment Received")
+Payment_date_entry.place(x = 300, y = 100, anchor = "nw")
+
+Payment_amount_label = tk.Label(Fine_payment_frame, text='Payment Amount')
+Payment_amount_label.place(x = 50, y = 150, anchor = "nw")
+Payment_amount_entry = tk.Entry(Fine_payment_frame, fg = 'black', width = 60)
+Payment_amount_entry.insert(0, "Total fine amount")
+Payment_amount_entry.place(x = 300, y = 150, anchor = "nw")
+
+Pay_fine_button = tk.Button(Fine_payment_frame, text = "Pay Fine", fg = 'black', command = pay_fine)
+Pay_fine_button.place(x = 50, y = 200, anchor = "nw")
+Back_to_fine_menu_button = tk.Button(Fine_payment_frame, text = "Back To Fines Menu", fg = 'black', command = lambda: change_frame(Fine_payment_frame, Fine_frame))
+Back_to_fine_menu_button.place(x = 700, y = 200, anchor = "nw")
 
 
 
