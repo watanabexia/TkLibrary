@@ -1,43 +1,29 @@
 import tkinter as tk
 
-# from venv import create
-# from sqlalchemy import Column, String, create_engine, Integer
-# from sqlalchemy.orm import sessionmaker
-# from sqlalchemy.ext.declarative import declarative_base
+from venv import create
+from sqlalchemy import Column, String, create_engine, Integer, Date
+from sqlalchemy.orm import sessionmaker
 
-# # Database Schema Definition
-# Base = declarative_base()
-# class Book(Base):
-#     __tablename__ = 'Book'
-#     Accession_Number = Column(String(3), primary_key = True)
-#     Title = Column(String(57))
-#     Authors = Column(String(28))
-#     FIELD4 = Column(String(16))
-#     FIELD5 = Column(String(8))
-#     ISBN = Column(String(13))
-#     Publisher = Column(String(32))
-#     Year = Column(Integer)
+from dbTable import *
+# ------ Database Function ------ #
+db_user = "root"
+db_password = "123456"
+schema_name = "bt2102_as_1"
 
-# # Database Connection Initialization
-# engine = create_engine('mysql+mysqlconnector://root:123456@localhost:3306/BT2102-AS1')
-# DBSession = sessionmaker(bind = engine)
+# Database Connection Initialization
+engine = create_engine('mysql+mysqlconnector://{}:{}@localhost:3306/{}'.format(db_user, db_password, schema_name))
+DBSession = sessionmaker(bind = engine)
+session = DBSession()
 
-# # session = DBSession()
 
-# # book = session.query(Book).all()
-
-# # print(book[0].Title)
-
-# # session.close()
+# ---------- UI ----------- #
+win_w = 1000
+win_h = 1000
 
 # UI Initialization
 root = tk.Tk()
 root.title('ALS')
-
-win_w = 1000
-win_h = 1000
-
-root.geometry(str(win_w) + "x" + str(win_h))
+root.geometry("{}x{}".format(str(win_w), str(win_h)))
 root.option_add("*font", "SF\ Pro 14")
 
 # Frame Definition
@@ -100,18 +86,17 @@ Res_book_Res_date_entry = tk.Entry(Res_book_frame, fg = 'black', width = 60)
 Res_book_Res_date_entry.insert(0, "Date of book reservation")
 Res_book_Res_date_entry.place(x = 300, y = 150, anchor = "nw")
 
+def confirm_book_reservation():
+    # book = session.query(LibBooks).all()
+    # print(book[0].Title)
+    acc_number = Res_book_Acc_number_entry.get()
+    book_title = ""
+    mem_id = Res_book_Mem_ID_entry.get()
+
 Res_book_Res_button = tk.Button(Res_book_frame, text = "Reserve Book", fg = 'black')
 Res_book_Res_button.place(x = 50, y = 200, anchor = "nw")
 Res_book_Back_button = tk.Button(Res_book_frame, text = "Back to Reservation Menu", fg = 'black', command = lambda: change_frame(Res_book_frame, Res_frame))
 Res_book_Back_button.place(x = 700, y = 200, anchor = "nw")
-
-def confirm_book_reservation():
-    acc_number = Res_book_Acc_number_entry.get()
-
-    book_title = ""
-
-    mem_id = Res_book_Mem_ID_entry.get()
-
 
 Res_cancel_title_label = tk.Label(Res_cancel_frame, text = "To cancel a reservation, please enter information below:", fg = 'black')
 Res_cancel_title_label.place(x = 50, y = 0, anchor = "nw")
@@ -135,14 +120,11 @@ Res_cancel_Res_button = tk.Button(Res_cancel_frame, text = "Cancel Reservation",
 Res_cancel_Res_button.place(x = 50, y = 200, anchor = "nw")
 Res_cancel_Back_button = tk.Button(Res_cancel_frame, text = "Back to Reservation Menu", fg = 'black', command = lambda: change_frame(Res_cancel_frame, Res_frame))
 Res_cancel_Back_button.place(x = 700, y = 200, anchor = "nw")
-
 # Qingyang ends
-
-
-
-
 
 # Root Frame Application
 Root_frame.pack()
 if __name__ == "__main__":
     root.mainloop()
+
+session.close()
