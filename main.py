@@ -34,17 +34,21 @@ import tkinter.messagebox
 # UI Initialization
 root = tk.Tk()
 root.title('ALS')
-root.geometry('1000x1000')
+
+win_w = 1000
+win_h = 1000
+
+root.geometry(str(win_w) + "x" + str(win_h))
 root.option_add("*font", "SF\ Pro 14")
 
 # Frame Definition
-Root_frame = tk.Frame(root)
-Mem_frame = tk.Frame(root)
-Book_frame = tk.Frame(root)
-Loan_frame = tk.Frame(root)
-Res_frame = tk.Frame(root)
-Fine_frame = tk.Frame(root)
-Rep_frame = tk.Frame(root)
+Root_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_frame = tk.Frame(root, height = win_h, width = win_w)
+Book_frame = tk.Frame(root, height = win_h, width = win_w)
+Loan_frame = tk.Frame(root, height = win_h, width = win_w)
+Res_frame = tk.Frame(root, height = win_h, width = win_w)
+Fine_frame = tk.Frame(root, height = win_h, width = win_w)
+Rep_frame = tk.Frame(root, height = win_h, width = win_w)
 
 # Frame Control Function
 def change_frame(from_frame, to_frame):
@@ -65,10 +69,31 @@ Fine_button.pack()
 Rep_button = tk.Button(Root_frame, text = "Reports", fg = 'black', command = lambda: change_frame(Root_frame, Rep_frame))
 Rep_button.pack()
 
+#
+Acq_frame = tk.Frame(root, height = win_h, width = win_w)
+Withd_frame = tk.Frame(root, height = win_h, width = win_w)
+
+top_text = tk.Label(Book_frame, text='Select One Of The Options Below', bg='cyan')
+top_text.place(x = 150, y = 0, anchor = "nw")
+
+Acq_label = tk.Label(Book_frame, text = "Book Acquisition", fg = 'black')
+Acq_label.place(x = 50, y = 50, anchor = "nw")
+Acq_button = tk.Button(Book_frame, text = "Acquire A Book", fg = 'black', command = lambda: change_frame(Book_frame, Acq_frame))
+Acq_button.place(x = 300, y = 50, anchor = "nw")
+
+Withd_label = tk.Label(Book_frame, text = "Book Withdrawal", fg = 'black')
+Withd_label.place(x = 50, y = 100, anchor = "nw")
+Withd_button = tk.Button(Book_frame, text = "Withdraw A Book", fg = 'black', command = lambda: change_frame(Book_frame, Withd_frame))
+Withd_button.place(x = 300, y = 100, anchor = "nw")
+
+Back_button = tk.Button(Book_frame, text = "Back To Main Menu", fg = 'black', command = lambda: change_frame(Book_frame, Root_frame))
+Back_button.place(x = 175, y = 150, anchor = "nw")
+#
+
 # Membership Frame
-Mem_create_frame = tk.Frame(root)
-Mem_delete_frame = tk.Frame(root)
-Mem_update_frame = tk.Frame(root)
+Mem_create_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_delete_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_update_frame = tk.Frame(root, height = win_h, width = win_w)
 
 def Mem_to_Mem_create():
     Mem_frame.pack_forget()
@@ -84,9 +109,8 @@ def Mem_to_Mem_update():
 
 
 # Membership menu labels and buttons
-top_word1 = tk.Label(Mem_frame, text='Select one of the Options below:', 
-bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
-top_word1.pack()
+top_text = tk.Label(Mem_frame, text='Select One Of The Options Below', bg='cyan')
+top_text.place(x = 150, y = 0, anchor = "nw")
 
 Mem_create_button = tk.Button(Mem_frame, text = "Membership Creation", fg = 'black', command = Mem_to_Mem_create)
 Mem_delete_button = tk.Button(Mem_frame, text = "Membership Deletion", fg = 'black', command = Mem_to_Mem_delete)
