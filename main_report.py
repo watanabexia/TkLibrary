@@ -1,3 +1,4 @@
+from re import X
 import tkinter as tk
 
 # from venv import create
@@ -33,17 +34,22 @@ import tkinter as tk
 # UI Initialization
 root = tk.Tk()
 root.title('ALS')
-root.geometry('1000x1000')
+
+win_w = 1000
+win_h = 1000
+
+root.geometry(str(win_w) + "x" + str(win_h))
 root.option_add("*font", "SF\ Pro 14")
 
+
 # Frame Definition
-Root_frame = tk.Frame(root)
-Mem_frame = tk.Frame(root)
-Book_frame = tk.Frame(root)
-Loan_frame = tk.Frame(root)
-Res_frame = tk.Frame(root)
-Fine_frame = tk.Frame(root)
-Rep_frame = tk.Frame(root)
+Root_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_frame = tk.Frame(root, height = win_h, width = win_w)
+Book_frame = tk.Frame(root, height = win_h, width = win_w)
+Loan_frame = tk.Frame(root, height = win_h, width = win_w)
+Res_frame = tk.Frame(root, height = win_h, width = win_w)
+Fine_frame = tk.Frame(root, height = win_h, width = win_w)
+Rep_frame = tk.Frame(root, height = win_h, width = win_w)
 
 # Frame Control Function
 def change_frame(from_frame, to_frame):
@@ -65,16 +71,16 @@ Rep_button = tk.Button(Root_frame, text = "Reports", fg = 'black', command = lam
 Rep_button.pack()
 
 # report frame
-Rep_frame = tk.Frame(root)
+Rep_frame = tk.Frame(root, height = win_h, width = win_w)
 
 #other frames in the report frame
-Book_search_frame = tk.Frame(root)
-Book_search_results_frame = tk.Frame(root)
-Book_on_Loan_frame = tk.Frame(root)
-Book_on_reservation_frame = tk.Frame(root)
-Outstanding_Fines__frame = tk.Frame(root)
-Books_on_Loan_to_Member__frame = tk.Frame(root)
-Books_on_Loan_to_Member__results_frame = tk.Frame(root)
+Book_search_frame = tk.Frame(root, height = win_h, width = win_w)
+Book_search_results_frame = tk.Frame(root, height = win_h, width = win_w)
+Book_on_Loan_frame = tk.Frame(root, height = win_h, width = win_w)
+Book_on_reservation_frame = tk.Frame(root, height = win_h, width = win_w)
+Outstanding_Fines__frame = tk.Frame(root, height = win_h, width = win_w)
+Books_on_Loan_to_Member__frame = tk.Frame(root, height = win_h, width = win_w)
+Books_on_Loan_to_Member__results_frame = tk.Frame(root, height = win_h, width = win_w)
 
 # report frame Main menu
 # top word 
@@ -83,22 +89,37 @@ bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
 top_word.pack()
 
 # buttoms on the report frame
-Book_Search_button = tk.Button(Rep_frame, text = "11. Book Search", fg = 'black', width=25, height=1, command = lambda: change_frame(Rep_frame, Book_search_frame))
-Book_on_Loan_button = tk.Button(Rep_frame, text = "12. Books on Loan", fg = 'black', width=25, height=1, command = lambda: change_frame(Rep_frame, Book_on_Loan_frame) )
-Book_on_reservation_button = tk.Button(Rep_frame, text = "13. Books on Reservation", fg = 'black', width=25, height=1, command = lambda: change_frame(Rep_frame, Book_on_reservation_frame))
-Outstanding_Fines__button = tk.Button(Rep_frame, text = "14. Outstanding Fines", fg = 'black', width=25, height=1, command = lambda: change_frame(Rep_frame, Outstanding_Fines__frame))
-Books_on_Loan_to_Member__button = tk.Button(Rep_frame, text = "15. Books on Loan to Member", fg = 'black', width=25, height=1, command = lambda: change_frame(Rep_frame, Books_on_Loan_to_Member__frame))
+Book_Search_button = tk.Button(Rep_frame, text = "11. Book Search", fg = 'black', width=25, height=2, command = lambda: change_frame(Rep_frame, Book_search_frame))
+Book_on_Loan_button = tk.Button(Rep_frame, text = "12. Books on Loan", fg = 'black', width=25, height=2, command = lambda: change_frame(Rep_frame, Book_on_Loan_frame) )
+Book_on_reservation_button = tk.Button(Rep_frame, text = "13. Books on Reservation", fg = 'black', width=25, height=2, command = lambda: change_frame(Rep_frame, Book_on_reservation_frame))
+Outstanding_Fines__button = tk.Button(Rep_frame, text = "14. Outstanding Fines", fg = 'black', width=25, height=2, command = lambda: change_frame(Rep_frame, Outstanding_Fines__frame))
+Books_on_Loan_to_Member__button = tk.Button(Rep_frame, text = "15. Books on Loan to Member", fg = 'black', width=25, height=2, command = lambda: change_frame(Rep_frame, Books_on_Loan_to_Member__frame))
 
 Book_Search_button.pack()
+Book_Search_label = tk.Label(Rep_frame, text = "A member can perform a search \n on the collection of books.", fg = 'black')
+Book_Search_label.pack()
+
 Book_on_Loan_button.pack()
+Book_on_Loan_label = tk.Label(Rep_frame, text = "This function displays all the books \n currently on loan to members.", fg = 'black')
+Book_on_Loan_label.pack()
+
 Book_on_reservation_button.pack()
+Book_on_reservation_label = tk.Label(Rep_frame, text = "This function displays all the books \n taht members have reserved.", fg = 'black')
+Book_on_reservation_label.pack()
+
 Outstanding_Fines__button.pack()
+Outstanding_Fines__label = tk.Label(Rep_frame, text = "This function displays the outstanding fines \n for members.", fg = 'black')
+Outstanding_Fines__label.pack()
+
 Books_on_Loan_to_Member__button.pack()
+Books_on_Loan_to_Member__label = tk.Label(Rep_frame, text = "This function displays all the books a member \n identified by the membership ID has borrowed.", fg = 'black')
+Books_on_Loan_to_Member__label.pack()
+
 
 # bottom buttom
 Back_to_Main = tk.Button(Rep_frame, text = "Back to Main Menu", 
 bg = 'red' , fg = 'white', width=15, height=1, command = lambda: change_frame(Rep_frame, Root_frame))
-Back_to_Main.pack(side = tk.RIGHT, padx=20, pady=20)
+Back_to_Main.pack(side = tk.BOTTOM, padx=20, pady=20)
 
 # Book search frame
 # top word 
@@ -107,16 +128,36 @@ bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
 top_word.pack()
 
 # category buttoms
-Title_text = tk.Label(Book_search_frame, text='Title', width=20, height=1, font=('Arial',14)).pack()
-Title_entry = tk.Entry(Book_search_frame, show=None, font=('Arial', 10)).pack()
-Author_text = tk.Label(Book_search_frame, text='Authors', width=10, height=1, font=('Arial',14)).pack()
-Author_entry = tk.Entry(Book_search_frame, show=None, font=('Arial', 10)).pack()
-ISBN_text = tk.Label(Book_search_frame, text='ISBN', width=10, height=1, font=('Arial',14)).pack()
-ISBN_entry = tk.Entry(Book_search_frame, show=None, font=('Arial', 10)).pack()
-Publisher_text = tk.Label(Book_search_frame, text='Publisher', width=10, height=1, font=('Arial',14)).pack()
-Publisher_entry = tk.Entry(Book_search_frame, show=None, font=('Arial', 10)).pack()
-PublishYear_text = tk.Label(Book_search_frame, text='Publication Year', width=15, height=1, font=('Arial',14)).pack()
-PublishYear_entry = tk.Entry(Book_search_frame, show=None, font=('Arial', 10)).pack()
+Title_text = tk.Label(Book_search_frame, text='Title', width=20, height=1, font=('Arial',15))
+Title_entry = tk.Entry(Book_search_frame, show=None, width = 50, font=('Arial', 12))
+Title_entry.insert(0, "Book Name")
+
+Author_text = tk.Label(Book_search_frame, text='Authors', width=20, height=1, font=('Arial',15))
+Author_entry = tk.Entry(Book_search_frame, show=None, width = 50, font=('Arial', 12))
+Author_entry.insert(0, "There can be multiple authors for a book")
+
+ISBN_text = tk.Label(Book_search_frame, text='ISBN', width=20, height=1, font=('Arial',15))
+ISBN_entry = tk.Entry(Book_search_frame, show=None, width = 50, font=('Arial', 12))
+ISBN_entry.insert(0, "ISBN Number")
+
+Publisher_text = tk.Label(Book_search_frame, text='Publisher', width=20, height=1, font=('Arial',15))
+Publisher_entry = tk.Entry(Book_search_frame, show=None, width = 50, font=('Arial', 12))
+Publisher_entry.insert(0, "Random House, Penguin, Cengage, Springer, etc.")
+
+PublishYear_text = tk.Label(Book_search_frame, text='Publication Year', width=20, height=1, font=('Arial',15))
+PublishYear_entry = tk.Entry(Book_search_frame, show=None, width = 50, font=('Arial', 12))
+PublishYear_entry.insert(0, "Edition year")
+
+Title_text.pack()
+Title_entry.pack()
+Author_text.pack()
+Author_entry.pack()
+ISBN_text.pack()
+ISBN_entry.pack()
+Publisher_text.pack()
+Publisher_entry.pack()
+PublishYear_text.pack()
+PublishYear_entry.pack()
 
 # search book buttom
 Search_book = tk.Button(Book_search_frame, text = "Search Book", 
@@ -182,8 +223,12 @@ bg='blue', fg = 'white', font=('Arial', 12), width=50, height=2)
 top_word.pack()
 
 # membership ID search
-MemID_text = tk.Label(Books_on_Loan_to_Member__frame, text='Membership ID', width=20, height=1, font=('Arial',14)).pack()
-MemID_entry = tk.Entry(Books_on_Loan_to_Member__frame, show=None, font=('Arial', 10)).pack()
+MemID_text = tk.Label(Books_on_Loan_to_Member__frame, text='Membership ID', width=20, height=1, font=('Arial',15))
+MemID_entry = tk.Entry(Books_on_Loan_to_Member__frame, show=None, width = 60, font=('Arial', 13))
+MemID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+MemID_text.pack()
+MemID_entry.pack()
+
 
 #seach member buttom
 Search_mem = tk.Button(Books_on_Loan_to_Member__frame, text = "Search Member", 
