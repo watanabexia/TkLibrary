@@ -236,6 +236,110 @@ Return_book_button.place(x = 50, y = 300, anchor = "nw")
 Back_to_loan_button = tk.Button(Return_frame, text = "Back To Loan", fg = 'black', command = lambda: change_frame(Return_frame, Loan_frame))
 Back_to_loan_button.place(x = 700, y = 300, anchor = "nw")
 
+#Changyang Code
+# Membership Frame Object
+Mem_create_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_delete_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_update1_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_update2_frame = tk.Frame(root, height = win_h, width = win_w)
+
+
+# Membership menu labels and buttons
+Mem_create_label = tk.Label(Mem_frame, text = "Membership Creation", fg = 'black')
+Mem_create_label.place(x = 50, y = 50, anchor = "nw")
+Mem_create_button = tk.Button(Mem_frame, text = "Create A Member", fg = 'black', command = lambda: change_frame(Mem_frame, Mem_create_frame))
+Mem_create_button.place(x = 300, y = 50, anchor = "nw")
+
+Mem_delete_label = tk.Label(Mem_frame, text = "Membership Deletion", fg = 'black')
+Mem_delete_label.place(x = 50, y = 100, anchor = "nw")
+Mem_delete_button = tk.Button(Mem_frame, text = "Delete A Member", fg = 'black', command = lambda: change_frame(Mem_frame, Mem_delete_frame))
+Mem_delete_button.place(x = 300, y = 100, anchor = "nw")
+
+Mem_update_label = tk.Label(Mem_frame, text = "Membership Update", fg = 'black')
+Mem_update_label.place(x = 50, y = 150, anchor = "nw")
+Mem_update_button = tk.Button(Mem_frame, text = "Update A Member", fg = 'black', command = lambda: change_frame(Mem_frame, Mem_update1_frame))
+Mem_update_button.place(x = 300, y = 150, anchor = "nw")
+
+Back_button = tk.Button(Mem_frame, text = "Back To Main Menu", fg = 'black', command = lambda: change_frame(Mem_frame, Root_frame))
+Back_button.place(x = 175, y = 200, anchor = "nw")
+
+
+
+# Deletion Object
+def delete_mem():
+    None
+
+top_text = tk.Label(Mem_delete_frame, text='To Delete A Member, Please Membership ID Below', bg='cyan')
+top_text.place(x = 50, y = 0, anchor = "nw")
+
+ID_label = tk.Label(Mem_delete_frame, text='Membership ID')
+ID_label.place(x = 50, y = 200, anchor = "nw")
+ID_entry = tk.Entry(Mem_delete_frame, fg = 'black', width = 60)
+ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+ID_entry.place(x = 300, y = 200, anchor = "nw")
+
+
+Mem_delete_button = tk.Button(Mem_delete_frame, text = "Delete Member", fg = 'black', command = delete_mem)
+Mem_delete_button.place(x = 50, y = 300, anchor = "nw")
+Back_to_mem_button = tk.Button(Mem_delete_frame, text = "Back To Membership Menu", fg = 'black', command = lambda: change_frame(Mem_delete_frame, Mem_frame))
+Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
+
+#Update1 Object 
+
+top_text = tk.Label(Mem_update1_frame, text='To Update A Member, Please Membership ID Below', bg='cyan')
+top_text.place(x = 50, y = 0, anchor = "nw")
+
+ID_label = tk.Label(Mem_update1_frame, text='Membership ID')
+ID_label.place(x = 50, y = 200, anchor = "nw")
+ID_entry = tk.Entry(Mem_update1_frame, fg = 'black', width = 60)
+ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+ID_entry.place(x = 300, y = 200, anchor = "nw")
+
+
+Mem_update1_button = tk.Button(Mem_update1_frame, text = "Update Member", fg = 'black', command = lambda: change_frame(Mem_update1_frame, Mem_update2_frame))
+Mem_update1_button.place(x = 50, y = 300, anchor = "nw")
+Back_to_mem_button = tk.Button(Mem_update1_frame, text = "Back To Membership Menu", fg = 'black', command = lambda: change_frame(Mem_update1_frame, Mem_frame))
+Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
+
+#Update2 Object 
+Mem_ID_label1 = tk.Label(Mem_update2_frame, text='Membership ID', fg = 'black')
+Mem_ID_label1.place(x = 50, y = 50, anchor = "nw")
+Mem_ID_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+Mem_ID_entry.place(x = 300, y = 50, anchor = "nw")
+
+Name_label = tk.Label(Mem_update2_frame, text='Name', fg = 'black')
+Name_label.place(x = 50, y = 100, anchor = "nw")
+Name_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Name_entry.insert(0, "Update name")
+Name_entry.place(x = 300, y = 100, anchor = "nw")
+
+Faculty_label = tk.Label(Mem_update2_frame, text='Faculty', fg = 'black')
+Faculty_label.place(x = 50, y = 150, anchor = "nw")
+Faculty_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Faculty_entry.insert(0, "Update faculty")
+Faculty_entry.place(x = 300, y = 150, anchor = "nw")
+
+Phone_number_label = tk.Label(Mem_update2_frame, text='Phone Number', fg = 'black')
+Phone_number_label.place(x = 50, y = 200, anchor = "nw")
+Phone_number_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Phone_number_entry.insert(0, "Update phone number")
+Phone_number_entry.place(x = 300, y = 200, anchor = "nw")
+
+Email_Address_label = tk.Label(Mem_create_frame, text='Email Address', fg = 'black')
+Email_Address_label.place(x = 50, y = 250, anchor = "nw")
+Email_Address_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Email_Address_entry.insert(0, "Update Email")
+Email_Address_entry.place(x = 300, y = 250, anchor = "nw")
+
+
+
+
+
+
+
+
+
 
 #Qingyang Code
 Res_book_frame = tk.Frame(root, height = win_h, width = win_w)
