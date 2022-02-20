@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox 
 
+
 # from venv import create
 # from sqlalchemy import Column, String, create_engine, Integer
 # from sqlalchemy.orm import sessionmaker
@@ -115,7 +116,7 @@ Mem_ID_entry.place(x = 300, y = 50, anchor = "nw")
 Name_label = tk.Label(Mem_create_frame, text='Name', fg = 'black')
 Name_label.place(x = 50, y = 100, anchor = "nw")
 Name_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
-Name_entry.insert(0, "Enter member’s name")
+Name_entry.insert(0, "Enter member's name")
 Name_entry.place(x = 300, y = 100, anchor = "nw")
 
 Faculty_label = tk.Label(Mem_create_frame, text='Faculty', fg = 'black')
