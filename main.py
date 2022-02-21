@@ -448,32 +448,32 @@ Res_book_Res_date_entry = tk.Entry(Res_book_frame, fg = 'black', bg = 'white', w
 Res_book_Res_date_entry.insert(0, "02/20/2022")
 Res_book_Res_date_entry.place(x = 300, y = 150, anchor = "nw")
 
-# def confirm_book_reservation():
-#     mem_id = Res_book_Mem_ID_entry.get()
-#     acc_number = Res_book_Acc_number_entry.get()
+def confirm_book_reservation():
+    mem_id = Res_book_Mem_ID_entry.get()
+    acc_number = Res_book_Acc_number_entry.get()
 
-#     try:
-#         res_date = get_date_object(Res_book_Res_date_entry.get())
-#     except:
-#         messagebox.showerror(title = "Error", message = "\"{}\" is not a valid date or a valid date format.".format(date_string))
+    try:
+        res_date = get_date_object(Res_book_Res_date_entry.get())
+    except:
+        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid date or a valid date format.".format(date_string))
     
-#     try:
-#         mem = get_member(mem_id)
-#     except:
-#         messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(member_id))
+    try:
+        mem = get_member(mem_id)
+    except:
+        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(member_id))
     
-#     try:
-#         book = get_book(acc_number)
-#     except:
-#         messagebox.showerror(title = "Error", message = "\"{}\" is not a valid accession number.".format(acc_number))
-#         if (is_book_on_loan(acc_number)):
-#             pass
-#         else:
-#             messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.name))
+    try:
+        book = get_book(acc_number)
+    except:
+        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid accession number.".format(acc_number))
+        if (is_book_on_loan(acc_number)):
+            pass
+        else:
+            messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.name))
 
-#     except QueryError:
-#         print("[confirm_book_reservation] QueryError.")
-#         return     
+    # except QueryError:
+    #     print("[confirm_book_reservation] QueryError.")
+    #     return     
 
 Res_book_Res_button = tk.Button(Res_book_frame, text = "Reserve Book", fg = 'black', command = confirm_book_reservation)
 Res_book_Res_button.place(x = 50, y = 200, anchor = "nw")
