@@ -12,7 +12,7 @@ from datetime import datetime
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "123456"
+db_password = "201314"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
@@ -65,6 +65,23 @@ def get_book(acc_number):
     * Returns None if no valid LibBook is found.
     """
     return session.query(LibBooks).filter_by(Accession_Number = acc_number).one()
+
+#book search funtions
+def get_book_contains_title(title_one):
+    return session.query(LibBooks).filter(LibBooks.Title.contains(title_one)).all()
+
+def get_book_contains_author():
+    
+def get_book_contains_ISBN(ISBN_input):
+    return session.query(LibBooks).filter_by(ISBN = ISBN_input).all()
+
+def get_book_contains_Publisher(publisher_one):
+    return session.query(LibBooks).filter(LibBooks.Publisher.contains(publisher_one)).all()
+
+def get_book_contains_Year(year_input):
+    return session.query(LibBooks).filter_by(Year = year_input).all()
+
+
 
 def get_date_object(date_string):
     return datetime.strptime(date_string, '%m/%d/%Y')
@@ -132,7 +149,7 @@ Back_button.place(x = 175, y = 200, anchor = "nw")
 
 # Membership creation labels and buttons
 def create_new_member():
-    tkinter.messagebox.showinfo(title='Success!', message='ALS Membership Created')
+    messagebox.showinfo(title='Success!', message='ALS Membership Created')
 
 top_text = tk.Label(Mem_create_frame, text='To Create Member, Please Enter Requested Information Below:', bg='cyan')
 top_text.place(x = 50, y = 0, anchor = "nw")
@@ -273,7 +290,7 @@ Back_button.place(x = 175, y = 150, anchor = "nw")
 
 #Book Acquisition object
 def add_new_book():
-    tkinter.messagebox.showinfo(title='Success!', message='New Book Added In Library!')
+    messagebox.showinfo(title='Success!', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Already Added; Duplicate, Missing or Incomplete fields')
 
 top_text = tk.Label(Acq_frame, text='For New Book Acquisition, Please Enter Information Below', bg='cyan')
@@ -323,7 +340,7 @@ Back_to_book_button.place(x = 700, y = 350, anchor = "nw")
 
 #Book Withdrawal object
 def withdraw_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Details Are Correct', message='New Book Added In Library!')
+    messagebox.askyesno(title='Please Confirm The Details Are Correct', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently On Loan.')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently Reserved.')
 
@@ -365,7 +382,7 @@ Back_button.place(x = 175, y = 150, anchor = "nw")
 
 #Borrow object
 def borrow_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Loan Details To Be Correct', message='New Book Added In Library!')
+    messagebox.askyesno(title='Please Confirm The Loan Details To Be Correct', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Currently On Loan Until.')
     # tkinter.messagebox.showinfo(title='Error!', message='Member Loan Quota Exceeded.')
     # tkinter.messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
@@ -392,7 +409,7 @@ Back_to_loan_button.place(x = 700, y = 300, anchor = "nw")
 
 #Return object
 def return_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Return Details To Be Correct', message='New Book Added In Library!')
+    messagebox.askyesno(title='Please Confirm The Return Details To Be Correct', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Success!', message='Book Returned Successfully.')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Returned Successfully. But Has Fines')
 
@@ -455,15 +472,15 @@ def confirm_book_reservation():
     mem_id = Res_book_Mem_ID_entry.get()
     acc_number = Res_book_Acc_number_entry.get()
 
-    try:
-        res_date = get_date_object(Res_book_Res_date_entry.get())
-    except:
-        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid date or a valid date format.".format(date_string))
+    # try:
+    #     res_date = get_date_object(Res_book_Res_date_entry.get())
+    # except:
+    #     messagebox.showerror(title = "Error", message = "\"{}\" is not a valid date or a valid date format.".format(date_string))
     
-    try:
-        mem = get_member(mem_id)
-    except:
-        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(member_id))
+    # try:
+    #     mem = get_member(mem_id)
+    # except:
+    #     messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(member_id))
     
     try:
         book = get_book(acc_number)
@@ -552,6 +569,7 @@ Pay_fine_button.place(x = 50, y = 200, anchor = "nw")
 Back_to_fine_menu_button = tk.Button(Fine_payment_frame, text = "Back To Fines Menu", fg = 'black', command = lambda: change_frame(Fine_payment_frame, Fine_frame))
 Back_to_fine_menu_button.place(x = 700, y = 200, anchor = "nw")
 
+#xunuo start
 #Report frame
 #other frames in the report frame
 Book_search_frame = tk.Frame(root, height = win_h, width = win_w)
@@ -595,6 +613,27 @@ Back_button = tk.Button(Rep_frame, text = "Back To Main Menu", fg = 'black', com
 Back_button.place(x = 300, y = 400, anchor = "nw")
 
 # Book search frame
+
+def book_search_function():
+    Title_keyword = Title_entry.get()
+    Author_keyword = Author_entry.get()
+    ISBN_keyword = ISBN_entry.get()
+    Publisher_keyword = Publisher_entry.get()
+    Year_keyword = Year_entry.get()
+    # book_list = get_book_contains_title(Title_keyword)
+    book_list = get_book_contains_Publisher(Publisher_keyword)
+    for book in book_list:
+        print(book.Accession_Number, book.Title, book.ISBN, book.Publisher, book.Year)
+        # if book.Accession_Number == Book_Author.Accession_Number:
+        #     print(Book_Author.Author)
+        
+    # try:
+    #     book = get_book_contains_year(Year_keyword)
+    #     print(book)
+    # except:
+    #     messagebox.showerror(title = "Error", message = "\"{}\" is not valid".format(Year_keyword))
+
+
 top_text = tk.Label(Book_search_frame, text='Select based on one of the categories below:', bg='cyan')
 top_text.place(x = 50, y = 0, anchor = "nw")
 
@@ -625,14 +664,15 @@ Publisher_entry.place(x = 300, y = 200, anchor = "nw")
 Year_label = tk.Label(Book_search_frame, text='Publication Year', fg = 'black')
 Year_label.place(x = 50, y = 250, anchor = "nw")
 Year_entry = tk.Entry(Book_search_frame, fg = 'black', width = 60)
-Year_entry.insert(0, "Edition year")
+Year_entry.insert(8, "Edition year")
 Year_entry.place(x = 300, y = 250, anchor = "nw")
 
-Search_book_buttom = tk.Button(Book_search_frame, text = "Search Book", width=20, height=1, command = lambda: change_frame(Book_search_frame, Book_search_results_frame))
+Search_book_buttom = tk.Button(Book_search_frame, text = "Search Book", width=20, height=1, command = book_search_function)
 Search_book_buttom.place(x = 50, y = 300, anchor = "nw")
 
 Back_to_Report_Main = tk.Button(Book_search_frame, text = "Back to Reports Menu", width=20, height=1, command = lambda: change_frame(Book_search_frame, Rep_frame))
 Back_to_Report_Main.place(x = 700, y = 300, anchor = "nw")
+
 
 #Book Search Results frame
 # top word
@@ -687,6 +727,7 @@ top_text.place(x = 50, y = 0, anchor = "nw")
 Back_to_Report_Main = tk.Button(Books_on_Loan_to_Member__results_frame, text = "Back to Reports Menu", width=20, height=1, command = lambda: change_frame(Books_on_Loan_to_Member__results_frame, Rep_frame))
 Back_to_Report_Main.place(x = 50, y = 100, anchor = "nw")
 
+#xunuo ends
 # Root Frame Application
 Root_frame.pack()
 if __name__ == "__main__":
