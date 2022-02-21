@@ -511,7 +511,7 @@ top_text.place(x = 50, y = 0, anchor = "nw")
 
 Book_Search_label = tk.Label(Rep_frame, text = "A member can perform a search \n on the collection of books.", fg = 'black')
 Book_Search_label.place(x = 400, y = 50, anchor = "nw")
-Book_Search_button = tk.Button(Rep_frame, text = "11. Book Search", width=25, fg = 'black', command = lambda: change_frame(Rep_frame, Book_search_frame))
+Book_Search_button = tk.Button(Rep_frame, text = "Book Search", width=25, fg = 'black', command = lambda: change_frame(Rep_frame, Book_search_frame))
 Book_Search_button.place(x = 50, y = 50, anchor = "nw")
 
 Book_on_Loan_label = tk.Label(Rep_frame, text = "This function displays all the books \n currently on loan to members.", fg = 'black')
