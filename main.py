@@ -1,3 +1,4 @@
+from sqlalchemy import Table, Column, String, create_engine, Integer, Date, MetaData
 import tkinter as tk
 from tkinter import messagebox
 
@@ -17,7 +18,9 @@ schema_name = "bt2102_as_1"
 # Database Connection Initialization
 engine = create_engine('mysql+mysqlconnector://{}:{}@localhost:3306/{}'.format(db_user, db_password, schema_name),
 echo = True)
+metadata = MetaData(engine)
 DBSession = sessionmaker(bind = engine)
+conn = engine.connect()
 session = DBSession()
 
 
@@ -690,3 +693,4 @@ if __name__ == "__main__":
     root.mainloop()
 
 session.close()
+conn.close()
