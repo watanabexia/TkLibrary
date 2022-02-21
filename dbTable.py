@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, create_engine, Integer, Date
+from sqlalchemy import Column, String, create_engine, Integer, Date, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 
 # Database Table Definition
@@ -25,6 +25,7 @@ class LibBooks(Base):
     Publisher = Column(String(100))
     Year = Column(Integer)
 
+
 class LibMember(Base):
     __tablename__ = 'LibMember'
     memberid = Column(String(6), primary_key = True)
@@ -33,6 +34,8 @@ class LibMember(Base):
     phone_number = Column(String(100))
     email_address = Column(String(100))
     outstanding_fee = Column(Integer)
+    current_books_borrowed = Column(Integer)
+    current_books_reserved = Column(Integer)
 
 class Reserve_Record(Base):
     __tablename__ = 'Reserve_Record'
