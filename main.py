@@ -1,44 +1,34 @@
 import tkinter as tk
-import tkinter.messagebox 
+from tkinter import messagebox
 
-# from venv import create
-# from sqlalchemy import Column, String, create_engine, Integer
-# from sqlalchemy.orm import sessionmaker
-# from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import *
+from sqlalchemy.exc import *
 
-# # Database Schema Definition
-# Base = declarative_base()
-# class Book(Base):
-#     __tablename__ = 'Book'
-#     Accession_Number = Column(String(3), primary_key = True)
-#     Title = Column(String(57))
-#     Authors = Column(String(28))
-#     FIELD4 = Column(String(16))
-#     FIELD5 = Column(String(8))
-#     ISBN = Column(String(13))
-#     Publisher = Column(String(32))
-#     Year = Column(Integer)
+from datetime import datetime
 
-# # Database Connection Initialization
-# engine = create_engine('mysql+mysqlconnector://root:123456@localhost:3306/BT2102-AS1')
-# DBSession = sessionmaker(bind = engine)
+from dbTable import *
+# ------ Database Function ------ #
+db_user = "root"
+db_password = "123456"
+schema_name = "bt2102_as_1"
 
-# # session = DBSession()
+# Database Connection Initialization
+engine = create_engine('mysql+mysqlconnector://{}:{}@localhost:3306/{}'.format(db_user, db_password, schema_name),
+echo = True)
+DBSession = sessionmaker(bind = engine)
+session = DBSession()
 
-# # book = session.query(Book).all()
 
-# # print(book[0].Title)
-
-# # session.close()
+# ---------- UI ----------- #
+win_w = 1000
+win_h = 1000
 
 # UI Initialization
 root = tk.Tk()
 root.title('ALS')
-
-win_w = 1000
-win_h = 1000
-
-root.geometry(str(win_w) + "x" + str(win_h))
+root.geometry("{}x{}".format(str(win_w), str(win_h)))
 root.option_add("*font", "SF\ Pro 14")
 
 # Frame Definition
@@ -54,6 +44,42 @@ Rep_frame = tk.Frame(root, height = win_h, width = win_w)
 def change_frame(from_frame, to_frame):
     from_frame.pack_forget()
     to_frame.pack()
+
+# Query Function
+class QueryError(Exception):
+    pass
+
+def get_member(member_id):
+    """
+    get the member with the unique member id.
+    * Returns None if no valid LibMember is found.
+    """
+    return session.query(LibMember).filter_by(memberid = member_id).one()
+
+def get_book(acc_number):
+    """
+    get the book with the unique acc number.
+    * Returns None if no valid LibBook is found.
+    """
+    return session.query(LibBooks).filter_by(Accession_Number = acc_number).one()
+
+def get_date_object(date_string):
+    return datetime.strptime(date_string, '%m/%d/%Y')
+
+def is_book_on_loan(acc_number):
+    """
+    check if a book is on loan.
+    Returns True if is on loan. False if is not on loan.
+    """
+    book = get_book(acc_number)
+    try:
+        br_record = session.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number, Return_Date = None).one()
+    except NoResultFound:
+        return False
+    else:
+        return True
+
+# def has_outstanding_fine(member_id):
 
 # Root frame object
 top_text = tk.Label(Root_frame, text='ALS System', bg='cyan')
@@ -390,7 +416,7 @@ Back_to_loan_button.place(x = 700, y = 300, anchor = "nw")
 
 
 # Reservation frame object
-# Qingyang begins
+#Qingyang Code
 Res_book_frame = tk.Frame(root, height = win_h, width = win_w)
 Res_cancel_frame = tk.Frame(root, height = win_h, width = win_w)
 
@@ -407,6 +433,7 @@ Res_book_title_label = tk.Label(Res_book_frame, text = "To reserve a book, pleas
 Res_book_title_label.place(x = 50, y = 0, anchor = "nw")
 Res_book_Acc_number_label = tk.Label(Res_book_frame, text = "Accession Number", fg = 'black')
 Res_book_Acc_number_label.place(x = 50, y = 50, anchor = "nw")
+
 Res_book_Acc_number_entry = tk.Entry(Res_book_frame, fg = 'black', bg = 'white', width = 60)
 # Res_book_Acc_number_entry.insert(0, "Used to identify an instance of book")
 Res_book_Acc_number_entry.place(x = 300, y = 50, anchor = "nw")
@@ -421,7 +448,34 @@ Res_book_Res_date_entry = tk.Entry(Res_book_frame, fg = 'black', bg = 'white', w
 Res_book_Res_date_entry.insert(0, "02/20/2022")
 Res_book_Res_date_entry.place(x = 300, y = 150, anchor = "nw")
 
-Res_book_Res_button = tk.Button(Res_book_frame, text = "Reserve Book", fg = 'black')
+# def confirm_book_reservation():
+#     mem_id = Res_book_Mem_ID_entry.get()
+#     acc_number = Res_book_Acc_number_entry.get()
+
+#     try:
+#         res_date = get_date_object(Res_book_Res_date_entry.get())
+#     except:
+#         messagebox.showerror(title = "Error", message = "\"{}\" is not a valid date or a valid date format.".format(date_string))
+    
+#     try:
+#         mem = get_member(mem_id)
+#     except:
+#         messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(member_id))
+    
+#     try:
+#         book = get_book(acc_number)
+#     except:
+#         messagebox.showerror(title = "Error", message = "\"{}\" is not a valid accession number.".format(acc_number))
+#         if (is_book_on_loan(acc_number)):
+#             pass
+#         else:
+#             messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.name))
+
+#     except QueryError:
+#         print("[confirm_book_reservation] QueryError.")
+#         return     
+
+Res_book_Res_button = tk.Button(Res_book_frame, text = "Reserve Book", fg = 'black', command = confirm_book_reservation)
 Res_book_Res_button.place(x = 50, y = 200, anchor = "nw")
 Res_book_Back_button = tk.Button(Res_book_frame, text = "Back to Reservation Menu", fg = 'black', command = lambda: change_frame(Res_book_frame, Res_frame))
 Res_book_Back_button.place(x = 700, y = 200, anchor = "nw")
@@ -630,8 +684,9 @@ top_text.place(x = 50, y = 0, anchor = "nw")
 Back_to_Report_Main = tk.Button(Books_on_Loan_to_Member__results_frame, text = "Back to Reports Menu", width=20, height=1, command = lambda: change_frame(Books_on_Loan_to_Member__results_frame, Rep_frame))
 Back_to_Report_Main.place(x = 50, y = 100, anchor = "nw")
 
-
 # Root Frame Application
 Root_frame.pack()
 if __name__ == "__main__":
     root.mainloop()
+
+session.close()
