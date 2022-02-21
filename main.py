@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, null
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import *
 from sqlalchemy.exc import *
@@ -17,8 +17,10 @@ schema_name = "bt2102_as_1"
 # Database Connection Initialization
 engine = create_engine('mysql+mysqlconnector://{}:{}@localhost:3306/{}'.format(db_user, db_password, schema_name),
 echo = True)
+metadata = MetaData(engine)
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
+conn = engine.connect()
 
 
 # ---------- UI ----------- #
@@ -63,6 +65,17 @@ def get_book(acc_number):
     """
     return session.query(LibBooks).filter_by(Accession_Number = acc_number).one()
 
+def book_exist(acc_number):
+    """
+    check the book is in LibBook.
+    * Returns False if no valid LibBook is found.
+    """
+    try:
+        get_book(acc_number)
+        return True
+    except NoResultFound:
+        return False
+
 def get_date_object(date_string):
     return datetime.strptime(date_string, '%m/%d/%Y')
 
@@ -78,6 +91,45 @@ def is_book_on_loan(acc_number):
         return False
     else:
         return True
+
+def is_book_reserved(acc_number):
+    """
+    check if a book is reserved.
+    Returns True if is reserved. False if is not reserved.
+    """
+    book = get_book(acc_number)
+    try:
+        Res_record = session.query(Reserve_Record).filter_by(Accession_Number = acc_number).one()
+    except NoResultFound:
+        return False
+    else:
+        return True
+
+def is_quota_reached(id):
+    """
+    check if a member's quota is reached (2).
+    Returns True if is reached. False if is not reached.
+    """
+    try:
+        member = session.query(LibMember).filter_by(member_id = id, current_books_borrowed = 2).one()
+    except NoResultFound: #this member has 2 borrowed books, quota reached
+        return False
+    else:
+        return True
+
+def has_outstanding_fine(id):
+    """
+    check if a member has outstanding fine (!=0).
+    Returns True if has outstanding fine. False if do not have outstanding fine.
+    """
+    try:
+        member = session.query(LibMember).filter_by(member_id = id, current_books_borrowed = 0).one()
+    except NoResultFound: #this member has outstanding fee of 0
+        return True
+    else:
+        return False
+
+
 
 # def has_outstanding_fine(member_id):
 
@@ -250,6 +302,7 @@ Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
 
 #Book Frame
 #Book frame object
+
 Acq_frame = tk.Frame(root, height = win_h, width = win_w)
 Withd_frame = tk.Frame(root, height = win_h, width = win_w)
 
@@ -271,74 +324,103 @@ Back_button.place(x = 175, y = 150, anchor = "nw")
 
 
 #Book Acquisition object
+
+top_text_book_acquisition  = tk.Label(Acq_frame, text='For New Book Acquisition, Please Enter Information Below', bg='cyan')
+top_text_book_acquisition .place(x = 50, y = 0, anchor = "nw")
+
+Acc_number_label_book_acquisition = tk.Label(Acq_frame, text='Accession Number', fg = 'black')
+Acc_number_label_book_acquisition.place(x = 50, y = 50, anchor = "nw")
+Acc_number_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
+Acc_number_entry_book_acquisition.insert(0, "Used to identify an instance of book")
+Acc_number_entry_book_acquisition.place(x = 300, y = 50, anchor = "nw")
+
+
+Title_label_book_acquisition = tk.Label(Acq_frame, text='Title', fg = 'black')
+Title_label_book_acquisition.place(x = 50, y = 100, anchor = "nw")
+Title_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
+Title_entry_book_acquisition.insert(0, "Title of the book")
+Title_entry_book_acquisition.place(x = 300, y = 100, anchor = "nw")
+
+Author_label_book_acquisition = tk.Label(Acq_frame, text='Author', fg = 'black')
+Author_label_book_acquisition.place(x = 50, y = 150, anchor = "nw")
+Author_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
+Author_entry_book_acquisition.insert(0, "Author of the book")
+Author_entry_book_acquisition.place(x = 300, y = 150, anchor = "nw")
+
+ISBN_label_book_acquisition = tk.Label(Acq_frame, text='ISBN', fg = 'black')
+ISBN_label_book_acquisition.place(x = 50, y = 200, anchor = "nw")
+ISBN_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
+ISBN_entry_book_acquisition.insert(0, "ISBN of the book")
+ISBN_entry_book_acquisition.place(x = 300, y = 200, anchor = "nw")
+
+Publisher_label_book_acquisition = tk.Label(Acq_frame, text='Publisher', fg = 'black')
+Publisher_label_book_acquisition.place(x = 50, y = 250, anchor = "nw")
+Publisher_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
+Publisher_entry_book_acquisition.insert(0, "Publisher of the book")
+Publisher_entry_book_acquisition.place(x = 300, y = 250, anchor = "nw")
+
+Year_label_book_acquisition = tk.Label(Acq_frame, text='Year', fg = 'black')
+Year_label_book_acquisition.place(x = 50, y = 300, anchor = "nw")
+Year_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
+Year_entry_book_acquisition.insert(0, "Year of publishing of the book")
+Year_entry_book_acquisition.place(x = 300, y = 300, anchor = "nw")
+
 def add_new_book():
-    messagebox.showinfo(title='Success!', message='New Book Added In Library!')
-    # tkinter.messagebox.showinfo(title='Error!', message='Book Already Added; Duplicate, Missing or Incomplete fields')
+    acc_number = Acc_number_entry_book_acquisition.get()
+    Title = Title_entry_book_acquisition.get()
+    Author = Author_entry_book_acquisition.get()
+    ISBN = ISBN_entry_book_acquisition.get()
+    Publisher = Publisher_entry_book_acquisition.get()
+    Year = Year_entry_book_acquisition.get()
 
-top_text = tk.Label(Acq_frame, text='For New Book Acquisition, Please Enter Information Below', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+    if book_exist(acc_number) or Title == "" or Author == "" or ISBN == "" or Publisher == "" or Year == "":
+        messagebox.showinfo(title='Error!', message='Book Already Added; Duplicate, Missing or Incomplete fields')
+    else:
+        messagebox.showinfo(title='Success!', message='New Book Added In Library!') # update book inside LibBooks
 
-AN_label = tk.Label(Acq_frame, text='Accession Number', fg = 'black')
-AN_label.place(x = 50, y = 50, anchor = "nw")
-AN_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
-AN_entry.insert(0, "Used to identify an instance of book")
-AN_entry.place(x = 300, y = 50, anchor = "nw")
+Add_new_book_button_book_acquisition = tk.Button(Acq_frame, text = "Add New Book", fg = 'black', command = add_new_book)
+Add_new_book_button_book_acquisition.place(x = 50, y = 350, anchor = "nw")
 
-Title_label = tk.Label(Acq_frame, text='Title', fg = 'black')
-Title_label.place(x = 50, y = 100, anchor = "nw")
-Title_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
-Title_entry.insert(0, "Title of the book")
-Title_entry.place(x = 300, y = 100, anchor = "nw")
 
-Author_label = tk.Label(Acq_frame, text='Author', fg = 'black')
-Author_label.place(x = 50, y = 150, anchor = "nw")
-Author_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
-Author_entry.insert(0, "Author of the book")
-Author_entry.place(x = 300, y = 150, anchor = "nw")
-
-ISBN_label = tk.Label(Acq_frame, text='ISBN', fg = 'black')
-ISBN_label.place(x = 50, y = 200, anchor = "nw")
-ISBN_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
-ISBN_entry.insert(0, "ISBN of the book")
-ISBN_entry.place(x = 300, y = 200, anchor = "nw")
-
-Publisher_label = tk.Label(Acq_frame, text='Publisher', fg = 'black')
-Publisher_label.place(x = 50, y = 250, anchor = "nw")
-Publisher_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
-Publisher_entry.insert(0, "Publisher of the book")
-Publisher_entry.place(x = 300, y = 250, anchor = "nw")
-
-Year_label = tk.Label(Acq_frame, text='Year', fg = 'black')
-Year_label.place(x = 50, y = 300, anchor = "nw")
-Year_entry = tk.Entry(Acq_frame, fg = 'black', width = 60)
-Year_entry.insert(0, "Year of publishing of the book")
-Year_entry.place(x = 300, y = 300, anchor = "nw")
-
-Add_new_book_button = tk.Button(Acq_frame, text = "Add New Book", fg = 'black', command = add_new_book)
-Add_new_book_button.place(x = 50, y = 350, anchor = "nw")
-Back_to_book_button = tk.Button(Acq_frame, text = "Back To Book", fg = 'black', command = lambda: change_frame(Acq_frame, Book_frame))
-Back_to_book_button.place(x = 700, y = 350, anchor = "nw")
+Back_to_book_button_book_acquisition = tk.Button(Acq_frame, text = "Back To Book", fg = 'black', command = lambda: change_frame(Acq_frame, Book_frame))
+Back_to_book_button_book_acquisition.place(x = 700, y = 350, anchor = "nw")
 
 
 #Book Withdrawal object
 def withdraw_book():
-    messagebox.askyesno(title='Please Confirm The Details Are Correct', message='New Book Added In Library!')
-    # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently On Loan.')
-    # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently Reserved.')
+    acc_number = Acc_number_entry_book_withdrawal.get()
+    res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct') # not done
+    if res:
+        if not book_exist(acc_number):
+            messagebox.showinfo(title='Error!', message='Book Does Not Exist.')
+        else:
+            withdraw_book_on_loan_or_reserved(acc_number)
+    else:
+        pass
 
-top_text = tk.Label(Withd_frame, text='To Remove Outdated Books From System, Please Enter Information Below', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
 
-AN_label = tk.Label(Withd_frame, text='Accession Number')
-AN_label.place(x = 50, y = 200, anchor = "nw")
-AN_entry = tk.Entry(Withd_frame, fg = 'black', width = 60)
-AN_entry.insert(0, "Used to identify an instance of book")
-AN_entry.place(x = 300, y = 200, anchor = "nw")
+def withdraw_book_on_loan_or_reserved(acc_number):
+    if is_book_reserved(acc_number):
+        messagebox.showinfo(title='Error!', message='Book Is Currently Reserved.')
+    elif is_book_on_loan(acc_number):
+        messagebox.showinfo(title='Error!', message='Book Is Currently On Loan.')
+    else:
+        messagebox.showinfo(title='Success!', message='Book Is Successfully Withdrawn.') # update database and delete LibBooks record
 
-Withdraw_book_button = tk.Button(Withd_frame, text = "Withdraw Book", fg = 'black', command = withdraw_book)
-Withdraw_book_button.place(x = 50, y = 350, anchor = "nw")
-Back_to_book_button = tk.Button(Withd_frame, text = "Back To Book", fg = 'black', command = lambda: change_frame(Withd_frame, Book_frame))
-Back_to_book_button.place(x = 700, y = 350, anchor = "nw")
+
+top_text_book_withdrawal = tk.Label(Withd_frame, text='To Remove Outdated Books From System, Please Enter Information Below', bg='cyan')
+top_text_book_withdrawal.place(x = 50, y = 0, anchor = "nw")
+
+Acc_number_label_book_withdrawal = tk.Label(Withd_frame, text='Accession Number')
+Acc_number_label_book_withdrawal.place(x = 50, y = 200, anchor = "nw")
+Acc_number_entry_book_withdrawal = tk.Entry(Withd_frame, fg = 'black', width = 60)
+Acc_number_entry_book_withdrawal.insert(0, "Used to identify an instance of book")
+Acc_number_entry_book_withdrawal.place(x = 300, y = 200, anchor = "nw")
+
+Withdraw_book_button_book_withdrawal = tk.Button(Withd_frame, text = "Withdraw Book", fg = 'black', command = withdraw_book)
+Withdraw_book_button_book_withdrawal.place(x = 50, y = 350, anchor = "nw")
+Back_to_book_button_book_withdrawal = tk.Button(Withd_frame, text = "Back To Book", fg = 'black', command = lambda: change_frame(Withd_frame, Book_frame))
+Back_to_book_button_book_withdrawal.place(x = 700, y = 350, anchor = "nw")
 
 #Loan Frame
 #Loan frame object
@@ -364,51 +446,84 @@ Back_button.place(x = 175, y = 150, anchor = "nw")
 
 #Borrow object
 def borrow_book():
-    messagebox.askyesno(title='Please Confirm The Loan Details To Be Correct', message='New Book Added In Library!')
-    # tkinter.messagebox.showinfo(title='Error!', message='Book Currently On Loan Until.')
-    # tkinter.messagebox.showinfo(title='Error!', message='Member Loan Quota Exceeded.')
-    # tkinter.messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
+    acc_number = Acc_number_entry_book_borrow.get()
+    id = ID_entry_book_borrow.get()
+    res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct') # not done
+    if res:
+        borrow_book_on_loan_quota_fine(acc_number)
+    else:
+        pass
 
-top_text = tk.Label(Borrow_frame, text='To Borrow A Book , Please Enter Information Below', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+def borrow_book_on_loan_quota_fine(acc_number, id):
+    if is_quota_reached(id):
+        messagebox.showinfo(title='Error!', message='Member Loan Quota Exceeded.')
+    elif is_book_on_loan(acc_number):
+        messagebox.showinfo(title='Error!', message='Book Is Currently On Loan Until' + '') # add date
+    elif has_outstanding_fine(id):
+        messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
+    else:
+        messagebox.showinfo(title='Success!', message='You Have Borrowed This Book.') 
+        # add 1 to books_borrowed and update borrow_and_return_record
 
-AN_label = tk.Label(Borrow_frame, text='Accession Number')
-AN_label.place(x = 50, y = 100, anchor = "nw")
-AN_entry = tk.Entry(Borrow_frame, fg = 'black', width = 60)
-AN_entry.insert(0, "Used to identify an instance of book")
-AN_entry.place(x = 300, y = 100, anchor = "nw")
 
-ID_label = tk.Label(Borrow_frame, text='Membership ID')
-ID_label.place(x = 50, y = 200, anchor = "nw")
-ID_entry = tk.Entry(Borrow_frame, fg = 'black', width = 60)
-ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
-ID_entry.place(x = 300, y = 200, anchor = "nw")
+top_text_book_borrow = tk.Label(Borrow_frame, text='To Borrow A Book , Please Enter Information Below', bg='cyan')
+top_text_book_borrow.place(x = 50, y = 0, anchor = "nw")
 
-Borrow_book_button = tk.Button(Borrow_frame, text = "Borrow Book", fg = 'black', command = withdraw_book)
-Borrow_book_button.place(x = 50, y = 300, anchor = "nw")
-Back_to_loan_button = tk.Button(Borrow_frame, text = "Back To Loan", fg = 'black', command = lambda: change_frame(Borrow_frame, Loan_frame))
-Back_to_loan_button.place(x = 700, y = 300, anchor = "nw")
+Acc_number_label_book_borrow = tk.Label(Borrow_frame, text='Accession Number')
+Acc_number_label_book_borrow.place(x = 50, y = 100, anchor = "nw")
+Acc_number_entry_book_borrow = tk.Entry(Borrow_frame, fg = 'black', width = 60)
+Acc_number_entry_book_borrow.insert(0, "Used to identify an instance of book")
+Acc_number_entry_book_borrow.place(x = 300, y = 100, anchor = "nw")
+
+ID_label_book_borrow = tk.Label(Borrow_frame, text='Membership ID')
+ID_label_book_borrow.place(x = 50, y = 200, anchor = "nw")
+ID_entry_book_borrow= tk.Entry(Borrow_frame, fg = 'black', width = 60)
+ID_entry_book_borrow.insert(0, "A unique alphanumeric id that distinguishes every member")
+ID_entry_book_borrow.place(x = 300, y = 200, anchor = "nw")
+
+Borrow_book_button_book_borrow = tk.Button(Borrow_frame, text = "Borrow Book", fg = 'black', command = withdraw_book)
+Borrow_book_button_book_borrow.place(x = 50, y = 300, anchor = "nw")
+Back_to_loan_button_book_borrow = tk.Button(Borrow_frame, text = "Back To Loan", fg = 'black', command = lambda: change_frame(Borrow_frame, Loan_frame))
+Back_to_loan_button_book_borrow.place(x = 700, y = 300, anchor = "nw")
 
 #Return object
 def return_book():
-    messagebox.askyesno(title='Please Confirm The Return Details To Be Correct', message='New Book Added In Library!')
-    # tkinter.messagebox.showinfo(title='Success!', message='Book Returned Successfully.')
-    # tkinter.messagebox.showinfo(title='Error!', message='Book Returned Successfully. But Has Fines')
+    acc_number = Acc_number_entry_book_return.get()
+    id = ID_entry_book_return.get()
+    res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct') # not done
+    if res:
+        return_book_fine(id)
+    else:
+        pass
 
-top_text = tk.Label(Return_frame, text='To Return A Book , Please Enter Information Below', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+def return_book_fine(id):
+    if has_outstanding_fine(id):
+        messagebox.showinfo(title='Error!', message='Book Returned Successfully But Member Has Fines.')
+    else:
+        messagebox.showinfo(title='Success!', message='You Have Returned This Book.') 
+        # minus 1 to books_borrowed and update borrow_and_return_record
 
-AN_label = tk.Label(Return_frame, text='Accession Number')
-AN_label.place(x = 50, y = 100, anchor = "nw")
-AN_entry = tk.Entry(Return_frame, fg = 'black', width = 60)
-AN_entry.insert(0, "Used to identify an instance of book")
-AN_entry.place(x = 300, y = 100, anchor = "nw")
 
-ID_label = tk.Label(Return_frame, text='Membership ID')
-ID_label.place(x = 50, y = 200, anchor = "nw")
-ID_entry = tk.Entry(Return_frame, fg = 'black', width = 60)
-ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
-ID_entry.place(x = 300, y = 200, anchor = "nw")
+top_text_book_borrow = tk.Label(Borrow_frame, text='To Borrow A Book , Please Enter Information Below', bg='cyan')
+
+    # messagebox.askyesno(title='Please Confirm The Return Details To Be Correct', message='New Book Added In Library!')
+    # messagebox.showinfo(title='Success!', message='Book Returned Successfully.')
+    # messagebox.showinfo(title='Error!', message='Book Returned Successfully. But Has Fines')
+
+top_text_book_return = tk.Label(Return_frame, text='To Return A Book , Please Enter Information Below', bg='cyan')
+top_text_book_return.place(x = 50, y = 0, anchor = "nw")
+
+Acc_number_label_book_return = tk.Label(Return_frame, text='Accession Number')
+Acc_number_label_book_return.place(x = 50, y = 100, anchor = "nw")
+Acc_number_entry_book_return = tk.Entry(Return_frame, fg = 'black', width = 60)
+Acc_number_entry_book_return.insert(0, "Used to identify an instance of book")
+Acc_number_entry_book_return.place(x = 300, y = 100, anchor = "nw")
+
+ID_label_book_return = tk.Label(Return_frame, text='Membership ID')
+ID_label_book_return.place(x = 50, y = 200, anchor = "nw")
+ID_entry_book_return = tk.Entry(Return_frame, fg = 'black', width = 60)
+ID_entry_book_return.insert(0, "A unique alphanumeric id that distinguishes every member")
+ID_entry_book_return.place(x = 300, y = 200, anchor = "nw")
 
 Return_book_button = tk.Button(Return_frame, text = "Return Book", fg = 'black', command = return_book)
 Return_book_button.place(x = 50, y = 300, anchor = "nw")
@@ -478,8 +593,8 @@ Res_book_Res_date_entry.place(x = 300, y = 150, anchor = "nw")
     #     print("[confirm_book_reservation] QueryError.")
     #     return     
 
-Res_book_Res_button = tk.Button(Res_book_frame, text = "Reserve Book", fg = 'black', command = confirm_book_reservation)
-Res_book_Res_button.place(x = 50, y = 200, anchor = "nw")
+# Res_book_Res_button = tk.Button(Res_book_frame, text = "Reserve Book", fg = 'black', command = confirm_book_reservation)
+# Res_book_Res_button.place(x = 50, y = 200, anchor = "nw")
 Res_book_Back_button = tk.Button(Res_book_frame, text = "Back to Reservation Menu", fg = 'black', command = lambda: change_frame(Res_book_frame, Res_frame))
 Res_book_Back_button.place(x = 700, y = 200, anchor = "nw")
 
@@ -693,3 +808,4 @@ if __name__ == "__main__":
     root.mainloop()
 
 session.close()
+conn.close()
