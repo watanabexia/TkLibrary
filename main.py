@@ -11,7 +11,7 @@ from datetime import datetime
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "123456"
+db_password = "454545hrz"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
@@ -246,6 +246,8 @@ Back_to_mem_button = tk.Button(Mem_update2_frame, text = "Back To Previous Membe
 Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
 
 
+#Renzhou starts
+
 #Book Frame
 #Book frame object
 Acq_frame = tk.Frame(root, height = win_h, width = win_w)
@@ -270,7 +272,7 @@ Back_button.place(x = 175, y = 150, anchor = "nw")
 
 #Book Acquisition object
 def add_new_book():
-    tkinter.messagebox.showinfo(title='Success!', message='New Book Added In Library!')
+    messagebox.showinfo(title='Success!', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Already Added; Duplicate, Missing or Incomplete fields')
 
 top_text = tk.Label(Acq_frame, text='For New Book Acquisition, Please Enter Information Below', bg='cyan')
@@ -320,7 +322,7 @@ Back_to_book_button.place(x = 700, y = 350, anchor = "nw")
 
 #Book Withdrawal object
 def withdraw_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Details Are Correct', message='New Book Added In Library!')
+    messagebox.askyesno(title='Please Confirm The Details Are Correct', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently On Loan.')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently Reserved.')
 
@@ -362,7 +364,7 @@ Back_button.place(x = 175, y = 150, anchor = "nw")
 
 #Borrow object
 def borrow_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Loan Details To Be Correct', message='New Book Added In Library!')
+    messagebox.askyesno(title='Please Confirm The Loan Details To Be Correct', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Currently On Loan Until.')
     # tkinter.messagebox.showinfo(title='Error!', message='Member Loan Quota Exceeded.')
     # tkinter.messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
@@ -389,7 +391,7 @@ Back_to_loan_button.place(x = 700, y = 300, anchor = "nw")
 
 #Return object
 def return_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Return Details To Be Correct', message='New Book Added In Library!')
+    messagebox.askyesno(title='Please Confirm The Return Details To Be Correct', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Success!', message='Book Returned Successfully.')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Returned Successfully. But Has Fines')
 
@@ -413,6 +415,7 @@ Return_book_button.place(x = 50, y = 300, anchor = "nw")
 Back_to_loan_button = tk.Button(Return_frame, text = "Back To Loan", fg = 'black', command = lambda: change_frame(Return_frame, Loan_frame))
 Back_to_loan_button.place(x = 700, y = 300, anchor = "nw")
 
+#Renzhou ends
 
 
 # Reservation frame object
@@ -448,28 +451,28 @@ Res_book_Res_date_entry = tk.Entry(Res_book_frame, fg = 'black', bg = 'white', w
 Res_book_Res_date_entry.insert(0, "02/20/2022")
 Res_book_Res_date_entry.place(x = 300, y = 150, anchor = "nw")
 
-def confirm_book_reservation():
-    mem_id = Res_book_Mem_ID_entry.get()
-    acc_number = Res_book_Acc_number_entry.get()
+# def confirm_book_reservation():
+    # mem_id = Res_book_Mem_ID_entry.get()
+    # acc_number = Res_book_Acc_number_entry.get()
 
-    try:
-        res_date = get_date_object(Res_book_Res_date_entry.get())
-    except:
-        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid date or a valid date format.".format(date_string))
+    # try:
+    #     res_date = get_date_object(Res_book_Res_date_entry.get())
+    # except:
+    #     messagebox.showerror(title = "Error", message = "\"{}\" is not a valid date or a valid date format.".format(date_string))
     
-    try:
-        mem = get_member(mem_id)
-    except:
-        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(member_id))
+    # try:
+    #     mem = get_member(mem_id)
+    # except:
+    #     messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(member_id))
     
-    try:
-        book = get_book(acc_number)
-    except:
-        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid accession number.".format(acc_number))
-        if (is_book_on_loan(acc_number)):
-            pass
-        else:
-            messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.name))
+    # try:
+    #     book = get_book(acc_number)
+    # except:
+    #     messagebox.showerror(title = "Error", message = "\"{}\" is not a valid accession number.".format(acc_number))
+    #     if (is_book_on_loan(acc_number)):
+    #         pass
+    #     else:
+    #         messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.name))
 
     # except QueryError:
     #     print("[confirm_book_reservation] QueryError.")
