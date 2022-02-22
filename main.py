@@ -52,36 +52,37 @@ class QueryError(Exception):
     pass
 
 def get_member(member_id):
-    """
-    get the member with the unique member id.
-    * Returns None if no valid LibMember is found.
-    """
-    return session.query(LibMember).filter_by(memberid = member_id).one()
+    session_new = DBSession()
+    member = session_new.query(LibMember).filter_by(memberid = member_id).one()
+    session_new.close()
+    return member
+    
 
 def get_book(acc_number):
-    """
-    get the book with the unique acc number.
-    * Returns None if no valid LibBook is found.
-    """
-    return session.query(LibBooks).filter_by(Accession_Number = acc_number).one()
+    session_new = DBSession()
+    book = session_new.query(LibBooks).filter_by(Accession_Number = acc_number).one()
+    session_new.close()
+    return book
 
 def get_date_object(date_string):
     return datetime.strptime(date_string, '%d/%m/%Y')
 
 def is_book_on_loan(acc_number):
-    """
-    check if a book is on loan.
-    Returns True if is on loan. False if is not on loan.
-    """
     try:
-        br_record = session.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number, Return_Date = None).one()
+        session_new = DBSession()
+        br_record = session_new.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number, Return_Date = None).one()
     except NoResultFound:
+        session_new.close()
         return False
     else:
+        session_new.close()
         return True
 
 def get_reserve_record(member_id, acc_number):
-    return session.query(Reserve_Record).filter_by(Accession_Number = acc_number, memberid = member_id).one()
+    session_new = DBSession()
+    reserve_record = session_new.query(Reserve_Record).filter_by(Accession_Number = acc_number, memberid = member_id).one()
+    session_new.close()
+    return reserve_record
 
 def insert_reserve_record(member_id, acc_number, res_date):
     res_table = Table('Reserve_Record', metadata, autoload = True)
@@ -91,12 +92,16 @@ def insert_reserve_record(member_id, acc_number, res_date):
     print(result)
 
 def update_member_reserved(member_id, reserved_number):
-    session.query(LibMember).filter_by(memberid = member_id).update({'current_books_reserved': reserved_number})
-    session.commit()
+    session_new = DBSession()
+    session_new.query(LibMember).filter_by(memberid = member_id).update({'current_books_reserved': reserved_number})
+    session_new.commit()
+    session_new.close()
 
 def delete_reserve_record(member_id, acc_number):
-    session.query(Reserve_Record).filter_by(memberid = member_id, Accession_Number = acc_number).delete()
-    session.commit()
+    session_new = DBSession()
+    session_new.query(Reserve_Record).filter_by(memberid = member_id, Accession_Number = acc_number).delete()
+    session_new.commit()
+    session_new.close()
 
 
 # Root frame object
