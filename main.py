@@ -497,7 +497,9 @@ def commit_book_reservation(mem, book, date, toplevel):
             return
     else:
         messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.Title))
-        return    
+        return  
+
+    messagebox.showinfo(title = "Success", message = "\"{}\" have successfully reserved the book \"{}\".".format(mem.name, book.Title))  
 
 def confirm_book_reservation():
     mem_id = Res_book_Mem_ID_entry.get()
@@ -581,6 +583,8 @@ def commit_cancel_reservation(mem, book, toplevel):
     else:
         delete_reserve_record(mem_id, acc_number)
         update_member_reserved(mem_id, mem.current_books_reserved - 1)
+
+    messagebox.showinfo(title = "Success", message = "\"{}\" have successfully cancelled the reservation for the book \"{}\".".format(mem.name, book.Title))  
 
 def confirm_cancel_reservation():
     mem_id = Res_cancel_Mem_ID_entry.get()
