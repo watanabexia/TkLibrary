@@ -56,28 +56,41 @@ def get_member(member_id):
     get the member with the unique member id.
     * Returns None if no valid LibMember is found.
     """
-    return session.query(LibMember).filter_by(memberid = member_id).one()
+    session_new = DBSession()
+    member = session_new.query(LibMember).filter_by(memberid = member_id).one()
+    session_new.close()
+    return member
+
 
 def get_book(acc_number):
     """
     get the book with the unique acc number.
     * Returns None if no valid LibBook is found.
     """
-    return session.query(LibBooks).filter_by(Accession_Number = acc_number).one()
+    session_new = DBSession()
+    book = session_new.query(LibBooks).filter_by(Accession_Number = acc_number).one()
+    session_new.close()
+    return book
 
 def get_book_BR(acc_number):
     """
     get the book with the unique acc number from borrow_and_return_record.
     * Returns None if no valid LibBook is found.
     """
-    return session.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number).one()
+    session_new = DBSession()
+    book = session_new.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number).one()
+    session_new.close()
+    return book
 
 def get_book_Reserve(acc_number):
     """
     get all the books with the unique acc number from reserve_record.
     * Returns None if no valid LibBook is found.
     """
-    return session.query(Reserve_Record).filter_by(Accession_Number = acc_number).all()
+    session_new = DBSession()
+    book = session_new.query(Reserve_Record).filter_by(Accession_Number = acc_number).all()
+    session_new.close()
+    return book
 
 def book_exist(acc_number):
     """
@@ -102,7 +115,7 @@ def member_exist(member_id):
         return False
 
 def get_date_object(date_string):
-    return datetime.strptime(date_string, '%m/%d/%Y')
+    return datetime.strptime(date_string, '%d/%m/%Y')
 
 def today_day():
     today = date.today()
@@ -114,6 +127,13 @@ def due_date():
     due_date = due_date.strftime('%d/%m/%Y')
     return due_date
 
+def get_due_date(acc_number, member_id):
+    session_new = DBSession()
+    br_record = session_new.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number, memberid = member_id).one()
+    session_new.close()
+    return br_record.Due_Date.strftime('%d/%m/%Y')
+
+
 def days_between(date1,date2):
     delta = date2 - date1
     return delta.days
@@ -124,12 +144,14 @@ def is_book_on_loan(acc_number):
     check if a book is on loan.
     Returns True if is on loan. False if is not on loan.
     """
-    book = get_book(acc_number)
+    session_new = DBSession()
     try:
-        br_record = session.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number, Return_Date = None).one()
+        session_new.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number, Return_Date = None).one()
     except NoResultFound:
+        session_new.close()
         return False
     else:
+        session_new.close()
         return True
 
 def is_book_reserved(acc_number):
@@ -137,12 +159,14 @@ def is_book_reserved(acc_number):
     check if a book is reserved.
     Returns True if is reserved. False if is not reserved.
     """
-    book = get_book(acc_number)
+    session_new = DBSession()
     try:
-        Res_record = session.query(Reserve_Record).filter_by(Accession_Number = acc_number).one()
+        session_new.query(Reserve_Record).filter_by(Accession_Number = acc_number).one()
     except NoResultFound:
+        session_new.close()
         return False
     else:
+        session_new.close()
         return True
 
 def members_reserved(acc_number):
@@ -161,10 +185,13 @@ def is_quota_reached(id):
     Returns True if is reached. False if is not reached.
     """
     try:
-        member = session.query(LibMember).filter_by(memberid = id, current_books_borrowed = 2).one()
+        session_new = DBSession()
+        session_new.query(LibMember).filter_by(memberid = id, current_books_borrowed = 2).one()
     except NoResultFound: #this member has 2 borrowed books, quota reached
+        session_new.close()
         return False
     else:
+        session_new.close()
         return True
 
 def has_outstanding_fine(id):
@@ -173,10 +200,13 @@ def has_outstanding_fine(id):
     Returns True if has outstanding fine. False if do not have outstanding fine.
     """
     try:
-        member = session.query(LibMember).filter_by(memberid = id, current_books_borrowed = 0).one()
+        session_new = DBSession()
+        session_new.query(LibMember).filter_by(memberid = id, outstanding_fee = 0).one()
     except NoResultFound: #this member has outstanding fee of 0
+        session_new.close()
         return True
     else:
+        session_new.close()
         return False
 
 def get_Authors(acc_number):
@@ -190,7 +220,10 @@ def get_Authors(acc_number):
     return res
 
 def get_reserve_record(member_id, acc_number):
-    return session.query(Reserve_Record).filter_by(Accession_Number = acc_number, memberid = member_id).one()
+    session_new = DBSession()
+    book = session_new.query(Reserve_Record).filter_by(Accession_Number = acc_number, memberid = member_id).one()
+    session_new.close()
+    return book
 
 def insert_reserve_record(member_id, acc_number, res_date):
     res_table = Table('Reserve_Record', metadata, autoload = True)
@@ -200,22 +233,28 @@ def insert_reserve_record(member_id, acc_number, res_date):
     print(result)
 
 def update_member_reserved(member_id, reserved_number):
-    session.query(LibMember).filter_by(memberid = member_id).update({'current_books_reserved': reserved_number})
-    session.commit()
+    session_new = DBSession()
+    session_new.query(LibMember).filter_by(memberid = member_id).update({'current_books_reserved': reserved_number})
+    session_new.commit()
+    session_new.close()
 
 def delete_reserve_record(member_id, acc_number):
-    session.query(Reserve_Record).filter_by(memberid = member_id, Accession_Number = acc_number).delete()
-    session.commit()
+    session_new = DBSession()
+    session_new.query(Reserve_Record).filter_by(memberid = member_id, Accession_Number = acc_number).delete()
+    session_new.commit()
+    session_new.close()
 
 def insert_LibBooks(acc_number, Title, ISBN, Publisher, Year):
     book_table = Table('LibBooks', metadata, autoload = True)
     book_ins = book_table.insert()
     book_ins = book_ins.values(Accession_Number = acc_number, Title = Title, ISBN = ISBN, Publisher = Publisher, Year = Year)
-    result = conn.execute(book_ins)
+    conn.execute(book_ins)
 
 def delete_LibBooks(acc_number):
-    session.query(LibBooks).filter_by(Accession_Number = acc_number).delete()
-    session.commit()
+    session_new = DBSession()
+    session_new.query(LibBooks).filter_by(Accession_Number = acc_number).delete()
+    session_new.commit()
+    session_new.close()
 
 def insert_Author(acc_number, AuthorList):
     for Author in AuthorList:
@@ -225,13 +264,46 @@ def insert_Author(acc_number, AuthorList):
         conn.execute(author_ins)
 
 def delete_All_Authors(acc_number):
-    session.query(Book_Author).filter_by(Accession_Number = acc_number).delete()
-    session.commit()
-        
+    session_new = DBSession()
+    session_new.query(Book_Author).filter_by(Accession_Number = acc_number).delete()
+    session_new.commit()
+    session_new.close()
+
+def insert_borrow_and_return_record(acc_number, member_id, borrow_date, due_date):
+    br_table = Table('Borrow_And_Return_Record', metadata, autoload = True)
+    br_ins = br_table.insert()
+    br_ins = br_ins.values(Accession_Number = acc_number, memberid = member_id,
+    Borrow_Date = get_date_object(borrow_date), Return_Date = None,
+    Due_Date = get_date_object(due_date))
+    conn.execute(br_ins)
+
+def delete_borrow_and_return_record(acc_number, member_id):
+    session_new = DBSession()
+    session_new.query(Borrow_And_Return_Record).filter_by(memberid = member_id, Accession_Number = acc_number).delete()
+    session_new.commit()
+    session_new.close()
+
+def get_borrowed_number(member_id):
+    member = get_member(member_id)
+    return member.current_books_borrowed
 
 
 
-# def has_outstanding_fine(member_id):
+def update_member_borrowed(member_id, borrowed_number):
+    session_new = DBSession()
+    session_new.query(LibMember).filter_by(memberid = member_id).update({'current_books_borrowed': borrowed_number})
+    session_new.commit()
+    session_new.close()
+
+def update_outstanding_fine(member_id, fine):
+    session_new = DBSession()
+    session_new.query(LibMember).filter_by(memberid = member_id).update({'outstanding_fee': fine})
+    session_new.commit()
+    session_new.close()
+
+
+
+
 
 # Root frame object
 top_text = tk.Label(Root_frame, text='ALS System', bg='cyan')
@@ -431,38 +503,38 @@ top_text_book_acquisition .place(x = 50, y = 0, anchor = "nw")
 Acc_number_label_book_acquisition = tk.Label(Acq_frame, text='Accession Number', fg = 'black')
 Acc_number_label_book_acquisition.place(x = 50, y = 50, anchor = "nw")
 Acc_number_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
-Acc_number_entry_book_acquisition.insert(0, "Used to identify an instance of book")
+# Acc_number_entry_book_acquisition.insert(0, "Used to identify an instance of book")
 Acc_number_entry_book_acquisition.place(x = 300, y = 50, anchor = "nw")
 
 
 Title_label_book_acquisition = tk.Label(Acq_frame, text='Title', fg = 'black')
 Title_label_book_acquisition.place(x = 50, y = 100, anchor = "nw")
 Title_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
-Title_entry_book_acquisition.insert(0, "Title of the book")
+# Title_entry_book_acquisition.insert(0, "Title of the book")
 Title_entry_book_acquisition.place(x = 300, y = 100, anchor = "nw")
 
 Author_label_book_acquisition = tk.Label(Acq_frame, text='Author', fg = 'black')
 Author_label_book_acquisition.place(x = 50, y = 150, anchor = "nw")
 Author_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
-Author_entry_book_acquisition.insert(0, "Author of the book")
+# Author_entry_book_acquisition.insert(0, "Author of the book")
 Author_entry_book_acquisition.place(x = 300, y = 150, anchor = "nw")
 
 ISBN_label_book_acquisition = tk.Label(Acq_frame, text='ISBN', fg = 'black')
 ISBN_label_book_acquisition.place(x = 50, y = 200, anchor = "nw")
 ISBN_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
-ISBN_entry_book_acquisition.insert(0, "ISBN of the book")
+# ISBN_entry_book_acquisition.insert(0, "ISBN of the book")
 ISBN_entry_book_acquisition.place(x = 300, y = 200, anchor = "nw")
 
 Publisher_label_book_acquisition = tk.Label(Acq_frame, text='Publisher', fg = 'black')
 Publisher_label_book_acquisition.place(x = 50, y = 250, anchor = "nw")
 Publisher_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
-Publisher_entry_book_acquisition.insert(0, "Publisher of the book")
+# Publisher_entry_book_acquisition.insert(0, "Publisher of the book")
 Publisher_entry_book_acquisition.place(x = 300, y = 250, anchor = "nw")
 
 Year_label_book_acquisition = tk.Label(Acq_frame, text='Year', fg = 'black')
 Year_label_book_acquisition.place(x = 50, y = 300, anchor = "nw")
 Year_entry_book_acquisition = tk.Entry(Acq_frame, fg = 'black', width = 60)
-Year_entry_book_acquisition.insert(0, "Year of publishing of the book")
+# Year_entry_book_acquisition.insert(0, "Year of publishing of the book")
 Year_entry_book_acquisition.place(x = 300, y = 300, anchor = "nw")
 
 def add_new_book():
@@ -492,10 +564,10 @@ Back_to_book_button_book_acquisition.place(x = 700, y = 350, anchor = "nw")
 #Book Withdrawal object
 def withdraw_book():
     acc_number = Acc_number_entry_book_withdrawal.get()
-    book_LibBook = get_book(acc_number)
     if not book_exist(acc_number):
             messagebox.showinfo(title='Error!', message='Book Does Not Exist.')
     else:
+        book_LibBook = get_book(acc_number)
         res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
             + 'Assession Number:  ' + acc_number  + '\n Title:  ' + book_LibBook.Title 
             + '\n Authors:  ' + get_Authors(acc_number) 
@@ -524,7 +596,7 @@ top_text_book_withdrawal.place(x = 50, y = 0, anchor = "nw")
 Acc_number_label_book_withdrawal = tk.Label(Withd_frame, text='Accession Number')
 Acc_number_label_book_withdrawal.place(x = 50, y = 200, anchor = "nw")
 Acc_number_entry_book_withdrawal = tk.Entry(Withd_frame, fg = 'black', width = 60)
-Acc_number_entry_book_withdrawal.insert(0, "Used to identify an instance of book")
+# Acc_number_entry_book_withdrawal.insert(0, "Used to identify an instance of book")
 Acc_number_entry_book_withdrawal.place(x = 300, y = 200, anchor = "nw")
 
 Withdraw_book_button_book_withdrawal = tk.Button(Withd_frame, text = "Withdraw Book", fg = 'black', command = withdraw_book)
@@ -561,29 +633,30 @@ top_text_book_borrow.place(x = 50, y = 0, anchor = "nw")
 Acc_number_label_book_borrow = tk.Label(Borrow_frame, text='Accession Number')
 Acc_number_label_book_borrow.place(x = 50, y = 100, anchor = "nw")
 Acc_number_entry_book_borrow = tk.Entry(Borrow_frame, fg = 'black', width = 60)
-Acc_number_entry_book_borrow.insert(0, "Used to identify an instance of book")
+# Acc_number_entry_book_borrow.insert(0, "Used to identify an instance of book")
 Acc_number_entry_book_borrow.place(x = 300, y = 100, anchor = "nw")
 
 ID_label_book_borrow = tk.Label(Borrow_frame, text='Membership ID')
 ID_label_book_borrow.place(x = 50, y = 200, anchor = "nw")
 ID_entry_book_borrow= tk.Entry(Borrow_frame, fg = 'black', width = 60)
-ID_entry_book_borrow.insert(0, "A unique alphanumeric id that distinguishes every member")
+# ID_entry_book_borrow.insert(0, "A unique alphanumeric id that distinguishes every member")
 ID_entry_book_borrow.place(x = 300, y = 200, anchor = "nw")
 
 def borrow_book():
     acc_number = Acc_number_entry_book_borrow.get()
-    book_LibBooks = get_book(acc_number)
     member_id = ID_entry_book_borrow.get()
-    member_LibMember = get_member(member_id)
+    borrow_date = today_day()
     if not book_exist(acc_number):
             messagebox.showinfo(title='Error!', message='Book Does Not Exist.')
     elif not member_exist(member_id):
-            messagebox.showinfo(title='Error!', message='member Does Not Exist.')
+            messagebox.showinfo(title='Error!', message='Member Does Not Exist.')
     else:
+        book_LibBooks = get_book(acc_number)
+        member_LibMember = get_member(member_id)
         res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
             + 'Assession Number:  ' + acc_number  
             + '\n Book Title:  ' + book_LibBooks.Title 
-            + '\n Borrow Date:  ' + today_day()
+            + '\n Borrow Date:  ' + borrow_date
             + '\n Membership ID:  ' + member_id 
             + '\n Member Name:  ' + member_LibMember.name
             + '\n Due Date:  ' + due_date())
@@ -594,15 +667,20 @@ def borrow_book():
             pass
 
 def borrow_book_on_loan_quota_fine(acc_number, member_id):
+    borrow_date = today_day()
+    new_borrowed_number = get_borrowed_number(member_id) + 1
     if is_quota_reached(member_id):
         messagebox.showinfo(title='Error!', message='Member Loan Quota Exceeded.')
     elif is_book_on_loan(acc_number):
-        messagebox.showinfo(title='Error!', message='Book Is Currently On Loan Until' + '') # add date
+        book_due_date = get_due_date(acc_number, member_id)
+        messagebox.showinfo(title='Error!', message='Book Is Currently On Loan Until ' + book_due_date)
     elif has_outstanding_fine(member_id):
         messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
     elif is_book_reserved(acc_number) and member_id not in members_reserved(acc_number):
         messagebox.showinfo(title='Error!', message='Book Is Already Reserved.')
     else:
+        insert_borrow_and_return_record(acc_number, member_id, borrow_date, due_date())
+        update_member_borrowed(member_id, new_borrowed_number)
         messagebox.showinfo(title='Success!', message='You Have Borrowed This Book.') 
         # add 1 to books_borrowed and update borrow_and_return_record
 
@@ -619,45 +697,55 @@ top_text_book_return.place(x = 50, y = 0, anchor = "nw")
 Acc_number_label_book_return = tk.Label(Return_frame, text='Accession Number')
 Acc_number_label_book_return.place(x = 50, y = 100, anchor = "nw")
 Acc_number_entry_book_return = tk.Entry(Return_frame, fg = 'black', width = 60)
-Acc_number_entry_book_return.insert(0, "Used to identify an instance of book")
+# Acc_number_entry_book_return.insert(0, "Used to identify an instance of book")
 Acc_number_entry_book_return.place(x = 300, y = 100, anchor = "nw")
 
 ID_label_book_return = tk.Label(Return_frame, text='Membership ID')
 ID_label_book_return.place(x = 50, y = 200, anchor = "nw")
 ID_entry_book_return = tk.Entry(Return_frame, fg = 'black', width = 60)
-ID_entry_book_return.insert(0, "A unique alphanumeric id that distinguishes every member")
+# ID_entry_book_return.insert(0, "A unique alphanumeric id that distinguishes every member")
 ID_entry_book_return.place(x = 300, y = 200, anchor = "nw")
 
 def return_book():
     acc_number = Acc_number_entry_book_return.get()
-    book_LibBooks = get_book(acc_number)
-    book_BR = get_book_BR(acc_number)
     member_id = ID_entry_book_return.get()
-    member_LibMember = get_member(member_id)
-
     if not book_exist(acc_number):
             messagebox.showinfo(title='Error!', message='Book Does Not Exist.')
     elif not member_exist(member_id):
-            messagebox.showinfo(title='Error!', message='member Does Not Exist.')
+            messagebox.showinfo(title='Error!', message='Member Does Not Exist.')
+    elif not is_book_on_loan(acc_number):
+            messagebox.showinfo(title='Error!', message='Book Is Not On Loan.')
     else:
+        book_LibBooks = get_book(acc_number)
+        book_BR = get_book_BR(acc_number)
+        member_LibMember = get_member(member_id)
+        Borrow_date = book_BR.Borrow_Date.strftime('%d/%m/%Y')
+        Fine = max(days_between(book_BR.Due_Date, date.today()),0)
+
         res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
             + 'Assession Number:  ' + acc_number  
             + '\n Book Title:  ' + book_LibBooks.Title 
-            + '\n Borrow Date:  ' + book_BR.Borrow_Date.strftime('%d/%m/%Y')
+            + '\n Borrow Date:  ' + Borrow_date
             + '\n Membership ID:  ' + member_id 
             + '\n Member Name:  ' + member_LibMember.name
             + '\n Return Date:  ' + today_day()
-            + '\n Fine:  ' + str(days_between(book_BR.Due_Date, date.today())))
+            + '\n Fine:  ' + str(Fine))
             # 
         if res:
-            return_book_fine(id)
+            return_book_fine(member_id, acc_number, Fine)
         else:
             pass
 
-def return_book_fine(id):
-    if has_outstanding_fine(id):
+def return_book_fine(member_id, acc_number, Fine):
+    new_borrowed_number = get_borrowed_number(member_id) - 1
+    if Fine != 0:
+        update_outstanding_fine(member_id, Fine)
+        update_member_borrowed(member_id, new_borrowed_number)
+        delete_borrow_and_return_record(acc_number, member_id)
         messagebox.showinfo(title='Error!', message='Book Returned Successfully But Member Has Fines.')
     else:
+        update_member_borrowed(member_id, new_borrowed_number)
+        delete_borrow_and_return_record(acc_number, member_id)
         messagebox.showinfo(title='Success!', message='You Have Returned This Book.') 
         # minus 1 to books_borrowed and update borrow_and_return_record
 
