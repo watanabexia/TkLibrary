@@ -33,6 +33,14 @@ root.title('ALS')
 root.geometry("{}x{}".format(str(win_w), str(win_h)))
 root.option_add("*font", "SF\ Pro 14")
 
+# Frame Definition
+Root_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_frame = tk.Frame(root, height = win_h, width = win_w)
+Book_frame = tk.Frame(root, height = win_h, width = win_w)
+Loan_frame = tk.Frame(root, height = win_h, width = win_w)
+Res_frame = tk.Frame(root, height = win_h, width = win_w)
+Fine_frame = tk.Frame(root, height = win_h, width = win_w)
+Rep_frame = tk.Frame(root, height = win_h, width = win_w)
 
 # Frame Control Function
 def change_frame(from_frame, to_frame):
@@ -807,28 +815,28 @@ Res_book_Res_date_entry.insert(0, "02/20/2022")
 Res_book_Res_date_entry.place(x = 300, y = 150, anchor = "nw")
 
 
-def confirm_book_reservation():
-    mem_id = Res_book_Mem_ID_entry.get()
-    acc_number = Res_book_Acc_number_entry.get()
+# def confirm_book_reservation():
+#     mem_id = Res_book_Mem_ID_entry.get()
+#     acc_number = Res_book_Acc_number_entry.get()
 
-    try:
-        res_date = get_date_object(Res_book_Res_date_entry.get())
-    except:
-        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid date or a valid date format.".format(date_string))
+#     try:
+#         res_date = get_date_object(Res_book_Res_date_entry.get())
+#     except:
+#         messagebox.showerror(title = "Error", message = "\"{}\" is not a valid date or a valid date format.".format(date_string))
     
-    try:
-        mem = get_member(mem_id)
-    except:
-        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(member_id))
+#     try:
+#         mem = get_member(mem_id)
+#     except:
+#         messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(member_id))
     
-    try:
-        book = get_book(acc_number)
-    except:
-        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid accession number.".format(acc_number))
-        if (is_book_on_loan(acc_number)):
-            pass
-        else:
-            messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.name))
+#     try:
+#         book = get_book(acc_number)
+#     except:
+#         messagebox.showerror(title = "Error", message = "\"{}\" is not a valid accession number.".format(acc_number))
+#         if (is_book_on_loan(acc_number)):
+#             pass
+#         else:
+#             messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.name))
 
     # except QueryError:
     #     print("[confirm_book_reservation] QueryError.")
