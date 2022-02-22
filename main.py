@@ -1,11 +1,15 @@
+from operator import and_
 from sqlalchemy import Table, Column, String, create_engine, Integer, Date, MetaData
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
+from tkinter import *
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import *
 from sqlalchemy.exc import *
+from sqlalchemy import and_
 
 from datetime import datetime
 
@@ -48,6 +52,12 @@ def change_frame(from_frame, to_frame):
     from_frame.pack_forget()
     to_frame.pack()
 
+def change_frame_delete_infor(from_frame, to_frame, tree):
+    for i in tree.get_children():
+        tree.delete(i)
+    from_frame.pack_forget()
+    to_frame.pack()
+
 # Query Function
 class QueryError(Exception):
     pass
@@ -66,22 +76,75 @@ def get_book(acc_number):
     """
     return session.query(LibBooks).filter_by(Accession_Number = acc_number).one()
 
-#book search funtions
-def get_book_contains_title(title_one):
-    return session.query(LibBooks).filter(LibBooks.Title.contains(title_one)).all()
+def get_book_contains_author(author_one):
+    if " " in author_one:
+        messagebox.showinfo(title='Wrong!', message='Input cannot be more than one word')
+    else:
+        return session.query(Book_Author).filter(Book_Author.Author.contains(author_one)).all()
 
-def get_book_contains_author():
-    
-def get_book_contains_ISBN(ISBN_input):
-    return session.query(LibBooks).filter_by(ISBN = ISBN_input).all()
+def get_book_contains(title_one, ISBN_one, publisher_one, publication_year_one):
+    if " " in title_one  or " " in ISBN_one or " " in publisher_one or " " in publication_year_one:
+        messagebox.showinfo(title='Wrong!', message='Input cannot be more than one word')
+    else: 
+        return session.query(LibBooks).filter(and_(
+            LibBooks.Title.contains(title_one),
+            LibBooks.ISBN.contains(ISBN_one),
+            LibBooks.Publisher.contains(publisher_one),
+            LibBooks.Year.contains(publication_year_one))).all()
 
-def get_book_contains_Publisher(publisher_one):
-    return session.query(LibBooks).filter(LibBooks.Publisher.contains(publisher_one)).all()
+def get_book_on_loan():
+    return session.query(Borrow_And_Return_Record).order_by(Borrow_And_Return_Record.Accession_Number).all()
+ 
+def get_borrow_record_by_memid(mem_id):
+    return session.query(Borrow_And_Return_Record).filter_by(memberid = mem_id).all()
 
-def get_book_contains_Year(year_input):
-    return session.query(LibBooks).filter_by(Year = year_input).all()
+def get_book_on_reserve():
+    return session.query(Reserve_Record).order_by(Reserve_Record.Accession_Number).all()
 
+def get_mem_with_fines():
+    return session.query(LibMember).filter(LibMember.outstanding_fee != 0).all()
 
+def get_book_title_based_on_AN(acc_number):
+    books = session.query(LibBooks).filter_by(Accession_Number = acc_number).all()
+    res = ''
+    for book in books:
+        res += book.Title
+    return res
+
+def get_book_ISBN_based_on_AN(acc_number):
+    books = session.query(LibBooks).filter_by(Accession_Number = acc_number).all()
+    res = ''
+    for book in books:
+        res += book.ISBN
+    return res
+
+def get_book_publisher_based_on_AN(acc_number):
+    books = session.query(LibBooks).filter_by(Accession_Number = acc_number).all()
+    res = ''
+    for book in books:
+        res += book.Publisher
+    return res
+
+def get_book_year_based_on_AN(acc_number):
+    books = session.query(LibBooks).filter_by(Accession_Number = acc_number).all()
+    res = ''
+    for book in books:
+        res += str(book.Year)
+    return res
+
+def get_member_name_based_on_id(mem_id):
+    books = session.query(LibMember).filter_by(memberid = mem_id).all()
+    res = ''
+    for book in books:
+        res += book.name
+    return res
+
+def get_Authors_report_loan(acc_number):
+    res = ''
+    books = session.query(Book_Author).filter_by(Accession_Number = acc_number).all()
+    for book in books:
+        res += book.Author
+    return res
 
 def get_date_object(date_string):
     return datetime.strptime(date_string, '%m/%d/%Y')
@@ -589,19 +652,137 @@ Book_Search_label.place(x = 400, y = 50, anchor = "nw")
 Book_Search_button = tk.Button(Rep_frame, text = "Book Search", width=25, fg = 'black', command = lambda: change_frame(Rep_frame, Book_search_frame))
 Book_Search_button.place(x = 50, y = 50, anchor = "nw")
 
+# display books on loan
+game_scroll = Scrollbar(Book_on_Loan_frame)
+game_scroll.pack(side=RIGHT, fill=Y)
+game_scroll = Scrollbar(Book_on_Loan_frame,orient='horizontal')
+game_scroll.pack(side= BOTTOM,fill=X)
+book_onloan_table = ttk.Treeview(Book_on_Loan_frame,yscrollcommand=game_scroll.set, xscrollcommand =game_scroll.set)
+book_onloan_table.pack()
+game_scroll.config(command=book_onloan_table.yview)
+game_scroll.config(command=book_onloan_table.xview)
+book_onloan_table['columns'] = ('book_AN', 'book_title', 'book_authors', 'book_ISBN', 'book_publisher','book_year')
+book_onloan_table.column("#0", width=0,  stretch=YES)
+book_onloan_table.column("book_AN",anchor=CENTER, width=150)
+book_onloan_table.column("book_title",anchor=CENTER,width=150)
+book_onloan_table.column("book_authors",anchor=CENTER,width=150)
+book_onloan_table.column("book_ISBN",anchor=CENTER,width=150)
+book_onloan_table.column("book_publisher",anchor=CENTER,width=150)
+book_onloan_table.column("book_year",anchor=CENTER,width=150)
+book_onloan_table.heading("#0",text="",anchor=CENTER)
+book_onloan_table.heading("book_AN",text="Accession Number",anchor=CENTER)
+book_onloan_table.heading("book_title",text="Title",anchor=CENTER)
+book_onloan_table.heading("book_authors",text="Authors",anchor=CENTER)
+book_onloan_table.heading("book_ISBN",text="ISBN",anchor=CENTER)
+book_onloan_table.heading("book_publisher",text="Publisher",anchor=CENTER)
+book_onloan_table.heading("book_year",text="Year",anchor=CENTER)
+
+def return_book_onloan():
+    book_list = get_book_on_loan()
+    book_final=[]
+    # for book_author in get_book_contains_author(Author_keyword):
+    for book in book_list:
+        author = get_Authors_report_loan(book.Accession_Number)
+        title = get_book_title_based_on_AN(book.Accession_Number)
+        ISBN = get_book_ISBN_based_on_AN(book.Accession_Number)
+        publisher = get_book_publisher_based_on_AN(book.Accession_Number)
+        year = get_book_year_based_on_AN(book.Accession_Number)
+        book_infor = [book.Accession_Number, title,author, ISBN, publisher, year]
+        book_final.append(book_infor)
+
+    change_frame(Rep_frame, Book_on_Loan_frame)
+
+    for book in book_final:
+        book_onloan_table.insert(parent='',index='end',iid=0,text='', values=(book))
+    book_onloan_table.pack()
+
 Book_on_Loan_label = tk.Label(Rep_frame, text = "This function displays all the books \n currently on loan to members.", fg = 'black')
 Book_on_Loan_label.place(x = 400, y = 120, anchor = "nw")
-Book_on_Loan_button = tk.Button(Rep_frame, text = "Books on Loan", width=25, fg = 'black', command = lambda: change_frame(Rep_frame, Book_on_Loan_frame))
+Book_on_Loan_button = tk.Button(Rep_frame, text = "Books on Loan", width=25, fg = 'black', command = return_book_onloan)
 Book_on_Loan_button.place(x = 50, y = 120, anchor = "nw")
+
+# display books on reservation
+game_scroll = Scrollbar(Book_on_reservation_frame)
+game_scroll.pack(side=RIGHT, fill=Y)
+game_scroll = Scrollbar(Book_on_reservation_frame,orient='horizontal')
+game_scroll.pack(side= BOTTOM,fill=X)
+book_onreserve_table = ttk.Treeview(Book_on_reservation_frame,yscrollcommand=game_scroll.set, xscrollcommand =game_scroll.set)
+book_onreserve_table.pack()
+game_scroll.config(command=book_onreserve_table.yview)
+game_scroll.config(command=book_onreserve_table.xview)
+book_onreserve_table['columns'] = ('book_AN', 'book_title', 'mem_id', 'mem_name')
+book_onreserve_table.column("#0", width=0,  stretch=YES)
+book_onreserve_table.column("book_AN",anchor=CENTER, width=150)
+book_onreserve_table.column("book_title",anchor=CENTER,width=150)
+book_onreserve_table.column("mem_id",anchor=CENTER,width=150)
+book_onreserve_table.column("mem_name",anchor=CENTER,width=150)
+book_onreserve_table.heading("#0",text="",anchor=CENTER)
+book_onreserve_table.heading("book_AN",text="Accession Number",anchor=CENTER)
+book_onreserve_table.heading("book_title",text="Title",anchor=CENTER)
+book_onreserve_table.heading("mem_id",text="Authors",anchor=CENTER)
+book_onreserve_table.heading("mem_name",text="ISBN",anchor=CENTER)
+
+def return_book_onreservation():
+    book_list = get_book_on_reserve()
+    book_final=[]
+    for book in book_list:
+        title = get_book_title_based_on_AN(book.Accession_Number)
+        member_id = book.memberid
+        member_name = get_member_name_based_on_id(member_id)
+        book_infor = [book.Accession_Number, title, member_id, member_name]
+        book_final.append(book_infor)
+
+    change_frame(Rep_frame, Book_on_reservation_frame)
+
+    for book in book_final:
+        book_onreserve_table.insert(parent='',index='end',iid=0,text='', values=(book))
+    book_onreserve_table.pack()
+
 
 Book_on_reservation_label = tk.Label(Rep_frame, text = "This function displays all the books \n that members have reserved.", fg = 'black')
 Book_on_reservation_label.place(x = 400, y = 190, anchor = "nw")
-Book_on_reservation_button = tk.Button(Rep_frame, text = "Books on Reservation", width=25, fg = 'black', command = lambda: change_frame(Rep_frame, Book_on_reservation_frame))
+Book_on_reservation_button = tk.Button(Rep_frame, text = "Books on Reservation", width=25, fg = 'black', command = return_book_onreservation)
 Book_on_reservation_button.place(x = 50, y = 190, anchor = "nw")
+
+# display members with outstanding fines
+game_scroll = Scrollbar(Outstanding_Fines__frame)
+game_scroll.pack(side=RIGHT, fill=Y)
+game_scroll = Scrollbar(Outstanding_Fines__frame,orient='horizontal')
+game_scroll.pack(side= BOTTOM,fill=X)
+mem_with_fines_table = ttk.Treeview(Outstanding_Fines__frame,yscrollcommand=game_scroll.set, xscrollcommand =game_scroll.set)
+mem_with_fines_table.pack()
+game_scroll.config(command=mem_with_fines_table.yview)
+game_scroll.config(command=mem_with_fines_table.xview)
+mem_with_fines_table['columns'] = ('mem_id', 'mem_name', 'mem_faculty', 'mem_ph', 'mem_email')
+mem_with_fines_table.column("#0", width=0,  stretch=YES)
+mem_with_fines_table.column("mem_id",anchor=CENTER, width=150)
+mem_with_fines_table.column("mem_name",anchor=CENTER,width=150)
+mem_with_fines_table.column("mem_faculty",anchor=CENTER,width=150)
+mem_with_fines_table.column("mem_ph",anchor=CENTER,width=150)
+mem_with_fines_table.column("mem_email",anchor=CENTER,width=150)
+mem_with_fines_table.heading("#0",text="",anchor=CENTER)
+mem_with_fines_table.heading("mem_id",text="Membership ID",anchor=CENTER)
+mem_with_fines_table.heading("mem_name",text="Name",anchor=CENTER)
+mem_with_fines_table.heading("mem_faculty",text="Faculty",anchor=CENTER)
+mem_with_fines_table.heading("mem_ph",text="Phone Number",anchor=CENTER)
+mem_with_fines_table.heading("mem_email",text="Email Address",anchor=CENTER)
+
+def return_mem_with_fines():
+    mem_list = get_mem_with_fines()
+    mem_final=[]
+    for mem in mem_list:
+        mem_infor = [mem.memberid, mem.name, mem.faculty, mem.phone_number, mem.email_address]
+        mem_final.append(mem_infor)
+
+    change_frame(Rep_frame, Outstanding_Fines__frame)
+
+    for mem in mem_final:
+        mem_with_fines_table.insert(parent='',index='end',iid=0,text='', values=(mem))
+    mem_with_fines_table.pack()
 
 Outstanding_Fines__label = tk.Label(Rep_frame, text = "This function displays the \n outstanding fines for members.", fg = 'black')
 Outstanding_Fines__label.place(x = 400, y = 260, anchor = "nw")
-Outstanding_Fines__button = tk.Button(Rep_frame, text = "Outstanding Fines", width=25, fg = 'black', command = lambda: change_frame(Rep_frame, Outstanding_Fines__frame))
+Outstanding_Fines__button = tk.Button(Rep_frame, text = "Outstanding Fines", width=25, fg = 'black', command = return_mem_with_fines)
 Outstanding_Fines__button.place(x = 50, y = 260, anchor = "nw")
 
 Books_on_Loan_to_Member__label = tk.Label(Rep_frame, text = "This function displays all the books a member \n identified by the membership ID has borrowed.", fg = 'black')
@@ -613,6 +794,30 @@ Back_button = tk.Button(Rep_frame, text = "Back To Main Menu", fg = 'black', com
 Back_button.place(x = 300, y = 400, anchor = "nw")
 
 # Book search frame
+# display books on search
+game_scroll = Scrollbar(Book_search_results_frame)
+game_scroll.pack(side=RIGHT, fill=Y)
+game_scroll = Scrollbar(Book_search_results_frame,orient='horizontal')
+game_scroll.pack(side= BOTTOM,fill=X)
+book_search_table = ttk.Treeview(Book_search_results_frame,yscrollcommand=game_scroll.set, xscrollcommand =game_scroll.set)
+book_search_table.pack()
+game_scroll.config(command=book_search_table.yview)
+game_scroll.config(command=book_search_table.xview)
+book_search_table['columns'] = ('book_AN', 'book_title', 'book_authors', 'book_ISBN', 'book_publisher','book_year')
+book_search_table.column("#0", width=0,  stretch=YES)
+book_search_table.column("book_AN",anchor=CENTER, width=150)
+book_search_table.column("book_title",anchor=CENTER,width=150)
+book_search_table.column("book_authors",anchor=CENTER,width=150)
+book_search_table.column("book_ISBN",anchor=CENTER,width=150)
+book_search_table.column("book_publisher",anchor=CENTER,width=150)
+book_search_table.column("book_year",anchor=CENTER,width=150)
+book_search_table.heading("#0",text="",anchor=CENTER)
+book_search_table.heading("book_AN",text="Accession Number",anchor=CENTER)
+book_search_table.heading("book_title",text="Title",anchor=CENTER)
+book_search_table.heading("book_authors",text="Authors",anchor=CENTER)
+book_search_table.heading("book_ISBN",text="ISBN",anchor=CENTER)
+book_search_table.heading("book_publisher",text="Publisher",anchor=CENTER)
+book_search_table.heading("book_year",text="Year",anchor=CENTER)
 
 def book_search_function():
     Title_keyword = Title_entry.get()
@@ -620,51 +825,49 @@ def book_search_function():
     ISBN_keyword = ISBN_entry.get()
     Publisher_keyword = Publisher_entry.get()
     Year_keyword = Year_entry.get()
-    # book_list = get_book_contains_title(Title_keyword)
-    book_list = get_book_contains_Publisher(Publisher_keyword)
-    for book in book_list:
-        print(book.Accession_Number, book.Title, book.ISBN, book.Publisher, book.Year)
-        # if book.Accession_Number == Book_Author.Accession_Number:
-        #     print(Book_Author.Author)
-        
-    # try:
-    #     book = get_book_contains_year(Year_keyword)
-    #     print(book)
-    # except:
-    #     messagebox.showerror(title = "Error", message = "\"{}\" is not valid".format(Year_keyword))
-
-
+    book_final=[]
+    book_list = get_book_contains(Title_keyword, ISBN_keyword, Publisher_keyword, Year_keyword)
+    for book_author in get_book_contains_author(Author_keyword):
+        for book in book_list:
+            if book.Accession_Number == book_author.Accession_Number:
+                book_infor = [book.Accession_Number, book_author.Author, book.Title, book.ISBN, book.Publisher, book.Year]
+                book_final.append(book_infor)
+    change_frame(Book_search_frame, Book_search_results_frame)
+    for book in book_final:
+        book_search_table.insert(parent='',index='end',iid=0,text='', values=(book))
+    book_search_table.pack()
+   
 top_text = tk.Label(Book_search_frame, text='Select based on one of the categories below:', bg='cyan')
 top_text.place(x = 50, y = 0, anchor = "nw")
 
 Title_label = tk.Label(Book_search_frame, text='Title', fg = 'black')
 Title_label.place(x = 50, y = 50, anchor = "nw")
 Title_entry = tk.Entry(Book_search_frame, fg = 'black', width = 60)
-Title_entry.insert(0, "Book Name")
+# Title_entry.insert(0, "Book Name")
 Title_entry.place(x = 300, y = 50, anchor = "nw")
 
 Author_label = tk.Label(Book_search_frame, text='Authors', fg = 'black')
 Author_label.place(x = 50, y = 100, anchor = "nw")
 Author_entry = tk.Entry(Book_search_frame, fg = 'black', width = 60)
-Author_entry.insert(0, "There can be multiple authors for a book")
+# Author_entry.insert(0, "There can be multiple authors for a book")
 Author_entry.place(x = 300, y = 100, anchor = "nw")
 
 ISBN_label = tk.Label(Book_search_frame, text='ISBN', fg = 'black')
 ISBN_label.place(x = 50, y = 150, anchor = "nw")
 ISBN_entry = tk.Entry(Book_search_frame, fg = 'black', width = 60)
-ISBN_entry.insert(0, "ISBN Number")
+# ISBN_entry.insert(0, "ISBN Number")
 ISBN_entry.place(x = 300, y = 150, anchor = "nw")
 
 Publisher_label = tk.Label(Book_search_frame, text='Publisher', fg = 'black')
 Publisher_label.place(x = 50, y = 200, anchor = "nw")
 Publisher_entry = tk.Entry(Book_search_frame, fg = 'black', width = 60)
-Publisher_entry.insert(0, "PRandom House, Penguin, Cengage, Springer, etc.")
+# Publisher_entry.insert(0, "PRandom House, Penguin, Cengage, Springer, etc.")
 Publisher_entry.place(x = 300, y = 200, anchor = "nw")
 
 Year_label = tk.Label(Book_search_frame, text='Publication Year', fg = 'black')
 Year_label.place(x = 50, y = 250, anchor = "nw")
 Year_entry = tk.Entry(Book_search_frame, fg = 'black', width = 60)
-Year_entry.insert(8, "Edition year")
+# Year_entry.insert(8, "Edition year")
 Year_entry.place(x = 300, y = 250, anchor = "nw")
 
 Search_book_buttom = tk.Button(Book_search_frame, text = "Search Book", width=20, height=1, command = book_search_function)
@@ -674,58 +877,97 @@ Back_to_Report_Main = tk.Button(Book_search_frame, text = "Back to Reports Menu"
 Back_to_Report_Main.place(x = 700, y = 300, anchor = "nw")
 
 
-#Book Search Results frame
-# top word
-top_text = tk.Label(Book_search_results_frame, text='Book Search Results', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+#Book Search Results frame buttom
+top_label = tk.Label(Book_search_results_frame, text='Book Search Results', bg='cyan')
+top_label.pack(side=TOP)
 
-Back_to_Search_Function = tk.Button(Book_search_results_frame, text = "Back To Search Function", width=20, height=1, command = lambda: change_frame(Book_search_results_frame, Book_search_frame))
-Back_to_Search_Function.place(x = 50, y = 100, anchor = "nw")
+Back_to_Search_Function = tk.Button(Book_search_results_frame, text = "Back To Search Function", width=20, height=1, command = lambda: change_frame_delete_infor(Book_search_results_frame, Book_search_frame, book_search_table))
+# Back_to_Search_Function.place(x = 50, y = 400, anchor = "nw")
+Back_to_Search_Function.pack(side=BOTTOM)
 
 # Book on loan frame
 top_text = tk.Label(Book_on_Loan_frame, text='Books on Loan Report', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+top_text.pack(side = TOP)
 
-Back_to_Report_Main = tk.Button(Book_on_Loan_frame, text = "Back to Reports Menu", width=20, height=1, command = lambda: change_frame(Book_on_Loan_frame, Rep_frame))
-Back_to_Report_Main.place(x = 50, y = 100, anchor = "nw")
+Back_to_Report_Main = tk.Button(Book_on_Loan_frame, text = "Back to Reports Menu", width=20, height=1, command = lambda: change_frame_delete_infor(Book_on_Loan_frame, Rep_frame, book_onloan_table))
+Back_to_Report_Main.pack(side = BOTTOM)
+
 
 # Book on reservation frame
 top_text = tk.Label(Book_on_reservation_frame, text='Books on Reservation Report', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+top_text.pack(side = TOP)
 
-Back_to_Report_Main = tk.Button(Book_on_reservation_frame, text = "Back to Reports Menu", width=20, height=1, command = lambda: change_frame(Book_on_reservation_frame, Rep_frame))
-Back_to_Report_Main.place(x = 50, y = 100, anchor = "nw")
-
+Back_to_Report_Main = tk.Button(Book_on_reservation_frame, text = "Back to Reports Menu", width=20, height=1, command = lambda: change_frame_delete_infor(Book_on_reservation_frame, Rep_frame, book_onreserve_table))
+Back_to_Report_Main.pack(side = BOTTOM)
 
 # Outstanding Fines frame
 top_text = tk.Label(Outstanding_Fines__frame, text='Members With Outstanding Fines', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+top_text.pack(side = TOP)
 
-Back_to_Report_Main = tk.Button(Outstanding_Fines__frame, text = "Back to Reports Menu", width=20, height=1, command = lambda: change_frame(Outstanding_Fines__frame, Rep_frame))
-Back_to_Report_Main.place(x = 50, y = 100, anchor = "nw")
-
+Back_to_Report_Main = tk.Button(Outstanding_Fines__frame, text = "Back to Reports Menu", width=20, height=1, command = lambda: change_frame_delete_infor(Outstanding_Fines__frame, Rep_frame, mem_with_fines_table))
+Back_to_Report_Main.pack(side = BOTTOM)
 
 # Books on Loan to Member search frame
+# books on loan to member table
+# game_scroll = Scrollbar(Book_search_results_frame)
+# game_scroll.pack(side=RIGHT, fill=Y)
+# game_scroll = Scrollbar(Book_search_results_frame,orient='horizontal')
+# game_scroll.pack(side= BOTTOM,fill=X)
+book_loan_mem_table = ttk.Treeview(Books_on_Loan_to_Member__results_frame,yscrollcommand=game_scroll.set, xscrollcommand =game_scroll.set)
+book_loan_mem_table.pack()
+# game_scroll.config(command=book_search_table.yview)
+# game_scroll.config(command=book_search_table.xview)
+book_loan_mem_table['columns'] = ('book_AN', 'book_title', 'book_authors', 'book_ISBN', 'book_publisher','book_year')
+book_loan_mem_table.column("#0", width=0,  stretch=YES)
+book_loan_mem_table.column("book_AN",anchor=CENTER, width=150)
+book_loan_mem_table.column("book_title",anchor=CENTER,width=150)
+book_loan_mem_table.column("book_authors",anchor=CENTER,width=150)
+book_loan_mem_table.column("book_ISBN",anchor=CENTER,width=150)
+book_loan_mem_table.column("book_publisher",anchor=CENTER,width=150)
+book_loan_mem_table.column("book_year",anchor=CENTER,width=150)
+book_loan_mem_table.heading("#0",text="",anchor=CENTER)
+book_loan_mem_table.heading("book_AN",text="Accession Number",anchor=CENTER)
+book_loan_mem_table.heading("book_title",text="Title",anchor=CENTER)
+book_loan_mem_table.heading("book_authors",text="Authors",anchor=CENTER)
+book_loan_mem_table.heading("book_ISBN",text="ISBN",anchor=CENTER)
+book_loan_mem_table.heading("book_publisher",text="Publisher",anchor=CENTER)
+book_loan_mem_table.heading("book_year",text="Year",anchor=CENTER)
+
+
 top_text = tk.Label(Books_on_Loan_to_Member__frame, text='Books on Loan to Member', bg='cyan')
 top_text.place(x = 50, y = 0, anchor = "nw")
 
 MemID_text = tk.Label(Books_on_Loan_to_Member__frame, text='Membership ID')
 MemID_text.place(x = 50, y = 200, anchor = "nw")
 MemID_entry = tk.Entry(Books_on_Loan_to_Member__frame, fg = 'black', width = 60)
-MemID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+# MemID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
 MemID_entry.place(x = 300, y = 200, anchor = "nw")
 
-Search_mem = tk.Button(Books_on_Loan_to_Member__frame, text = "Search Member", fg = 'black', command = lambda: change_frame(Books_on_Loan_to_Member__frame, Books_on_Loan_to_Member__results_frame))
+def book_on_loan_mem_function():
+    mem_id_keyword = MemID_entry.get()
+    borrow_return_list_final=[]
+    borrow_return_list = get_borrow_record_by_memid(mem_id_keyword)
+    for infor in borrow_return_list:
+        book = get_book(infor.Accession_Number)
+        book_infor = [book.Accession_Number, get_Authors_report_loan(infor.Accession_Number), book.Title, book.ISBN, book.Publisher, book.Year]
+        borrow_return_list_final.append(book_infor)
+    change_frame(Books_on_Loan_to_Member__frame, Books_on_Loan_to_Member__results_frame)
+    for book in borrow_return_list_final:
+        book_loan_mem_table.insert(parent='',index='end',iid=0,text='', values=(book))
+    book_loan_mem_table.pack()
+
+
+Search_mem = tk.Button(Books_on_Loan_to_Member__frame, text = "Search Member", fg = 'black', command = book_on_loan_mem_function)
 Search_mem.place(x = 50, y = 350, anchor = "nw")
 Back_to_Report_Main = tk.Button(Books_on_Loan_to_Member__frame, text = "Back to Reports Menu", fg = 'black', command = lambda: change_frame(Books_on_Loan_to_Member__frame, Rep_frame))
 Back_to_Report_Main.place(x = 700, y = 350, anchor = "nw")
 
 # Books on Loan to Member results frame
 top_text = tk.Label(Books_on_Loan_to_Member__results_frame, text='Books on Loan to Member', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+top_text.pack(side = TOP)
 
-Back_to_Report_Main = tk.Button(Books_on_Loan_to_Member__results_frame, text = "Back to Reports Menu", width=20, height=1, command = lambda: change_frame(Books_on_Loan_to_Member__results_frame, Rep_frame))
-Back_to_Report_Main.place(x = 50, y = 100, anchor = "nw")
+Back_to_Report_Main = tk.Button(Books_on_Loan_to_Member__results_frame, text = "Back to search Menu", width=20, height=1, command = lambda: change_frame_delete_infor(Books_on_Loan_to_Member__results_frame, Books_on_Loan_to_Member__frame, book_loan_mem_table))
+Back_to_Report_Main.pack(side = BOTTOM)
 
 #xunuo ends
 # Root Frame Application
