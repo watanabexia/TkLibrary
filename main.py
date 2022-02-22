@@ -6,12 +6,14 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import *
 from sqlalchemy.exc import *
 
+
 from datetime import date, datetime, timedelta
+
 
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "454545hrz"
+db_password = "123456"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
@@ -33,6 +35,14 @@ root.title('ALS')
 root.geometry("{}x{}".format(str(win_w), str(win_h)))
 root.option_add("*font", "SF\ Pro 14")
 
+# Frame Definition
+Root_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_frame = tk.Frame(root, height = win_h, width = win_w)
+Book_frame = tk.Frame(root, height = win_h, width = win_w)
+Loan_frame = tk.Frame(root, height = win_h, width = win_w)
+Res_frame = tk.Frame(root, height = win_h, width = win_w)
+Fine_frame = tk.Frame(root, height = win_h, width = win_w)
+Rep_frame = tk.Frame(root, height = win_h, width = win_w)
 
 # Frame Control Function
 def change_frame(from_frame, to_frame):
@@ -44,22 +54,12 @@ class QueryError(Exception):
     pass
 
 def get_member(member_id):
-    """
-    get the member with the unique member id.
-    * Returns None if no valid LibMember is found.
-    """
-
     session_new = DBSession()
     member = session_new.query(LibMember).filter_by(memberid = member_id).one()
     session_new.close()
     return member
 
 def get_book(acc_number):
-    """
-    get the book with the unique acc number.
-    * Returns None if no valid LibBook is found.
-    """
-
     session_new = DBSession()
     book = session_new.query(LibBooks).filter_by(Accession_Number = acc_number).one()
     session_new.close()
@@ -75,23 +75,26 @@ def get_book_BR(acc_number):
     session_new.close()
     return book
 
-
 def get_date_object(date_string):
-    return datetime.strptime(date_string, '%m/%d/%Y')
+    return datetime.strptime(date_string, '%d/%m/%Y')
 
 def is_book_on_loan(acc_number):
-    """
-    check if a book is on loan.
-    Returns True if is on loan. False if is not on loan.
-    """
-    book = get_book(acc_number)
     try:
-        br_record = session.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number, Return_Date = None).one()
+        session_new = DBSession()
+        br_record = session_new.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number, Return_Date = None).one()
     except NoResultFound:
+        session_new.close()
         return False
     else:
+        session_new.close()
         return True
 
+
+def get_reserve_record(member_id, acc_number):
+    session_new = DBSession()
+    reserve_record = session_new.query(Reserve_Record).filter_by(Accession_Number = acc_number, memberid = member_id).one()
+    session_new.close()
+    return reserve_record
 
 def get_book_Reserve(acc_number):
     """
@@ -188,7 +191,7 @@ def members_reserved(acc_number):
     book_reserved = get_book_Reserve(acc_number)
     res = []
     for book in book_reserved:
-        res += book_reserved.memberid
+        res += book.memberid
     return res
 
 def is_quota_reached(id):
@@ -312,11 +315,6 @@ def update_outstanding_fine(member_id, fine):
     session_new.query(LibMember).filter_by(memberid = member_id).update({'outstanding_fee': fine})
     session_new.commit()
     session_new.close()
-
-
-
-
-
 
 # Root frame object
 top_text = tk.Label(Root_frame, text='ALS System', bg='cyan')
@@ -786,6 +784,8 @@ Res_cancel_label = tk.Label(Res_frame, text = "Reservation Cancellation", fg = '
 Res_cancel_label.place(x = 50, y = 100, anchor = "nw")
 Res_cancel_button = tk.Button(Res_frame, text = "Cancel Reservation", fg = 'black', command = lambda: change_frame(Res_frame, Res_cancel_frame))
 Res_cancel_button.place(x = 300, y = 100, anchor = "nw")
+Res_back_button = tk.Button(Res_frame, text = "Back to Main Menu", fg = 'black', command = lambda: change_frame(Res_frame, Root_frame))
+Res_back_button.place(x = 300, y = 150, anchor = "nw")
 
 Res_book_title_label = tk.Label(Res_book_frame, text = "To reserve a book, please enter information below:", fg = 'black')
 Res_book_title_label.place(x = 50, y = 0, anchor = "nw")
@@ -800,40 +800,90 @@ Res_book_Mem_ID_label.place(x = 50, y = 100, anchor = "nw")
 Res_book_Mem_ID_entry = tk.Entry(Res_book_frame, fg = 'black', bg = 'white', width = 60)
 # Res_book_Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
 Res_book_Mem_ID_entry.place(x = 300, y = 100, anchor = "nw")
-Res_book_Res_date_label = tk.Label(Res_book_frame, text = "Reserve date (MM/DD/YYYY)", fg = 'black')
+Res_book_Res_date_label = tk.Label(Res_book_frame, text = "Reserve date (DD/MM/YYYY)", fg = 'black')
 Res_book_Res_date_label.place(x = 50, y = 150, anchor = "nw")
 Res_book_Res_date_entry = tk.Entry(Res_book_frame, fg = 'black', bg = 'white', width = 60)
-Res_book_Res_date_entry.insert(0, "02/20/2022")
+# Res_book_Res_date_entry.insert(0, "02/02/2022")
 Res_book_Res_date_entry.place(x = 300, y = 150, anchor = "nw")
 
+def commit_book_reservation(mem, book, date, toplevel):
+    toplevel.destroy()
+    mem_id = mem.memberid
+    acc_number = book.Accession_Number
+    # Check if the book is on loan
+    if (is_book_on_loan(acc_number)):
+        # Check if the member has already reserved the book
+        try:
+            get_reserve_record(mem_id, acc_number)
+        except NoResultFound:
+            pass
+        else:
+            messagebox.showerror(title = "Error", message = "\"{}\" has already reserved the book \"{}\".".format(mem.name, book.Title))
+            return
+
+        # Check if the member has outstanding fine
+        if (mem.outstanding_fee == 0):
+            # Check if no more than 2 books are reserved
+            if (mem.current_books_reserved < 2):
+                insert_reserve_record(mem_id, acc_number, date)
+                update_member_reserved(mem_id, mem.current_books_reserved + 1)
+            else:
+                messagebox.showerror(title = "Error", message = "\"{}\" has already reserved 2 books. No more reservation is allowed.".format(mem.name))
+                return
+        else:
+            messagebox.showerror(title = "Error", message = "\"{}\" has unpaid outstanding fine of {}. Please pay before any reservation.".format(mem.name, mem.outstanding_fee))
+            return
+    else:
+        messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.Title))
+        return  
+      
+    messagebox.showinfo(title = "Success", message = "\"{}\" have successfully reserved the book \"{}\".".format(mem.name, book.Title))  
 
 def confirm_book_reservation():
     mem_id = Res_book_Mem_ID_entry.get()
     acc_number = Res_book_Acc_number_entry.get()
+    date_string = Res_book_Res_date_entry.get()
 
+    # Check if the input date format is wrong
     try:
-        res_date = get_date_object(Res_book_Res_date_entry.get())
-    except:
+        res_date = get_date_object(date_string)
+    except ValueError:
         messagebox.showerror(title = "Error", message = "\"{}\" is not a valid date or a valid date format.".format(date_string))
-    
+        return
+
+    # Check if member exists
     try:
         mem = get_member(mem_id)
-    except:
-        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(member_id))
-    
+    except NoResultFound:
+        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(mem_id))
+        return 
+
+    # Check if book exists
     try:
         book = get_book(acc_number)
-    except:
+    except NoResultFound:
         messagebox.showerror(title = "Error", message = "\"{}\" is not a valid accession number.".format(acc_number))
-        if (is_book_on_loan(acc_number)):
-            pass
-        else:
-            messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.name))
+        return 
 
-    # except QueryError:
-    #     print("[confirm_book_reservation] QueryError.")
-    #     return     
+    Res_book_confirm_top = tk.Toplevel(height = 500, width = 500)
+    Res_book_confirm_top.geometry("{}x{}".format(500, 500))
+    Res_book_confirm_top.title("Confirm Reservation")
+    Res_book_confirm_label = tk.Label(Res_book_confirm_top, text = "Confirm Reservation Details To Be Correct", fg = 'black')
+    Res_book_confirm_label.place(x = 50, y = 0, anchor = "nw")
+    Res_book_confirm_acc_label = tk.Label(Res_book_confirm_top, text = "Accession Number: {}".format(acc_number), fg = 'black')
+    Res_book_confirm_acc_label.place(x = 50, y = 50, anchor = "nw")
+    Res_book_confirm_title_label = tk.Label(Res_book_confirm_top, text = "Book Title: {}".format(book.Title), fg = 'black')
+    Res_book_confirm_title_label.place(x = 50, y = 100, anchor = "nw")
+    Res_book_confirm_memid_label = tk.Label(Res_book_confirm_top, text = "Membership ID: {}".format(mem_id), fg = 'black')
+    Res_book_confirm_memid_label.place(x = 50, y = 150, anchor = "nw")
+    Res_book_confirm_name_label = tk.Label(Res_book_confirm_top, text = "Member Name: {}".format(mem.name), fg = 'black')
+    Res_book_confirm_name_label.place(x = 50, y = 200, anchor = "nw")
+    Res_book_confirm_date_label = tk.Label(Res_book_confirm_top, text = "Reserve Date (DD/MM/YYYY): {}".format(date_string), fg = 'black')
+    Res_book_confirm_date_label.place(x = 50, y = 250, anchor = "nw")
+    Res_book_confirm_button = tk.Button(Res_book_confirm_top, text = "Confirm Reservation", fg = 'black', command = lambda: commit_book_reservation(mem, book, res_date, Res_book_confirm_top))
+    Res_book_confirm_button.place(x = 50, y = 300, anchor = "nw")
 
+    Res_book_confirm_top.loop()
 
 Res_book_Res_button = tk.Button(Res_book_frame, text = "Reserve Book", fg = 'black', command = confirm_book_reservation)
 Res_book_Res_button.place(x = 50, y = 200, anchor = "nw")
@@ -844,21 +894,73 @@ Res_cancel_title_label = tk.Label(Res_cancel_frame, text = "To cancel a reservat
 Res_cancel_title_label.place(x = 50, y = 0, anchor = "nw")
 Res_cancel_Acc_number_label = tk.Label(Res_cancel_frame, text = "Accession Number", fg = 'black')
 Res_cancel_Acc_number_label.place(x = 50, y = 50, anchor = "nw")
-Res_cancel_Acc_number_entry = tk.Entry(Res_cancel_frame, fg = 'black', width = 60)
-Res_cancel_Acc_number_entry.insert(0, "Used to identify an instance of book")
+Res_cancel_Acc_number_entry = tk.Entry(Res_cancel_frame, fg = 'black', bg = 'white', width = 60)
+# Res_cancel_Acc_number_entry.insert(0, "Used to identify an instance of book")
 Res_cancel_Acc_number_entry.place(x = 300, y = 50, anchor = "nw")
 Res_cancel_Mem_ID_label = tk.Label(Res_cancel_frame, text = "Membership ID", fg = 'black')
 Res_cancel_Mem_ID_label.place(x = 50, y = 100, anchor = "nw")
-Res_cancel_Mem_ID_entry = tk.Entry(Res_cancel_frame, fg = 'black', width = 60)
-Res_cancel_Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
+Res_cancel_Mem_ID_entry = tk.Entry(Res_cancel_frame, fg = 'black', bg = 'white', width = 60)
+# Res_cancel_Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
 Res_cancel_Mem_ID_entry.place(x = 300, y = 100, anchor = "nw")
-Res_cancel_Cancel_date_label = tk.Label(Res_cancel_frame, text = "Cancel date", fg = 'black')
-Res_cancel_Cancel_date_label.place(x = 50, y = 150, anchor = "nw")
-Res_cancel_Cancel_date_entry = tk.Entry(Res_cancel_frame, fg = 'black', width = 60)
-Res_cancel_Cancel_date_entry.insert(0, "Date of reservation cancellation")
-Res_cancel_Cancel_date_entry.place(x = 300, y = 150, anchor = "nw")
+# Res_cancel_Cancel_date_label = tk.Label(Res_cancel_frame, text = "Cancel date (DD/MM/YYYY)", fg = 'black')
+# Res_cancel_Cancel_date_label.place(x = 50, y = 150, anchor = "nw")
+# Res_cancel_Cancel_date_entry = tk.Entry(Res_cancel_frame, fg = 'black', bg = 'white', width = 60)
+# Res_cancel_Cancel_date_entry.insert(0, "Date of reservation cancellation")
+# Res_cancel_Cancel_date_entry.place(x = 300, y = 150, anchor = "nw")
 
-Res_cancel_Res_button = tk.Button(Res_cancel_frame, text = "Cancel Reservation", fg = 'black')
+def commit_cancel_reservation(mem, book, toplevel):
+    toplevel.destroy()
+    mem_id = mem.memberid
+    acc_number = book.Accession_Number
+    # Check if the member has already reserved the book
+    try:
+        get_reserve_record(mem_id, acc_number)
+    except NoResultFound:
+        messagebox.showerror(title = "Error", message = "\"{}\" hasn't reserved the book \"{}\" yet.".format(mem.name, book.Title))
+        return
+    else:
+        delete_reserve_record(mem_id, acc_number)
+        update_member_reserved(mem_id, mem.current_books_reserved - 1)
+
+    messagebox.showinfo(title = "Success", message = "\"{}\" have successfully cancelled the reservation for the book \"{}\".".format(mem.name, book.Title))  
+
+def confirm_cancel_reservation():
+    mem_id = Res_cancel_Mem_ID_entry.get()
+    acc_number = Res_cancel_Acc_number_entry.get()
+    
+    # Check if member exists
+    try:
+        mem = get_member(mem_id)
+    except NoResultFound:
+        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid member id.".format(mem_id))
+        return 
+
+    # Check if book exists
+    try:
+        book = get_book(acc_number)
+    except NoResultFound:
+        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid accession number.".format(acc_number))
+        return 
+
+    Res_cancel_confirm_top = tk.Toplevel(height = 500, width = 500)
+    Res_cancel_confirm_top.geometry("{}x{}".format(500, 500))
+    Res_cancel_confirm_top.title("Confirm Cancellation")
+    Res_cancel_confirm_label = tk.Label(Res_cancel_confirm_top, text = "Confirm Cancellation Details To Be Correct", fg = 'black')
+    Res_cancel_confirm_label.place(x = 50, y = 0, anchor = "nw")
+    Res_cancel_confirm_acc_label = tk.Label(Res_cancel_confirm_top, text = "Accession Number: {}".format(acc_number), fg = 'black')
+    Res_cancel_confirm_acc_label.place(x = 50, y = 50, anchor = "nw")
+    Res_cancel_confirm_title_label = tk.Label(Res_cancel_confirm_top, text = "Book Title: {}".format(book.Title), fg = 'black')
+    Res_cancel_confirm_title_label.place(x = 50, y = 100, anchor = "nw")
+    Res_cancel_confirm_memid_label = tk.Label(Res_cancel_confirm_top, text = "Membership ID: {}".format(mem_id), fg = 'black')
+    Res_cancel_confirm_memid_label.place(x = 50, y = 150, anchor = "nw")
+    Res_cancel_confirm_name_label = tk.Label(Res_cancel_confirm_top, text = "Member Name: {}".format(mem.name), fg = 'black')
+    Res_cancel_confirm_name_label.place(x = 50, y = 200, anchor = "nw")
+    Res_cancel_confirm_button = tk.Button(Res_cancel_confirm_top, text = "Confirm Cancellation", fg = 'black', command = lambda: commit_cancel_reservation(mem, book, Res_cancel_confirm_top))
+    Res_cancel_confirm_button.place(x = 50, y = 300, anchor = "nw")
+
+    Res_cancel_confirm_top.loop()
+
+Res_cancel_Res_button = tk.Button(Res_cancel_frame, text = "Cancel Reservation", fg = 'black', command = confirm_cancel_reservation)
 Res_cancel_Res_button.place(x = 50, y = 200, anchor = "nw")
 Res_cancel_Back_button = tk.Button(Res_cancel_frame, text = "Back to Reservation Menu", fg = 'black', command = lambda: change_frame(Res_cancel_frame, Res_frame))
 Res_cancel_Back_button.place(x = 700, y = 200, anchor = "nw")

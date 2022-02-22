@@ -5,4 +5,5 @@
 4. "Start Import"
 5. Double click the schema `bt2102_as_1` to set it to the default working schema.
 6. Run the mySQL instructions in the file `set_nullable_return_date.sql`.
-7. Done!
+7. Run the mySQL instructions in the file `Add current book borrowed.sql`.
+8. Done!
