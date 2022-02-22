@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import *
 from sqlalchemy.exc import *
 
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 from dbTable import *
 # ------ Database Function ------ #
@@ -65,6 +65,20 @@ def get_book(acc_number):
     """
     return session.query(LibBooks).filter_by(Accession_Number = acc_number).one()
 
+def get_book_BR(acc_number):
+    """
+    get the book with the unique acc number from borrow_and_return_record.
+    * Returns None if no valid LibBook is found.
+    """
+    return session.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number).one()
+
+def get_book_Reserve(acc_number):
+    """
+    get all the books with the unique acc number from reserve_record.
+    * Returns None if no valid LibBook is found.
+    """
+    return session.query(Reserve_Record).filter_by(Accession_Number = acc_number).all()
+
 def book_exist(acc_number):
     """
     check the book is in LibBook.
@@ -89,6 +103,21 @@ def member_exist(member_id):
 
 def get_date_object(date_string):
     return datetime.strptime(date_string, '%m/%d/%Y')
+
+def today_day():
+    today = date.today()
+    today = today.strftime('%d/%m/%Y')
+    return today
+
+def due_date():
+    due_date = date.today() + timedelta(days = 14)
+    due_date = due_date.strftime('%d/%m/%Y')
+    return due_date
+
+def days_between(date1,date2):
+    delta = date2 - date1
+    return delta.days
+
 
 def is_book_on_loan(acc_number):
     """
@@ -116,6 +145,16 @@ def is_book_reserved(acc_number):
     else:
         return True
 
+def members_reserved(acc_number):
+    """
+    if book is reserved, find all the memberids that reserves the book
+    """
+    book_reserved = get_book_Reserve(acc_number)
+    res = []
+    for book in book_reserved:
+        res += book_reserved.memberid
+    return res
+
 def is_quota_reached(id):
     """
     check if a member's quota is reached (2).
@@ -139,6 +178,18 @@ def has_outstanding_fine(id):
         return True
     else:
         return False
+
+def get_Authors(acc_number):
+    """
+    get all authors from Book_Author
+    """
+    res = ''
+    books = session.query(Book_Author).filter_by(Accession_Number = acc_number).all()
+    for book in books:
+        res += book.Author + '\n'
+    return res
+
+
 
 
 
@@ -400,18 +451,20 @@ Back_to_book_button_book_acquisition.place(x = 700, y = 350, anchor = "nw")
 #Book Withdrawal object
 def withdraw_book():
     acc_number = Acc_number_entry_book_withdrawal.get()
+    book_LibBook = get_book(acc_number)
     if not book_exist(acc_number):
             messagebox.showinfo(title='Error!', message='Book Does Not Exist.')
     else:
         res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
-            + 'Assession Number  ' + acc_number  + '\n Title ' + '' + '\n Authors ' + '' + '\n ISBN ' + '' + '\n Publisher ' + ''
-            + '\n Year ' + '') # not done
+            + 'Assession Number:  ' + acc_number  + '\n Title:  ' + book_LibBook.Title 
+            + '\n Authors:  ' + get_Authors(acc_number) 
+            + '\n ISBN:  ' + book_LibBook.ISBN 
+            + '\n Publisher:  ' + book_LibBook.Publisher
+            + '\n Year:  ' + str(book_LibBook.Year)) # not done
         if res:
             withdraw_book_on_loan_or_reserved(acc_number)
         else:
             pass
-
-    # Title = session.query(LibBooks).filter_by(memberid = member_id).one()
 
 
 def withdraw_book_on_loan_or_reserved(acc_number):
@@ -477,16 +530,22 @@ ID_entry_book_borrow.place(x = 300, y = 200, anchor = "nw")
 
 def borrow_book():
     acc_number = Acc_number_entry_book_borrow.get()
+    book_LibBooks = get_book(acc_number)
     member_id = ID_entry_book_borrow.get()
+    member_LibMember = get_member(member_id)
     if not book_exist(acc_number):
             messagebox.showinfo(title='Error!', message='Book Does Not Exist.')
     elif not member_exist(member_id):
             messagebox.showinfo(title='Error!', message='member Does Not Exist.')
     else:
         res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
-            + 'Assession Number  ' + acc_number  + '\n Book Title ' + '' + '\n Borrow Date ' + '' 
-            + '\n Membership ID ' + member_id + '\n Member Name ' + ''
-            + '\n Due Date ' + '') # not done
+            + 'Assession Number:  ' + acc_number  
+            + '\n Book Title:  ' + book_LibBooks.Title 
+            + '\n Borrow Date:  ' + today_day()
+            + '\n Membership ID:  ' + member_id 
+            + '\n Member Name:  ' + member_LibMember.name
+            + '\n Due Date:  ' + due_date())
+
         if res:
             borrow_book_on_loan_quota_fine(acc_number, member_id)
         else:
@@ -499,6 +558,8 @@ def borrow_book_on_loan_quota_fine(acc_number, member_id):
         messagebox.showinfo(title='Error!', message='Book Is Currently On Loan Until' + '') # add date
     elif has_outstanding_fine(member_id):
         messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
+    elif is_book_reserved(acc_number) and member_id not in members_reserved(acc_number):
+        messagebox.showinfo(title='Error!', message='Book Is Already Reserved.')
     else:
         messagebox.showinfo(title='Success!', message='You Have Borrowed This Book.') 
         # add 1 to books_borrowed and update borrow_and_return_record
@@ -527,17 +588,25 @@ ID_entry_book_return.place(x = 300, y = 200, anchor = "nw")
 
 def return_book():
     acc_number = Acc_number_entry_book_return.get()
+    book_LibBooks = get_book(acc_number)
+    book_BR = get_book_BR(acc_number)
     member_id = ID_entry_book_return.get()
-    
+    member_LibMember = get_member(member_id)
+
     if not book_exist(acc_number):
             messagebox.showinfo(title='Error!', message='Book Does Not Exist.')
     elif not member_exist(member_id):
             messagebox.showinfo(title='Error!', message='member Does Not Exist.')
     else:
         res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
-            + 'Assession Number  ' + acc_number  + '\n Book Title ' + '' + '\n Borrow Date ' + '' 
-            + '\n Membership ID ' + member_id + '\n Member Name ' + ''
-            + '\n Return Date ' + '' + '\n Fine' + '')# not done
+            + 'Assession Number:  ' + acc_number  
+            + '\n Book Title:  ' + book_LibBooks.Title 
+            + '\n Borrow Date:  ' + book_BR.Borrow_Date.strftime('%d/%m/%Y')
+            + '\n Membership ID:  ' + member_id 
+            + '\n Member Name:  ' + member_LibMember.name
+            + '\n Return Date:  ' + today_day()
+            + '\n Fine:  ' + str(days_between(book_BR.Due_Date, date.today())))
+            # 
         if res:
             return_book_fine(id)
         else:
