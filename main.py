@@ -189,7 +189,45 @@ def get_Authors(acc_number):
         res += book.Author + '\n'
     return res
 
+def get_reserve_record(member_id, acc_number):
+    return session.query(Reserve_Record).filter_by(Accession_Number = acc_number, memberid = member_id).one()
 
+def insert_reserve_record(member_id, acc_number, res_date):
+    res_table = Table('Reserve_Record', metadata, autoload = True)
+    res_ins = res_table.insert()
+    res_ins = res_ins.values(Accession_Number = acc_number, memberid = member_id, Reserve_Date = res_date)
+    result = conn.execute(res_ins)
+    print(result)
+
+def update_member_reserved(member_id, reserved_number):
+    session.query(LibMember).filter_by(memberid = member_id).update({'current_books_reserved': reserved_number})
+    session.commit()
+
+def delete_reserve_record(member_id, acc_number):
+    session.query(Reserve_Record).filter_by(memberid = member_id, Accession_Number = acc_number).delete()
+    session.commit()
+
+def insert_LibBooks(acc_number, Title, ISBN, Publisher, Year):
+    book_table = Table('LibBooks', metadata, autoload = True)
+    book_ins = book_table.insert()
+    book_ins = book_ins.values(Accession_Number = acc_number, Title = Title, ISBN = ISBN, Publisher = Publisher, Year = Year)
+    result = conn.execute(book_ins)
+
+def delete_LibBooks(acc_number):
+    session.query(LibBooks).filter_by(Accession_Number = acc_number).delete()
+    session.commit()
+
+def insert_Author(acc_number, AuthorList):
+    for Author in AuthorList:
+        author_table = Table('Book_Author', metadata, autoload = True)
+        author_ins = author_table.insert()
+        author_ins = author_ins.values(Accession_Number = acc_number, Author = Author)
+        conn.execute(author_ins)
+
+def delete_All_Authors(acc_number):
+    session.query(Book_Author).filter_by(Accession_Number = acc_number).delete()
+    session.commit()
+        
 
 
 
@@ -431,6 +469,7 @@ def add_new_book():
     acc_number = Acc_number_entry_book_acquisition.get()
     Title = Title_entry_book_acquisition.get()
     Author = Author_entry_book_acquisition.get()
+    Authorlist = Author.split(',')
     ISBN = ISBN_entry_book_acquisition.get()
     Publisher = Publisher_entry_book_acquisition.get()
     Year = Year_entry_book_acquisition.get()
@@ -438,7 +477,9 @@ def add_new_book():
     if book_exist(acc_number) or Title == "" or Author == "" or ISBN == "" or Publisher == "" or Year == "":
         messagebox.showinfo(title='Error!', message='Book Already Added; Duplicate, Missing or Incomplete fields')
     else:
-        messagebox.showinfo(title='Success!', message='New Book Added In Library!') # update book inside LibBooks
+        insert_LibBooks(acc_number, Title, ISBN, Publisher, Year)
+        insert_Author(acc_number, Authorlist)
+        messagebox.showinfo(title='Success!', message='New Book Added In Library!') # insert book inside LibBooks
 
 Add_new_book_button_book_acquisition = tk.Button(Acq_frame, text = "Add New Book", fg = 'black', command = add_new_book)
 Add_new_book_button_book_acquisition.place(x = 50, y = 350, anchor = "nw")
@@ -460,7 +501,7 @@ def withdraw_book():
             + '\n Authors:  ' + get_Authors(acc_number) 
             + '\n ISBN:  ' + book_LibBook.ISBN 
             + '\n Publisher:  ' + book_LibBook.Publisher
-            + '\n Year:  ' + str(book_LibBook.Year)) # not done
+            + '\n Year:  ' + str(book_LibBook.Year))
         if res:
             withdraw_book_on_loan_or_reserved(acc_number)
         else:
@@ -473,8 +514,9 @@ def withdraw_book_on_loan_or_reserved(acc_number):
     elif is_book_on_loan(acc_number):
         messagebox.showinfo(title='Error!', message='Book Is Currently On Loan.')
     else:
-        messagebox.showinfo(title='Success!', message='Book Is Successfully Withdrawn.') # update database and delete LibBooks record
-
+        delete_All_Authors(acc_number)
+        delete_LibBooks(acc_number)
+        messagebox.showinfo(title='Success!', message='Book Is Successfully Withdrawn.')
 
 top_text_book_withdrawal = tk.Label(Withd_frame, text='To Remove Outdated Books From System, Please Enter Information Below', bg='cyan')
 top_text_book_withdrawal.place(x = 50, y = 0, anchor = "nw")
