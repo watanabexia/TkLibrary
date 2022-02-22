@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, create_engine, Integer, Date
+from sqlalchemy import Table, Column, String, create_engine, Integer, Date, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 
 # Database Table Definition

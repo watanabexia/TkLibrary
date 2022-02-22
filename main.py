@@ -11,14 +11,16 @@ from datetime import datetime
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "123456"
+db_password = "YcyCl525JE#"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
 engine = create_engine('mysql+mysqlconnector://{}:{}@localhost:3306/{}'.format(db_user, db_password, schema_name),
 echo = True)
+metadata = MetaData(engine)
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
+conn = engine.connect()
 
 
 # ---------- UI ----------- #
@@ -50,18 +52,17 @@ class QueryError(Exception):
     pass
 
 def get_member(member_id):
-    """
-    get the member with the unique member id.
-    * Returns None if no valid LibMember is found.
-    """
-    return session.query(LibMember).filter_by(memberid = member_id).one()
+    session_new = DBSession()
+    member = session_new.query(LibMember).filter_by(memberid = member_id).one()
+    session_new.close()
+    return member
+
 
 def get_book(acc_number):
-    """
-    get the book with the unique acc number.
-    * Returns None if no valid LibBook is found.
-    """
-    return session.query(LibBooks).filter_by(Accession_Number = acc_number).one()
+    session_new = DBSession()
+    book = session_new.query(LibBooks).filter_by(Accession_Number = acc_number).one()
+    session_new.close()
+    return book
 
 def get_date_object(date_string):
     return datetime.strptime(date_string, '%m/%d/%Y')
@@ -78,6 +79,20 @@ def is_book_on_loan(acc_number):
         return False
     else:
         return True
+
+def create_new_member():
+    MemID = Mem_ID_entry1.get()
+    Name = Name_entry1.get()
+    Faculty = Faculty_entry1.get()
+    PhoneNum = Phone_number_entry1.get()
+    Email = Email_Address_entry1.get()
+
+    Mem_table = Table('LibMember', metadata, autoload=True)
+    Mem_ins = Mem_table.insert()
+    Mem_ins = Mem_ins.values(memberid = MemID, name = Name, faculty = Faculty, phone_number = PhoneNum, email_address = Email, outstanding_fee = 0)
+    conn.execute(Mem_ins)
+    messagebox.showinfo(title='Success!', message='ALS Membership Created')
+
 
 # def has_outstanding_fine(member_id):
 
@@ -97,7 +112,7 @@ Fine_button.place(x = 200, y = 250, anchor = "nw")
 Rep_button = tk.Button(Root_frame, text = "Reports", width=20, fg = 'black', command = lambda: change_frame(Root_frame, Rep_frame))
 Rep_button.place(x = 200, y = 300, anchor = "nw")
 
-#Membership Frame
+
 # Membership Frame Object
 Mem_create_frame = tk.Frame(root, height = win_h, width = win_w)
 Mem_delete_frame = tk.Frame(root, height = win_h, width = win_w)
@@ -128,41 +143,39 @@ Back_button.place(x = 175, y = 200, anchor = "nw")
 
 
 # Membership creation labels and buttons
-def create_new_member():
-    tkinter.messagebox.showinfo(title='Success!', message='ALS Membership Created')
 
 top_text = tk.Label(Mem_create_frame, text='To Create Member, Please Enter Requested Information Below:', bg='cyan')
 top_text.place(x = 50, y = 0, anchor = "nw")
 
 Mem_ID_label1 = tk.Label(Mem_create_frame, text='Membership ID', fg = 'black')
 Mem_ID_label1.place(x = 50, y = 50, anchor = "nw")
-Mem_ID_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
-Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
-Mem_ID_entry.place(x = 300, y = 50, anchor = "nw")
+Mem_ID_entry1 = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Mem_ID_entry1.insert(0, "A unique alphanumeric id that distinguishes every member")
+Mem_ID_entry1.place(x = 300, y = 50, anchor = "nw")
 
 Name_label = tk.Label(Mem_create_frame, text='Name', fg = 'black')
 Name_label.place(x = 50, y = 100, anchor = "nw")
-Name_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
-Name_entry.insert(0, "Enter member's name")
-Name_entry.place(x = 300, y = 100, anchor = "nw")
+Name_entry1 = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Name_entry1.insert(0, "Enter member's name")
+Name_entry1.place(x = 300, y = 100, anchor = "nw")
 
 Faculty_label = tk.Label(Mem_create_frame, text='Faculty', fg = 'black')
 Faculty_label.place(x = 50, y = 150, anchor = "nw")
-Faculty_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
-Faculty_entry.insert(0, "e.g., Computing, Engineering, Science, etc.")
-Faculty_entry.place(x = 300, y = 150, anchor = "nw")
+Faculty_entry1 = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Faculty_entry1.insert(0, "e.g., Computing, Engineering, Science, etc.")
+Faculty_entry1.place(x = 300, y = 150, anchor = "nw")
 
 Phone_number_label = tk.Label(Mem_create_frame, text='Phone Number', fg = 'black')
 Phone_number_label.place(x = 50, y = 200, anchor = "nw")
-Phone_number_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
-Phone_number_entry.insert(0, "e.g., 91234567, 81093487, 92054981, etc.")
-Phone_number_entry.place(x = 300, y = 200, anchor = "nw")
+Phone_number_entry1 = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Phone_number_entry1.insert(0, "e.g., 91234567, 81093487, 92054981, etc.")
+Phone_number_entry1.place(x = 300, y = 200, anchor = "nw")
 
 Email_Address_label = tk.Label(Mem_create_frame, text='Email Address', fg = 'black')
 Email_Address_label.place(x = 50, y = 250, anchor = "nw")
-Email_Address_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
-Email_Address_entry.insert(0, "e.g., ALSuser@als.edu")
-Email_Address_entry.place(x = 300, y = 250, anchor = "nw")
+Email_Address_entry1 = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
+Email_Address_entry1.insert(0, "e.g., ALSuser@als.edu")
+Email_Address_entry1.place(x = 300, y = 250, anchor = "nw")
 
 Add_new_member_button = tk.Button(Mem_create_frame, text = "Create Member", fg = 'black', command = create_new_member)
 Add_new_member_button.place(x = 50, y = 300, anchor = "nw")
@@ -212,33 +225,33 @@ def update_mem():
 
 Mem_ID_label1 = tk.Label(Mem_update2_frame, text='Membership ID', fg = 'red')
 Mem_ID_label1.place(x = 50, y = 50, anchor = "nw")
-Mem_ID_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
-Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
-Mem_ID_entry.place(x = 300, y = 50, anchor = "nw")
+Mem_ID_entry2 = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Mem_ID_entry2.insert(0, "A unique alphanumeric id that distinguishes every member")
+Mem_ID_entry2.place(x = 300, y = 50, anchor = "nw")
 
 Name_label = tk.Label(Mem_update2_frame, text='Name', fg = 'black')
 Name_label.place(x = 50, y = 100, anchor = "nw")
-Name_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
-Name_entry.insert(0, "Update name")
-Name_entry.place(x = 300, y = 100, anchor = "nw")
+Name_entry2 = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Name_entry2.insert(0, "Update name")
+Name_entry2.place(x = 300, y = 100, anchor = "nw")
 
 Faculty_label = tk.Label(Mem_update2_frame, text='Faculty', fg = 'black')
 Faculty_label.place(x = 50, y = 150, anchor = "nw")
-Faculty_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
-Faculty_entry.insert(0, "Update faculty")
-Faculty_entry.place(x = 300, y = 150, anchor = "nw")
+Faculty_entry2 = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Faculty_entry2.insert(0, "Update faculty")
+Faculty_entry2.place(x = 300, y = 150, anchor = "nw")
 
 Phone_number_label = tk.Label(Mem_update2_frame, text='Phone Number', fg = 'black')
 Phone_number_label.place(x = 50, y = 200, anchor = "nw")
-Phone_number_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
-Phone_number_entry.insert(0, "Update phone number")
-Phone_number_entry.place(x = 300, y = 200, anchor = "nw")
+Phone_number_entry2 = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Phone_number_entry2.insert(0, "Update phone number")
+Phone_number_entry2.place(x = 300, y = 200, anchor = "nw")
 
 Email_Address_label = tk.Label(Mem_update2_frame, text='Email Address', fg = 'black')
 Email_Address_label.place(x = 50, y = 250, anchor = "nw")
-Email_Address_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
-Email_Address_entry.insert(0, "Update Email")
-Email_Address_entry.place(x = 300, y = 250, anchor = "nw")
+Email_Address_entry2 = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
+Email_Address_entry2.insert(0, "Update Email")
+Email_Address_entry2.place(x = 300, y = 250, anchor = "nw")
 
 Mem_update2_button = tk.Button(Mem_update2_frame, text = "Update Member", fg = 'black', command = lambda: change_frame(Mem_update2_frame, update_mem))
 Mem_update2_button.place(x = 50, y = 300, anchor = "nw")
@@ -270,7 +283,7 @@ Back_button.place(x = 175, y = 150, anchor = "nw")
 
 #Book Acquisition object
 def add_new_book():
-    tkinter.messagebox.showinfo(title='Success!', message='New Book Added In Library!')
+    messagebox.showinfo(title='Success!', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Already Added; Duplicate, Missing or Incomplete fields')
 
 top_text = tk.Label(Acq_frame, text='For New Book Acquisition, Please Enter Information Below', bg='cyan')
@@ -320,7 +333,7 @@ Back_to_book_button.place(x = 700, y = 350, anchor = "nw")
 
 #Book Withdrawal object
 def withdraw_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Details Are Correct', message='New Book Added In Library!')
+    messagebox.askyesno(title='Please Confirm The Details Are Correct', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently On Loan.')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Is Currently Reserved.')
 
@@ -362,7 +375,7 @@ Back_button.place(x = 175, y = 150, anchor = "nw")
 
 #Borrow object
 def borrow_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Loan Details To Be Correct', message='New Book Added In Library!')
+    messagebox.askyesno(title='Please Confirm The Loan Details To Be Correct', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Currently On Loan Until.')
     # tkinter.messagebox.showinfo(title='Error!', message='Member Loan Quota Exceeded.')
     # tkinter.messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
@@ -389,7 +402,7 @@ Back_to_loan_button.place(x = 700, y = 300, anchor = "nw")
 
 #Return object
 def return_book():
-    tkinter.messagebox.askyesno(title='Please Confirm The Return Details To Be Correct', message='New Book Added In Library!')
+    messagebox.askyesno(title='Please Confirm The Return Details To Be Correct', message='New Book Added In Library!')
     # tkinter.messagebox.showinfo(title='Success!', message='Book Returned Successfully.')
     # tkinter.messagebox.showinfo(title='Error!', message='Book Returned Successfully. But Has Fines')
 
@@ -690,3 +703,4 @@ if __name__ == "__main__":
     root.mainloop()
 
 session.close()
+conn.close()
