@@ -13,7 +13,7 @@ from datetime import date, datetime, timedelta
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "454545hrz"
+db_password = "123456"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
@@ -191,7 +191,7 @@ def members_reserved(acc_number):
     book_reserved = get_book_Reserve(acc_number)
     res = []
     for book in book_reserved:
-        res += book_reserved.memberid
+        res += book.memberid
     return res
 
 def is_quota_reached(id):
