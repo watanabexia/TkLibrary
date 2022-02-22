@@ -76,6 +76,17 @@ def book_exist(acc_number):
     except NoResultFound:
         return False
 
+def member_exist(member_id):
+    """
+    check the member is in LibMember.
+    * Returns False if no valid Member is found.
+    """
+    try:
+        get_member(member_id)
+        return True
+    except NoResultFound:
+        return False
+
 def get_date_object(date_string):
     return datetime.strptime(date_string, '%m/%d/%Y')
 
@@ -111,7 +122,7 @@ def is_quota_reached(id):
     Returns True if is reached. False if is not reached.
     """
     try:
-        member = session.query(LibMember).filter_by(member_id = id, current_books_borrowed = 2).one()
+        member = session.query(LibMember).filter_by(memberid = id, current_books_borrowed = 2).one()
     except NoResultFound: #this member has 2 borrowed books, quota reached
         return False
     else:
@@ -123,7 +134,7 @@ def has_outstanding_fine(id):
     Returns True if has outstanding fine. False if do not have outstanding fine.
     """
     try:
-        member = session.query(LibMember).filter_by(member_id = id, current_books_borrowed = 0).one()
+        member = session.query(LibMember).filter_by(memberid = id, current_books_borrowed = 0).one()
     except NoResultFound: #this member has outstanding fee of 0
         return True
     else:
@@ -181,7 +192,7 @@ Back_button.place(x = 175, y = 200, anchor = "nw")
 
 # Membership creation labels and buttons
 def create_new_member():
-    tkinter.messagebox.showinfo(title='Success!', message='ALS Membership Created')
+    messagebox.showinfo(title='Success!', message='ALS Membership Created')
 
 top_text = tk.Label(Mem_create_frame, text='To Create Member, Please Enter Requested Information Below:', bg='cyan')
 top_text.place(x = 50, y = 0, anchor = "nw")
@@ -389,14 +400,18 @@ Back_to_book_button_book_acquisition.place(x = 700, y = 350, anchor = "nw")
 #Book Withdrawal object
 def withdraw_book():
     acc_number = Acc_number_entry_book_withdrawal.get()
-    res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct') # not done
-    if res:
-        if not book_exist(acc_number):
+    if not book_exist(acc_number):
             messagebox.showinfo(title='Error!', message='Book Does Not Exist.')
-        else:
-            withdraw_book_on_loan_or_reserved(acc_number)
     else:
-        pass
+        res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
+            + 'Assession Number  ' + acc_number  + '\n Title ' + '' + '\n Authors ' + '' + '\n ISBN ' + '' + '\n Publisher ' + ''
+            + '\n Year ' + '') # not done
+        if res:
+            withdraw_book_on_loan_or_reserved(acc_number)
+        else:
+            pass
+
+    # Title = session.query(LibBooks).filter_by(memberid = member_id).one()
 
 
 def withdraw_book_on_loan_or_reserved(acc_number):
@@ -445,27 +460,6 @@ Back_button.place(x = 175, y = 150, anchor = "nw")
 
 
 #Borrow object
-def borrow_book():
-    acc_number = Acc_number_entry_book_borrow.get()
-    id = ID_entry_book_borrow.get()
-    res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct') # not done
-    if res:
-        borrow_book_on_loan_quota_fine(acc_number)
-    else:
-        pass
-
-def borrow_book_on_loan_quota_fine(acc_number, id):
-    if is_quota_reached(id):
-        messagebox.showinfo(title='Error!', message='Member Loan Quota Exceeded.')
-    elif is_book_on_loan(acc_number):
-        messagebox.showinfo(title='Error!', message='Book Is Currently On Loan Until' + '') # add date
-    elif has_outstanding_fine(id):
-        messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
-    else:
-        messagebox.showinfo(title='Success!', message='You Have Borrowed This Book.') 
-        # add 1 to books_borrowed and update borrow_and_return_record
-
-
 top_text_book_borrow = tk.Label(Borrow_frame, text='To Borrow A Book , Please Enter Information Below', bg='cyan')
 top_text_book_borrow.place(x = 50, y = 0, anchor = "nw")
 
@@ -481,34 +475,40 @@ ID_entry_book_borrow= tk.Entry(Borrow_frame, fg = 'black', width = 60)
 ID_entry_book_borrow.insert(0, "A unique alphanumeric id that distinguishes every member")
 ID_entry_book_borrow.place(x = 300, y = 200, anchor = "nw")
 
-Borrow_book_button_book_borrow = tk.Button(Borrow_frame, text = "Borrow Book", fg = 'black', command = withdraw_book)
+def borrow_book():
+    acc_number = Acc_number_entry_book_borrow.get()
+    member_id = ID_entry_book_borrow.get()
+    if not book_exist(acc_number):
+            messagebox.showinfo(title='Error!', message='Book Does Not Exist.')
+    elif not member_exist(member_id):
+            messagebox.showinfo(title='Error!', message='member Does Not Exist.')
+    else:
+        res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
+            + 'Assession Number  ' + acc_number  + '\n Book Title ' + '' + '\n Borrow Date ' + '' 
+            + '\n Membership ID ' + member_id + '\n Member Name ' + ''
+            + '\n Due Date ' + '') # not done
+        if res:
+            borrow_book_on_loan_quota_fine(acc_number, member_id)
+        else:
+            pass
+
+def borrow_book_on_loan_quota_fine(acc_number, member_id):
+    if is_quota_reached(member_id):
+        messagebox.showinfo(title='Error!', message='Member Loan Quota Exceeded.')
+    elif is_book_on_loan(acc_number):
+        messagebox.showinfo(title='Error!', message='Book Is Currently On Loan Until' + '') # add date
+    elif has_outstanding_fine(member_id):
+        messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
+    else:
+        messagebox.showinfo(title='Success!', message='You Have Borrowed This Book.') 
+        # add 1 to books_borrowed and update borrow_and_return_record
+
+Borrow_book_button_book_borrow = tk.Button(Borrow_frame, text = "Borrow Book", fg = 'black', command = borrow_book)
 Borrow_book_button_book_borrow.place(x = 50, y = 300, anchor = "nw")
 Back_to_loan_button_book_borrow = tk.Button(Borrow_frame, text = "Back To Loan", fg = 'black', command = lambda: change_frame(Borrow_frame, Loan_frame))
 Back_to_loan_button_book_borrow.place(x = 700, y = 300, anchor = "nw")
 
 #Return object
-def return_book():
-    acc_number = Acc_number_entry_book_return.get()
-    id = ID_entry_book_return.get()
-    res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct') # not done
-    if res:
-        return_book_fine(id)
-    else:
-        pass
-
-def return_book_fine(id):
-    if has_outstanding_fine(id):
-        messagebox.showinfo(title='Error!', message='Book Returned Successfully But Member Has Fines.')
-    else:
-        messagebox.showinfo(title='Success!', message='You Have Returned This Book.') 
-        # minus 1 to books_borrowed and update borrow_and_return_record
-
-
-top_text_book_borrow = tk.Label(Borrow_frame, text='To Borrow A Book , Please Enter Information Below', bg='cyan')
-
-    # messagebox.askyesno(title='Please Confirm The Return Details To Be Correct', message='New Book Added In Library!')
-    # messagebox.showinfo(title='Success!', message='Book Returned Successfully.')
-    # messagebox.showinfo(title='Error!', message='Book Returned Successfully. But Has Fines')
 
 top_text_book_return = tk.Label(Return_frame, text='To Return A Book , Please Enter Information Below', bg='cyan')
 top_text_book_return.place(x = 50, y = 0, anchor = "nw")
@@ -524,6 +524,32 @@ ID_label_book_return.place(x = 50, y = 200, anchor = "nw")
 ID_entry_book_return = tk.Entry(Return_frame, fg = 'black', width = 60)
 ID_entry_book_return.insert(0, "A unique alphanumeric id that distinguishes every member")
 ID_entry_book_return.place(x = 300, y = 200, anchor = "nw")
+
+def return_book():
+    acc_number = Acc_number_entry_book_return.get()
+    member_id = ID_entry_book_return.get()
+    
+    if not book_exist(acc_number):
+            messagebox.showinfo(title='Error!', message='Book Does Not Exist.')
+    elif not member_exist(member_id):
+            messagebox.showinfo(title='Error!', message='member Does Not Exist.')
+    else:
+        res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
+            + 'Assession Number  ' + acc_number  + '\n Book Title ' + '' + '\n Borrow Date ' + '' 
+            + '\n Membership ID ' + member_id + '\n Member Name ' + ''
+            + '\n Return Date ' + '' + '\n Fine' + '')# not done
+        if res:
+            return_book_fine(id)
+        else:
+            pass
+
+def return_book_fine(id):
+    if has_outstanding_fine(id):
+        messagebox.showinfo(title='Error!', message='Book Returned Successfully But Member Has Fines.')
+    else:
+        messagebox.showinfo(title='Success!', message='You Have Returned This Book.') 
+        # minus 1 to books_borrowed and update borrow_and_return_record
+
 
 Return_book_button = tk.Button(Return_frame, text = "Return Book", fg = 'black', command = return_book)
 Return_book_button.place(x = 50, y = 300, anchor = "nw")
