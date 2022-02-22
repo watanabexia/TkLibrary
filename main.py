@@ -455,7 +455,7 @@ Res_book_Acc_number_label = tk.Label(Res_book_frame, text = "Accession Number", 
 Res_book_Acc_number_label.place(x = 50, y = 50, anchor = "nw")
 
 Res_book_Acc_number_entry = tk.Entry(Res_book_frame, fg = 'black', bg = 'white', width = 60)
-Res_book_Acc_number_entry.insert(0, "Used to identify an instance of book")
+# Res_book_Acc_number_entry.insert(0, "Used to identify an instance of book")
 Res_book_Acc_number_entry.place(x = 300, y = 50, anchor = "nw")
 Res_book_Mem_ID_label = tk.Label(Res_book_frame, text = "Membership ID", fg = 'black')
 Res_book_Mem_ID_label.place(x = 50, y = 100, anchor = "nw")
@@ -465,7 +465,7 @@ Res_book_Mem_ID_entry.place(x = 300, y = 100, anchor = "nw")
 Res_book_Res_date_label = tk.Label(Res_book_frame, text = "Reserve date (DD/MM/YYYY)", fg = 'black')
 Res_book_Res_date_label.place(x = 50, y = 150, anchor = "nw")
 Res_book_Res_date_entry = tk.Entry(Res_book_frame, fg = 'black', bg = 'white', width = 60)
-Res_book_Res_date_entry.insert(0, "02/02/2022")
+# Res_book_Res_date_entry.insert(0, "02/02/2022")
 Res_book_Res_date_entry.place(x = 300, y = 150, anchor = "nw")
 
 def commit_book_reservation(mem, book, date, toplevel):
