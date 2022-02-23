@@ -719,8 +719,8 @@ book_onreserve_table.column("mem_name",anchor=CENTER,width=150)
 book_onreserve_table.heading("#0",text="",anchor=CENTER)
 book_onreserve_table.heading("book_AN",text="Accession Number",anchor=CENTER)
 book_onreserve_table.heading("book_title",text="Title",anchor=CENTER)
-book_onreserve_table.heading("mem_id",text="Authors",anchor=CENTER)
-book_onreserve_table.heading("mem_name",text="ISBN",anchor=CENTER)
+book_onreserve_table.heading("mem_id",text="Membership ID",anchor=CENTER)
+book_onreserve_table.heading("mem_name",text="Name",anchor=CENTER)
 
 def return_book_onreservation():
     book_list = get_book_on_reserve()
@@ -830,7 +830,7 @@ def book_search_function():
     for book_author in get_book_contains_author(Author_keyword):
         for book in book_list:
             if book.Accession_Number == book_author.Accession_Number:
-                book_infor = [book.Accession_Number, book_author.Author, book.Title, book.ISBN, book.Publisher, book.Year]
+                book_infor = [book.Accession_Number, book.Title, book_author.Author, book.ISBN, book.Publisher, book.Year]
                 book_final.append(book_infor)
     change_frame(Book_search_frame, Book_search_results_frame)
     for book in book_final:
@@ -949,7 +949,7 @@ def book_on_loan_mem_function():
     borrow_return_list = get_borrow_record_by_memid(mem_id_keyword)
     for infor in borrow_return_list:
         book = get_book(infor.Accession_Number)
-        book_infor = [book.Accession_Number, get_Authors_report_loan(infor.Accession_Number), book.Title, book.ISBN, book.Publisher, book.Year]
+        book_infor = [book.Accession_Number,  book.Title, get_Authors_report_loan(infor.Accession_Number), book.ISBN, book.Publisher, book.Year]
         borrow_return_list_final.append(book_infor)
     change_frame(Books_on_Loan_to_Member__frame, Books_on_Loan_to_Member__results_frame)
     for book in borrow_return_list_final:
