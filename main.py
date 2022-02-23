@@ -1274,6 +1274,7 @@ Res_cancel_Back_button = tk.Button(Res_cancel_frame, text="Back to Reservation M
 Res_cancel_Back_button.place(x=700, y=200, anchor="nw")
 # Qingyang ends
 
+# Changyang's code starts
 # Fine frame
 # Fine menu labels and buttons
 Fine_payment_frame = tk.Frame(root, height=win_h, width=win_w)
@@ -1366,6 +1367,8 @@ Pay_fine_button.place(x=50, y=200, anchor="nw")
 Back_to_fine_menu_button = tk.Button(Fine_payment_frame, text="Back To Fines Menu",
                                      fg='black', command=lambda: change_frame(Fine_payment_frame, Fine_frame))
 Back_to_fine_menu_button.place(x=700, y=200, anchor="nw")
+# Changyang's code ends
+
 
 # Report frame
 # other frames in the report frame
