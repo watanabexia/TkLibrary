@@ -25,7 +25,6 @@ class LibBooks(Base):
     Publisher = Column(String(100))
     Year = Column(Integer)
 
-
 class LibMember(Base):
     __tablename__ = 'LibMember'
     memberid = Column(String(6), primary_key = True)
