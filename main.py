@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "123456"
+db_password = "YcyCl525JE#"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
@@ -494,8 +494,15 @@ def create_new_member():
         insert_LibMember(MemID, Name, Faculty, PhoneNum, Email)
         messagebox.showinfo(title='Success!', message='ALS Membership Created')
 
+def clear_text5(entry1, entry2, entry3, entry4, entry5):
+    entry1.delete(0, END)
+    entry2.delete(0, END)
+    entry3.delete(0, END)
+    entry4.delete(0, END)
+    entry5.delete(0, END)
+
 def change_frame_and_delete_entry1(from_frame, to_frame):
-    clear_text(Mem_ID_entry1, Name_entry1, Faculty_entry1,
+    clear_text5(Mem_ID_entry1, Name_entry1, Faculty_entry1,
                Phone_number_entry1, Email_Address_entry1)
     change_frame(from_frame, to_frame)
 
@@ -588,7 +595,7 @@ def final_delete_member(Mem_id):
 
 def clear_text1(entry1):
     entry1.delete(0, END)
-    
+
 def change_frame_and_delete_entry2(from_frame, to_frame):
     clear_text1(Mem_ID_entry2)
     change_frame(from_frame, to_frame)
@@ -621,15 +628,9 @@ def change_frame_and_update_entry(from_frame, to_frame):
         change_frame(from_frame, to_frame)
         Mem_ID_entry4.insert(0, Mem_ID_entry3.get())
 
-def clear_text(entry1, entry2, entry3, entry4, entry5):
-    entry1.delete(0, END)
-    entry2.delete(0, END)
-    entry3.delete(0, END)
-    entry4.delete(0, END)
-    entry5.delete(0, END)
 
 def change_frame_and_delete_entry(from_frame, to_frame):
-    clear_text(Mem_ID_entry4, Name_entry2, Faculty_entry2,
+    clear_text5(Mem_ID_entry4, Name_entry2, Faculty_entry2,
                Phone_number_entry2, Email_Address_entry2)
     change_frame(from_frame, to_frame)
 
@@ -1302,13 +1303,13 @@ Back_to_mem_button.place(x=300, y=100, anchor="nw")
 
 
 # Fine payment labels and buttons
-def clear_text2(entry1, entry2, entry3):
+def clear_text3(entry1, entry2, entry3):
     entry1.delete(0, END)
     entry2.delete(0, END)
     entry3.delete(0, END)
 
 def change_frame_and_delete_entry4(from_frame, to_frame):
-    clear_text2(Mem_ID_entry5, Payment_date_entry, Payment_amount_entry)
+    clear_text3(Mem_ID_entry5, Payment_date_entry, Payment_amount_entry)
     change_frame(from_frame, to_frame)
 
 def update_member_fine(Mem_id):
