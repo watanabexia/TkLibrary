@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "201314"
+db_password = "YcyCl525JE#"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
@@ -558,6 +558,12 @@ Back_to_membership_menu_button_C.place(x=700, y=300, anchor="nw")
 
 
 # Membership deletion labels and buttons
+def delete_all_reserve_record(Mem_id):
+    session_new = DBSession()
+    session_new.query(Reserve_Record).filter_by(memberid = Mem_id).delete()
+    session_new.commit()
+    session_new.close()
+
 def delete_member():
     Mem_id = Mem_ID_entry2.get()
     if not member_exist(Mem_id):
@@ -583,22 +589,15 @@ def final_delete_member(Mem_id):
     if member_LibMember.current_books_borrowed != 0:
         error_message += "loans"
         num += 1
-    if member_LibMember.current_books_reserved != 0:
-        if num == 0:
-            error_message += "reservations"
-        else:
-            error_message += " and reservations"
-        num += 1
     if has_outstanding_fine(Mem_id):
         if num == 0:
             error_message += "outstanding fines"
-        elif num == 1:
-            error_message += "and outstanding fines"
         else:
-            error_message = "Member has loans, reservations and outstanding fines"
+            error_message = "Member has loans and outstanding fines"
         num += 1
     error_message += "."
     if num == 0:
+        delete_all_reserve_record(Mem_id)
         delete_LibMember(Mem_id)
         messagebox.showinfo(
             title='Success!', message='Member Is Successfully Deleted.')
@@ -670,8 +669,16 @@ Back_to_mem_button.place(x=700, y=300, anchor="nw")
 # Membership update information labels and buttons
 def update_member_info(Mem_id, Name, Faculty, PhoneNum, Email):
     session_new = DBSession()
-    session_new.query(LibMember).filter_by(memberid=Mem_id).update(
-        {'memberid': Mem_id, 'name': Name, 'faculty': Faculty, 'phone_number': PhoneNum, 'email_address': Email})
+    dic = {}
+    if Name != "":
+        dic['name'] = Name
+    if Faculty != "":
+        dic['faculty'] = Faculty
+    if PhoneNum != "":
+        dic['phone_number'] = PhoneNum
+    if Email != "":
+        dic['email_address'] = Email
+    session_new.query(LibMember).filter_by(memberid=Mem_id).update(dic)
     session_new.commit()
     session_new.close()
 
@@ -695,12 +702,8 @@ def final_update_member(Mem_id):
     Faculty = Faculty_entry2.get()
     PhoneNum = Phone_number_entry2.get()
     Email = Email_Address_entry2.get()
-    if Name == "" or Faculty == "" or PhoneNum == "" or Email == "":
-        messagebox.showinfo(
-            title='Error!', message='Missing or Incomplete fields.')
-    else:
-        update_member_info(Mem_id, Name, Faculty, PhoneNum, Email)
-        messagebox.showinfo(title='Success!', message='ALS Membership Update.')
+    update_member_info(Mem_id, Name, Faculty, PhoneNum, Email)
+    messagebox.showinfo(title='Success!', message='ALS Membership Update.')
 
 
 Mem_ID_label1 = tk.Label(Mem_update2_frame, text='Membership ID', fg='red')
