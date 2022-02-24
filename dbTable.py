@@ -33,9 +33,9 @@ class LibMember(Base):
     phone_number = Column(String(100))
     email_address = Column(String(100))
     outstanding_fee = Column(Integer)
-
     current_books_borrowed = Column(Integer)
     current_books_reserved = Column(Integer)
+    payment_date = Column(Date)
 
 class Reserve_Record(Base):
     __tablename__ = 'Reserve_Record'
