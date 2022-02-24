@@ -1151,7 +1151,7 @@ def return_book_onloan():
     change_frame(Rep_frame, Book_on_Loan_frame)
 
     for book in book_final:
-        book_onloan_table.insert(parent='',index='end',iid=0,text='', values=(book))
+        book_onloan_table.insert(parent='',index='end',text='', values=(book))
     book_onloan_table.pack()
 
 Book_on_Loan_label = tk.Label(Rep_frame, text = "This function displays all the books \n currently on loan to members.", fg = 'black')
@@ -1193,7 +1193,7 @@ def return_book_onreservation():
     change_frame(Rep_frame, Book_on_reservation_frame)
 
     for book in book_final:
-        book_onreserve_table.insert(parent='',index='end',iid=0,text='', values=(book))
+        book_onreserve_table.insert(parent='',index='end',text='', values=(book))
     book_onreserve_table.pack()
 
 
@@ -1235,7 +1235,7 @@ def return_mem_with_fines():
     change_frame(Rep_frame, Outstanding_Fines__frame)
 
     for mem in mem_final:
-        mem_with_fines_table.insert(parent='',index='end',iid=0,text='', values=(mem))
+        mem_with_fines_table.insert(parent='',index='end',text='', values=(mem))
     mem_with_fines_table.pack()
 
 Outstanding_Fines__label = tk.Label(Rep_frame, text = "This function displays the \n outstanding fines for members.", fg = 'black')
@@ -1292,7 +1292,7 @@ def book_search_function():
                 book_final.append(book_infor)
     change_frame(Book_search_frame, Book_search_results_frame)
     for book in book_final:
-        book_search_table.insert(parent='',index='end',iid=0,text='', values=(book))
+        book_search_table.insert(parent='',index='end',text='', values=(book))
     book_search_table.pack()
    
 
@@ -1404,7 +1404,7 @@ def book_on_loan_mem_function():
         borrow_return_list_final.append(book_infor)
     change_frame(Books_on_Loan_to_Member__frame, Books_on_Loan_to_Member__results_frame)
     for book in borrow_return_list_final:
-        book_loan_mem_table.insert(parent='',index='end',iid=0,text='', values=(book))
+        book_loan_mem_table.insert(parent='',index='end',text='', values=(book))
     book_loan_mem_table.pack()
 
 
