@@ -460,6 +460,10 @@ def create_new_member():
         insert_LibMember(MemID, Name, Faculty, PhoneNum, Email)
         messagebox.showinfo(title='Success!', message='ALS Membership Created')
 
+def change_frame_and_delete_entry1(from_frame, to_frame):
+    clear_text(Mem_ID_entry1, Name_entry1, Faculty_entry1,
+               Phone_number_entry1, Email_Address_entry1)
+    change_frame(from_frame, to_frame)
 
 top_text = tk.Label(
     Mem_create_frame, text='To Create Member, Please Enter Requested Information Below:', bg='cyan')
@@ -496,7 +500,7 @@ Add_new_member_button = tk.Button(
     Mem_create_frame, text="Create Member", fg='black', command=create_new_member)
 Add_new_member_button.place(x=50, y=300, anchor="nw")
 Back_to_membership_menu_button_C = tk.Button(
-    Mem_create_frame, text="Back To Membership Menu", fg='black', command=lambda: change_frame(Mem_create_frame, Mem_frame))
+    Mem_create_frame, text="Back To Membership Menu", fg='black', command=lambda: change_frame_and_delete_entry1(Mem_create_frame, Mem_frame))
 Back_to_membership_menu_button_C.place(x=700, y=300, anchor="nw")
 
 
@@ -548,6 +552,13 @@ def final_delete_member(Mem_id):
     if num != 0:
         messagebox.showinfo(title='Error!', message=error_message)
 
+def clear_text1(entry1):
+    entry1.delete(0, END)
+    
+def change_frame_and_delete_entry2(from_frame, to_frame):
+    clear_text1(Mem_ID_entry2)
+    change_frame(from_frame, to_frame)
+
 
 top_text = tk.Label(
     Mem_delete_frame, text='To Delete A Member, Please Membership ID Below', bg='cyan')
@@ -563,7 +574,7 @@ Mem_delete_button = tk.Button(
     Mem_delete_frame, text="Delete Member", fg='black', command=delete_member)
 Mem_delete_button.place(x=50, y=300, anchor="nw")
 Back_to_mem_button = tk.Button(Mem_delete_frame, text="Back To Membership Menu",
-                               fg='black', command=lambda: change_frame(Mem_delete_frame, Mem_frame))
+                               fg='black', command=lambda: change_frame_and_delete_entry2(Mem_delete_frame, Mem_frame))
 Back_to_mem_button.place(x=700, y=300, anchor="nw")
 
 
@@ -588,6 +599,9 @@ def change_frame_and_delete_entry(from_frame, to_frame):
                Phone_number_entry2, Email_Address_entry2)
     change_frame(from_frame, to_frame)
 
+def change_frame_and_delete_entry3(from_frame, to_frame):
+    clear_text1(Mem_ID_entry3)
+    change_frame(from_frame, to_frame)
 
 top_text = tk.Label(
     Mem_update1_frame, text='To Update A Member, Please Membership ID Below', bg='cyan')
@@ -602,7 +616,7 @@ Mem_update1_button = tk.Button(Mem_update1_frame, text="Update Member", fg='blac
                                command=lambda: change_frame_and_update_entry(Mem_update1_frame, Mem_update2_frame))
 Mem_update1_button.place(x=50, y=300, anchor="nw")
 Back_to_mem_button = tk.Button(Mem_update1_frame, text="Back To Membership Menu",
-                               fg='black', command=lambda: change_frame(Mem_update1_frame, Mem_frame))
+                               fg='black', command=lambda: change_frame_and_delete_entry3(Mem_update1_frame, Mem_frame))
 Back_to_mem_button.place(x=700, y=300, anchor="nw")
 
 
@@ -1277,6 +1291,15 @@ Back_to_mem_button.place(x=300, y=100, anchor="nw")
 
 
 # Fine payment labels and buttons
+def clear_text2(entry1, entry2, entry3):
+    entry1.delete(0, END)
+    entry2.delete(0, END)
+    entry3.delete(0, END)
+
+def change_frame_and_delete_entry4(from_frame, to_frame):
+    clear_text2(Mem_ID_entry5, Payment_date_entry, Payment_amount_entry)
+    change_frame(from_frame, to_frame)
+
 def update_member_fine(Mem_id):
     session_new = DBSession()
     session_new.query(LibMember).filter_by(memberid=Mem_id).update(
@@ -1345,7 +1368,7 @@ Pay_fine_button = tk.Button(
     Fine_payment_frame, text="Pay Fine", fg='black', command=pay_fine)
 Pay_fine_button.place(x=50, y=200, anchor="nw")
 Back_to_fine_menu_button = tk.Button(Fine_payment_frame, text="Back To Fines Menu",
-                                     fg='black', command=lambda: change_frame(Fine_payment_frame, Fine_frame))
+                                     fg='black', command=lambda: change_frame_and_delete_entry4(Fine_payment_frame, Fine_frame))
 Back_to_fine_menu_button.place(x=700, y=200, anchor="nw")
 # Changyang's code ends
 
