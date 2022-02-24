@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "YcyCl525JE#"
+db_password = "454545hrz"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
@@ -185,6 +185,12 @@ def get_book_BR(acc_number):
     session_new.close()
     return book
 
+def get_current_fine(member_id):
+    session_new = DBSession()
+    Member = session_new.query(LibMember).filter_by(memberid = member_id).one()
+    session_new.close()
+    return Member.outstanding_fee
+
 def get_date_object(date_string):
     return datetime.strptime(date_string, '%d/%m/%Y')
 
@@ -205,13 +211,14 @@ def get_reserve_record(member_id, acc_number):
     session_new.close()
     return reserve_record
 
+
 def get_book_Reserve(acc_number):
     """
     get all the books with the unique acc number from reserve_record.
     * Returns None if no valid LibBook is found.
     """
     session_new = DBSession()
-    book = session_new.query(Reserve_Record).filter_by(Accession_Number = acc_number).all()
+    book = session_new.query(Reserve_Record).filter_by(Accession_Number = acc_number).one()
     session_new.close()
     return book
 
@@ -250,9 +257,9 @@ def due_date():
     due_date = due_date.strftime('%d/%m/%Y')
     return due_date
 
-def get_due_date(acc_number, member_id):
+def get_due_date(acc_number):
     session_new = DBSession()
-    br_record = session_new.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number, memberid = member_id).one()
+    br_record = session_new.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number).one()
     session_new.close()
     return br_record.Due_Date.strftime('%d/%m/%Y')
 
@@ -298,10 +305,7 @@ def members_reserved(acc_number):
     if book is reserved, find all the memberids that reserves the book
     """
     book_reserved = get_book_Reserve(acc_number)
-    res = []
-    for book in book_reserved:
-        res += book.memberid
-    return res
+    return book_reserved.memberid
 
 def is_quota_reached(id):
     """
@@ -411,6 +415,9 @@ def get_borrowed_number(member_id):
     member = get_member(member_id)
     return member.current_books_borrowed
 
+def get_reserve_number(member_id):
+    member = get_member(member_id)
+    return member.current_books_reserved
 
 
 def update_member_borrowed(member_id, borrowed_number):
@@ -939,20 +946,27 @@ def borrow_book():
 def borrow_book_on_loan_quota_fine(acc_number, member_id):
     borrow_date = today_day()
     new_borrowed_number = get_borrowed_number(member_id) + 1
+    new_reserved_number = get_reserve_number(member_id) - 1
     if is_quota_reached(member_id):
         messagebox.showinfo(title='Error!', message='Member Loan Quota Exceeded.')
     elif is_book_on_loan(acc_number):
-        book_due_date = get_due_date(acc_number, member_id)
+        book_due_date = get_due_date(acc_number)
         messagebox.showinfo(title='Error!', message='Book Is Currently On Loan Until ' + book_due_date)
     elif has_outstanding_fine(member_id):
         messagebox.showinfo(title='Error!', message='Member Has Outstanding Fines.')
-    elif is_book_reserved(acc_number) and member_id not in members_reserved(acc_number):
-        messagebox.showinfo(title='Error!', message='Book Is Already Reserved.')
+    elif is_book_reserved(acc_number):
+        if member_id != members_reserved(acc_number):
+            messagebox.showinfo(title='Error!', message='Book Is Already Reserved.')
+        else:
+            insert_borrow_and_return_record(acc_number, member_id, borrow_date, due_date())
+            update_member_borrowed(member_id, new_borrowed_number)
+            delete_reserve_record(member_id, acc_number)
+            update_member_reserved(member_id, new_reserved_number)
+            messagebox.showinfo(title='Success!', message='You Have Borrowed This Book.') 
     else:
         insert_borrow_and_return_record(acc_number, member_id, borrow_date, due_date())
         update_member_borrowed(member_id, new_borrowed_number)
         messagebox.showinfo(title='Success!', message='You Have Borrowed This Book.') 
-        # add 1 to books_borrowed and update borrow_and_return_record
 
 Borrow_book_button_book_borrow = tk.Button(Borrow_frame, text = "Borrow Book", fg = 'black', command = borrow_book)
 Borrow_book_button_book_borrow.place(x = 50, y = 300, anchor = "nw")
@@ -1009,7 +1023,9 @@ def return_book():
 def return_book_fine(member_id, acc_number, Fine):
     new_borrowed_number = get_borrowed_number(member_id) - 1
     if Fine != 0:
-        update_outstanding_fine(member_id, Fine)
+        current_fine = get_current_fine(member_id)
+        new_fine = current_fine + Fine
+        update_outstanding_fine(member_id, new_fine)
         update_member_borrowed(member_id, new_borrowed_number)
         delete_borrow_and_return_record(acc_number, member_id)
         messagebox.showinfo(title='Error!', message='Book Returned Successfully But Member Has Fines.')
@@ -1298,7 +1314,6 @@ def final_pay_fine(Mem_id, payment_amount, payment_date):
         messagebox.showinfo(title='Success!', message='Fine Has Been Paid')
 
 
-
 top_text = tk.Label(Fine_payment_frame,
                     text='To Pay a Fine, Please Enter Information Below:', bg='cyan')
 top_text.place(x=50, y=0, anchor="nw")
@@ -1325,7 +1340,6 @@ Back_to_fine_menu_button = tk.Button(Fine_payment_frame, text="Back To Fines Men
                                      fg='black', command=lambda: change_frame_and_delete_entry4(Fine_payment_frame, Fine_frame))
 Back_to_fine_menu_button.place(x=700, y=200, anchor="nw")
 # Changyang's code ends
-
 
 #xunuo start
 
