@@ -453,7 +453,7 @@ def create_new_member():
     if member_exist(MemID):
         messagebox.showinfo(
             title='Error!', message='Member already exist.')
-    elif Name == "" or "Enter member's name" or Faculty == "" or "e.g., Computing, Engineering, Science, etc." or PhoneNum == "" or "e.g., 91234567, 81093487, 92054981, etc." or Email == "" or "e.g., ALSuser@als.edu":
+    elif Name == "" or Faculty == "" or PhoneNum == "" or Email == "":
         messagebox.showinfo(
             title='Error!', message='Missing or Incomplete fields.')
     else:
@@ -468,34 +468,28 @@ top_text.place(x=50, y=0, anchor="nw")
 Mem_ID_label1 = tk.Label(Mem_create_frame, text='Membership ID', fg='black')
 Mem_ID_label1.place(x=50, y=50, anchor="nw")
 Mem_ID_entry1 = tk.Entry(Mem_create_frame, fg='black', width=60)
-Mem_ID_entry1.insert(
-    0, "A unique alphanumeric id that distinguishes every member")
 Mem_ID_entry1.place(x=300, y=50, anchor="nw")
 
 Name_label = tk.Label(Mem_create_frame, text='Name', fg='black')
 Name_label.place(x=50, y=100, anchor="nw")
 Name_entry1 = tk.Entry(Mem_create_frame, fg='black', width=60)
-Name_entry1.insert(0, "Enter member's name")
 Name_entry1.place(x=300, y=100, anchor="nw")
 
 Faculty_label = tk.Label(Mem_create_frame, text='Faculty', fg='black')
 Faculty_label.place(x=50, y=150, anchor="nw")
 Faculty_entry1 = tk.Entry(Mem_create_frame, fg='black', width=60)
-Faculty_entry1.insert(0, "e.g., Computing, Engineering, Science, etc.")
 Faculty_entry1.place(x=300, y=150, anchor="nw")
 
 Phone_number_label = tk.Label(
     Mem_create_frame, text='Phone Number', fg='black')
 Phone_number_label.place(x=50, y=200, anchor="nw")
 Phone_number_entry1 = tk.Entry(Mem_create_frame, fg='black', width=60)
-Phone_number_entry1.insert(0, "e.g., 91234567, 81093487, 92054981, etc.")
 Phone_number_entry1.place(x=300, y=200, anchor="nw")
 
 Email_Address_label = tk.Label(
     Mem_create_frame, text='Email Address', fg='black')
 Email_Address_label.place(x=50, y=250, anchor="nw")
 Email_Address_entry1 = tk.Entry(Mem_create_frame, fg='black', width=60)
-Email_Address_entry1.insert(0, "e.g., ALSuser@als.edu")
 Email_Address_entry1.place(x=300, y=250, anchor="nw")
 
 Add_new_member_button = tk.Button(
@@ -562,8 +556,6 @@ top_text.place(x=50, y=0, anchor="nw")
 ID_label = tk.Label(Mem_delete_frame, text='Membership ID')
 ID_label.place(x=50, y=200, anchor="nw")
 Mem_ID_entry2 = tk.Entry(Mem_delete_frame, fg='black', width=60)
-Mem_ID_entry2.insert(
-    0, "A unique alphanumeric id that distinguishes every member")
 Mem_ID_entry2.place(x=300, y=200, anchor="nw")
 
 
@@ -592,13 +584,10 @@ def clear_text(entry1, entry2, entry3, entry4, entry5):
     entry5.delete(0, END)
 
 def change_frame_and_delete_entry(from_frame, to_frame):
-    change_frame(from_frame, to_frame)
     clear_text(Mem_ID_entry4, Name_entry2, Faculty_entry2,
                Phone_number_entry2, Email_Address_entry2)
-    Name_entry2.insert(0, "Update name")
-    Faculty_entry2.insert(0, "Update faculty")
-    Phone_number_entry2.insert(0, "Update phone number")
-    Email_Address_entry2.insert(0, "Update Email")
+    change_frame(from_frame, to_frame)
+
 
 top_text = tk.Label(
     Mem_update1_frame, text='To Update A Member, Please Membership ID Below', bg='cyan')
@@ -607,8 +596,6 @@ top_text.place(x=50, y=0, anchor="nw")
 ID_label = tk.Label(Mem_update1_frame, text='Membership ID')
 ID_label.place(x=50, y=200, anchor="nw")
 Mem_ID_entry3 = tk.Entry(Mem_update1_frame, fg='black', width=60)
-Mem_ID_entry3.insert(
-    0, "A unique alphanumeric id that distinguishes every member")
 Mem_ID_entry3.place(x=300, y=200, anchor="nw")
 
 Mem_update1_button = tk.Button(Mem_update1_frame, text="Update Member", fg='black',
@@ -647,7 +634,7 @@ def final_update_member(Mem_id):
     Faculty = Faculty_entry2.get()
     PhoneNum = Phone_number_entry2.get()
     Email = Email_Address_entry2.get()
-    if Name == "" or "Update Name" or Faculty == "" or "Update Faculty" or PhoneNum == "" or "Update Phone Number" or Email == "" or "Update Email Address":
+    if Name == "" or Faculty == "" or PhoneNum == "" or Email == "":
         messagebox.showinfo(
             title='Error!', message='Missing or Incomplete fields.')
     else:
@@ -663,27 +650,23 @@ Mem_ID_entry4.place(x=300, y=50, anchor="nw")
 Name_label = tk.Label(Mem_update2_frame, text='Name', fg='black')
 Name_label.place(x=50, y=100, anchor="nw")
 Name_entry2 = tk.Entry(Mem_update2_frame, fg='black', width=60)
-Name_entry2.insert(0, "Update Name")
 Name_entry2.place(x=300, y=100, anchor="nw")
 
 Faculty_label = tk.Label(Mem_update2_frame, text='Faculty', fg='black')
 Faculty_label.place(x=50, y=150, anchor="nw")
 Faculty_entry2 = tk.Entry(Mem_update2_frame, fg='black', width=60)
-Faculty_entry2.insert(0, "Update Faculty")
 Faculty_entry2.place(x=300, y=150, anchor="nw")
 
 Phone_number_label = tk.Label(
     Mem_update2_frame, text='Phone Number', fg='black')
 Phone_number_label.place(x=50, y=200, anchor="nw")
 Phone_number_entry2 = tk.Entry(Mem_update2_frame, fg='black', width=60)
-Phone_number_entry2.insert(0, "Update Phone Number")
 Phone_number_entry2.place(x=300, y=200, anchor="nw")
 
 Email_Address_label = tk.Label(
     Mem_update2_frame, text='Email Address', fg='black')
 Email_Address_label.place(x=50, y=250, anchor="nw")
 Email_Address_entry2 = tk.Entry(Mem_update2_frame, fg='black', width=60)
-Email_Address_entry2.insert(0, "Update Email Address")
 Email_Address_entry2.place(x=300, y=250, anchor="nw")
 
 Mem_update2_button = tk.Button(
@@ -1346,19 +1329,16 @@ top_text.place(x=50, y=0, anchor="nw")
 Mem_ID_label = tk.Label(Fine_payment_frame, text='Membership ID')
 Mem_ID_label.place(x=50, y=50, anchor="nw")
 Mem_ID_entry5 = tk.Entry(Fine_payment_frame, fg='black', width=60)
-Mem_ID_entry5.insert(0, "A unique alphanumeric id that distinguishes every member")
 Mem_ID_entry5.place(x=300, y=50, anchor="nw")
 
 Payment_date_label = tk.Label(Fine_payment_frame, text='Payment Date')
 Payment_date_label.place(x=50, y=100, anchor="nw")
 Payment_date_entry = tk.Entry(Fine_payment_frame, fg='black', width=60)
-Payment_date_entry.insert(0, "Date Payment Received")
 Payment_date_entry.place(x=300, y=100, anchor="nw")
 
 Payment_amount_label = tk.Label(Fine_payment_frame, text='Payment Amount')
 Payment_amount_label.place(x=50, y=150, anchor="nw")
 Payment_amount_entry = tk.Entry(Fine_payment_frame, fg='black', width=60)
-Payment_amount_entry.insert(0, "Total fine amount")
 Payment_amount_entry.place(x=300, y=150, anchor="nw")
 
 Pay_fine_button = tk.Button(
