@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "454545hrz"
+db_password = "201314"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
@@ -73,70 +73,100 @@ def get_book_contains_author(author_one):
     if " " in author_one:
         messagebox.showinfo(title='Wrong!', message='Input cannot be more than one word')
     else:
-        return session.query(Book_Author).filter(Book_Author.Author.contains(author_one)).all()
+        session_new = DBSession()
+        book = session_new.query(Book_Author).filter(Book_Author.Author.contains(author_one)).all()
+        session_new.close()
+        return book
 
 def get_book_contains(title_one, ISBN_one, publisher_one, publication_year_one):
     if " " in title_one  or " " in ISBN_one or " " in publisher_one or " " in publication_year_one:
         messagebox.showinfo(title='Wrong!', message='Input cannot be more than one word')
-    else: 
-        return session.query(LibBooks).filter(and_(
+    else:
+        session_new = DBSession()
+        book = session_new.query(LibBooks).filter(and_(
             LibBooks.Title.contains(title_one),
             LibBooks.ISBN.contains(ISBN_one),
             LibBooks.Publisher.contains(publisher_one),
             LibBooks.Year.contains(publication_year_one))).all()
+        session_new.close()
+        return book
 
 def get_book_on_loan():
-    return session.query(Borrow_And_Return_Record).order_by(Borrow_And_Return_Record.Accession_Number).all()
+    session_new = DBSession()
+    book = session_new.query(Borrow_And_Return_Record).order_by(Borrow_And_Return_Record.Accession_Number).all()
+    session_new.close()
+    return book
  
 def get_borrow_record_by_memid(mem_id):
-    return session.query(Borrow_And_Return_Record).filter_by(memberid = mem_id).all()
+    session_new = DBSession()
+    book = session_new.query(Borrow_And_Return_Record).filter_by(memberid = mem_id).all()
+    session_new.close()
+    return book
 
 def get_book_on_reserve():
-    return session.query(Reserve_Record).order_by(Reserve_Record.Accession_Number).all()
+    session_new = DBSession()
+    book = session_new.query(Reserve_Record).order_by(Reserve_Record.Accession_Number).all()
+    session_new.close()
+    return book
 
 def get_mem_with_fines():
-    return session.query(LibMember).filter(LibMember.outstanding_fee != 0).all()
+    session_new = DBSession()
+    mem = session_new.query(LibMember).filter(LibMember.outstanding_fee != 0).all()
+    session_new.close()
+    return mem 
 
 def get_book_title_based_on_AN(acc_number):
-    books = session.query(LibBooks).filter_by(Accession_Number = acc_number).all()
+    session_new = DBSession()
+    books = session_new.query(LibBooks).filter_by(Accession_Number = acc_number).all()
     res = ''
     for book in books:
         res += book.Title
+    session_new.close()
     return res
 
 def get_book_ISBN_based_on_AN(acc_number):
-    books = session.query(LibBooks).filter_by(Accession_Number = acc_number).all()
+    session_new = DBSession()
+    books = session_new.query(LibBooks).filter_by(Accession_Number = acc_number).all()
     res = ''
     for book in books:
         res += book.ISBN
+    session_new.close()
     return res
   
 def get_book_publisher_based_on_AN(acc_number):
-    books = session.query(LibBooks).filter_by(Accession_Number = acc_number).all()
+    session_new = DBSession()
+    books = session_new.query(LibBooks).filter_by(Accession_Number = acc_number).all()
     res = ''
     for book in books:
         res += book.Publisher
+    session_new.close()
     return res
 
 def get_book_year_based_on_AN(acc_number):
-    books = session.query(LibBooks).filter_by(Accession_Number = acc_number).all()
+    session_new = DBSession()
+    books = session_new.query(LibBooks).filter_by(Accession_Number = acc_number).all()
     res = ''
     for book in books:
         res += str(book.Year)
+    session_new.close()   
     return res
 
 def get_member_name_based_on_id(mem_id):
-    books = session.query(LibMember).filter_by(memberid = mem_id).all()
+    session_new = DBSession()
+    books = session_new.query(LibMember).filter_by(memberid = mem_id).all()
     res = ''
     for book in books:
         res += book.name
+    session_new.close()
     return res
 
 def get_Authors_report_loan(acc_number):
+    session_new = DBSession()
     res = ''
-    books = session.query(Book_Author).filter_by(Accession_Number = acc_number).all()
+    books = session_new.query(Book_Author).filter_by(Accession_Number = acc_number).all()
     for book in books:
         res += book.Author
+    session_new.close()
     return res
 
 def get_book(acc_number):
