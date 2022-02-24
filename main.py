@@ -425,6 +425,19 @@ def update_outstanding_fine(member_id, fine):
     session_new.commit()
     session_new.close()
 
+def insert_LibMember(MemID, Name, Faculty, PhoneNum, Email):
+    Mem_table = Table('LibMember', metadata, autoload=True)
+    Mem_ins = Mem_table.insert()
+    Mem_ins = Mem_ins.values(memberid=MemID, name=Name, faculty=Faculty, phone_number=PhoneNum,
+                             email_address=Email, outstanding_fee=0, current_books_borrowed=0, current_books_reserved=0)
+    conn.execute(Mem_ins)
+
+def delete_LibMember(MemID):
+    session_new = DBSession()
+    session_new.query(LibMember).filter_by(memberid=MemID).delete()
+    session_new.commit()
+    session_new.close()
+
 # Root frame object
 top_text = tk.Label(Root_frame, text='ALS System', bg='cyan')
 top_text.place(x = 250, y = 0, anchor = "nw")
@@ -441,155 +454,290 @@ Fine_button.place(x = 200, y = 250, anchor = "nw")
 Rep_button = tk.Button(Root_frame, text = "Reports", width=20, fg = 'black', command = lambda: change_frame(Root_frame, Rep_frame))
 Rep_button.place(x = 200, y = 300, anchor = "nw")
 
-#Membership Frame
+# Changyang's code start
 # Membership Frame Object
-Mem_create_frame = tk.Frame(root, height = win_h, width = win_w)
-Mem_delete_frame = tk.Frame(root, height = win_h, width = win_w)
-Mem_update1_frame = tk.Frame(root, height = win_h, width = win_w)
-Mem_update2_frame = tk.Frame(root, height = win_h, width = win_w)
+Mem_create_frame = tk.Frame(root, height=win_h, width=win_w)
+Mem_delete_frame = tk.Frame(root, height=win_h, width=win_w)
+Mem_update1_frame = tk.Frame(root, height=win_h, width=win_w)
+Mem_update2_frame = tk.Frame(root, height=win_h, width=win_w)
 
 # Membership menu labels and buttons
-top_text = tk.Label(Mem_frame, text='Select One Of The Options Below', bg='cyan')
-top_text.place(x = 150, y = 0, anchor = "nw")
+top_text = tk.Label(
+    Mem_frame, text='Select One Of The Options Below', bg='cyan')
+top_text.place(x=150, y=0, anchor="nw")
 
-Mem_create_label = tk.Label(Mem_frame, text = "Membership Creation", fg = 'black')
-Mem_create_label.place(x = 50, y = 50, anchor = "nw")
-Mem_create_button = tk.Button(Mem_frame, text = "Create A Member", fg = 'black', command = lambda: change_frame(Mem_frame, Mem_create_frame))
-Mem_create_button.place(x = 300, y = 50, anchor = "nw")
+Mem_create_label = tk.Label(Mem_frame, text="Membership Creation", fg='black')
+Mem_create_label.place(x=50, y=50, anchor="nw")
+Mem_create_button = tk.Button(Mem_frame, text="Create A Member",
+                              fg='black', command=lambda: change_frame(Mem_frame, Mem_create_frame))
+Mem_create_button.place(x=300, y=50, anchor="nw")
 
-Mem_delete_label = tk.Label(Mem_frame, text = "Membership Deletion", fg = 'black')
-Mem_delete_label.place(x = 50, y = 100, anchor = "nw")
-Mem_delete_button = tk.Button(Mem_frame, text = "Delete A Member", fg = 'black', command = lambda: change_frame(Mem_frame, Mem_delete_frame))
-Mem_delete_button.place(x = 300, y = 100, anchor = "nw")
+Mem_delete_label = tk.Label(Mem_frame, text="Membership Deletion", fg='black')
+Mem_delete_label.place(x=50, y=100, anchor="nw")
+Mem_delete_button = tk.Button(Mem_frame, text="Delete A Member",
+                              fg='black', command=lambda: change_frame(Mem_frame, Mem_delete_frame))
+Mem_delete_button.place(x=300, y=100, anchor="nw")
 
-Mem_update_label = tk.Label(Mem_frame, text = "Membership Update", fg = 'black')
-Mem_update_label.place(x = 50, y = 150, anchor = "nw")
-Mem_update_button = tk.Button(Mem_frame, text = "Update A Member", fg = 'black', command = lambda: change_frame(Mem_frame, Mem_update1_frame))
-Mem_update_button.place(x = 300, y = 150, anchor = "nw")
+Mem_update_label = tk.Label(Mem_frame, text="Membership Update", fg='black')
+Mem_update_label.place(x=50, y=150, anchor="nw")
+Mem_update_button = tk.Button(Mem_frame, text="Update A Member", fg='black',
+                              command=lambda: change_frame(Mem_frame, Mem_update1_frame))
+Mem_update_button.place(x=300, y=150, anchor="nw")
 
-Back_button = tk.Button(Mem_frame, text = "Back To Main Menu", fg = 'black', command = lambda: change_frame(Mem_frame, Root_frame))
-Back_button.place(x = 175, y = 200, anchor = "nw")
+Back_button = tk.Button(Mem_frame, text="Back To Main Menu",
+                        fg='black', command=lambda: change_frame(Mem_frame, Root_frame))
+Back_button.place(x=175, y=200, anchor="nw")
 
 
 # Membership creation labels and buttons
 def create_new_member():
-    messagebox.showinfo(title='Success!', message='ALS Membership Created')
+    MemID = Mem_ID_entry1.get()
+    Name = Name_entry1.get()
+    Faculty = Faculty_entry1.get()
+    PhoneNum = Phone_number_entry1.get()
+    Email = Email_Address_entry1.get()
+    if member_exist(MemID):
+        messagebox.showinfo(
+            title='Error!', message='Member already exist.')
+    elif Name == "" or Faculty == "" or PhoneNum == "" or Email == "":
+        messagebox.showinfo(
+            title='Error!', message='Missing or Incomplete fields.')
+    else:
+        insert_LibMember(MemID, Name, Faculty, PhoneNum, Email)
+        messagebox.showinfo(title='Success!', message='ALS Membership Created')
 
-top_text = tk.Label(Mem_create_frame, text='To Create Member, Please Enter Requested Information Below:', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+def clear_text5(entry1, entry2, entry3, entry4, entry5):
+    entry1.delete(0, END)
+    entry2.delete(0, END)
+    entry3.delete(0, END)
+    entry4.delete(0, END)
+    entry5.delete(0, END)
 
-Mem_ID_label1 = tk.Label(Mem_create_frame, text='Membership ID', fg = 'black')
-Mem_ID_label1.place(x = 50, y = 50, anchor = "nw")
-Mem_ID_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
-Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
-Mem_ID_entry.place(x = 300, y = 50, anchor = "nw")
+def change_frame_and_delete_entry1(from_frame, to_frame):
+    clear_text5(Mem_ID_entry1, Name_entry1, Faculty_entry1,
+               Phone_number_entry1, Email_Address_entry1)
+    change_frame(from_frame, to_frame)
 
-Name_label = tk.Label(Mem_create_frame, text='Name', fg = 'black')
-Name_label.place(x = 50, y = 100, anchor = "nw")
-Name_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
-Name_entry.insert(0, "Enter member's name")
-Name_entry.place(x = 300, y = 100, anchor = "nw")
+top_text = tk.Label(
+    Mem_create_frame, text='To Create Member, Please Enter Requested Information Below:', bg='cyan')
+top_text.place(x=50, y=0, anchor="nw")
 
-Faculty_label = tk.Label(Mem_create_frame, text='Faculty', fg = 'black')
-Faculty_label.place(x = 50, y = 150, anchor = "nw")
-Faculty_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
-Faculty_entry.insert(0, "e.g., Computing, Engineering, Science, etc.")
-Faculty_entry.place(x = 300, y = 150, anchor = "nw")
+Mem_ID_label1 = tk.Label(Mem_create_frame, text='Membership ID', fg='black')
+Mem_ID_label1.place(x=50, y=50, anchor="nw")
+Mem_ID_entry1 = tk.Entry(Mem_create_frame, fg='black', width=60)
+Mem_ID_entry1.place(x=300, y=50, anchor="nw")
 
-Phone_number_label = tk.Label(Mem_create_frame, text='Phone Number', fg = 'black')
-Phone_number_label.place(x = 50, y = 200, anchor = "nw")
-Phone_number_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
-Phone_number_entry.insert(0, "e.g., 91234567, 81093487, 92054981, etc.")
-Phone_number_entry.place(x = 300, y = 200, anchor = "nw")
+Name_label = tk.Label(Mem_create_frame, text='Name', fg='black')
+Name_label.place(x=50, y=100, anchor="nw")
+Name_entry1 = tk.Entry(Mem_create_frame, fg='black', width=60)
+Name_entry1.place(x=300, y=100, anchor="nw")
 
-Email_Address_label = tk.Label(Mem_create_frame, text='Email Address', fg = 'black')
-Email_Address_label.place(x = 50, y = 250, anchor = "nw")
-Email_Address_entry = tk.Entry(Mem_create_frame, fg = 'black', width = 60)
-Email_Address_entry.insert(0, "e.g., ALSuser@als.edu")
-Email_Address_entry.place(x = 300, y = 250, anchor = "nw")
+Faculty_label = tk.Label(Mem_create_frame, text='Faculty', fg='black')
+Faculty_label.place(x=50, y=150, anchor="nw")
+Faculty_entry1 = tk.Entry(Mem_create_frame, fg='black', width=60)
+Faculty_entry1.place(x=300, y=150, anchor="nw")
 
-Add_new_member_button = tk.Button(Mem_create_frame, text = "Create Member", fg = 'black', command = create_new_member)
-Add_new_member_button.place(x = 50, y = 300, anchor = "nw")
-Back_to_membership_menu_button_C = tk.Button(Mem_create_frame, text = "Back To Membership Menu", fg = 'black', command = lambda: change_frame(Mem_create_frame, Mem_frame))
-Back_to_membership_menu_button_C.place(x = 700, y = 300, anchor = "nw")
+Phone_number_label = tk.Label(
+    Mem_create_frame, text='Phone Number', fg='black')
+Phone_number_label.place(x=50, y=200, anchor="nw")
+Phone_number_entry1 = tk.Entry(Mem_create_frame, fg='black', width=60)
+Phone_number_entry1.place(x=300, y=200, anchor="nw")
+
+Email_Address_label = tk.Label(
+    Mem_create_frame, text='Email Address', fg='black')
+Email_Address_label.place(x=50, y=250, anchor="nw")
+Email_Address_entry1 = tk.Entry(Mem_create_frame, fg='black', width=60)
+Email_Address_entry1.place(x=300, y=250, anchor="nw")
+
+Add_new_member_button = tk.Button(
+    Mem_create_frame, text="Create Member", fg='black', command=create_new_member)
+Add_new_member_button.place(x=50, y=300, anchor="nw")
+Back_to_membership_menu_button_C = tk.Button(
+    Mem_create_frame, text="Back To Membership Menu", fg='black', command=lambda: change_frame_and_delete_entry1(Mem_create_frame, Mem_frame))
+Back_to_membership_menu_button_C.place(x=700, y=300, anchor="nw")
 
 
 # Membership deletion labels and buttons
-def delete_mem():
-    None
+def delete_member():
+    Mem_id = Mem_ID_entry2.get()
+    if not member_exist(Mem_id):
+        messagebox.showinfo(title='Error!', message='Member Does Not Exist.')
+    else:
+        member_LibMember = get_member(Mem_id)
+        res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
+                                  + 'Member ID:  ' + Mem_id
+                                  + '\n Name:  ' + member_LibMember.name
+                                  + '\n Faculty:  ' + member_LibMember.faculty
+                                  + '\n Phone Number:  ' + member_LibMember.phone_number
+                                  + '\n Email Address:  ' + member_LibMember.email_address)
+        if res:
+            final_delete_member(Mem_id)
+        else:
+            pass
 
-top_text = tk.Label(Mem_delete_frame, text='To Delete A Member, Please Membership ID Below', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+
+def final_delete_member(Mem_id):
+    error_message = "Member has "
+    num = 0
+    member_LibMember = get_member(Mem_id)
+    if member_LibMember.current_books_borrowed != 0:
+        error_message += "loans"
+        num += 1
+    if member_LibMember.current_books_reserved != 0:
+        if num == 0:
+            error_message += "reservations"
+        else:
+            error_message += " and reservations"
+        num += 1
+    if has_outstanding_fine(Mem_id):
+        if num == 0:
+            error_message += "outstanding fines"
+        elif num == 1:
+            error_message += "and outstanding fines"
+        else:
+            error_message = "Member has loans, reservations and outstanding fines"
+        num += 1
+    error_message += "."
+    if num == 0:
+        delete_LibMember(Mem_id)
+        messagebox.showinfo(
+            title='Success!', message='Member Is Successfully Deleted.')
+    if num != 0:
+        messagebox.showinfo(title='Error!', message=error_message)
+
+def clear_text1(entry1):
+    entry1.delete(0, END)
+
+def change_frame_and_delete_entry2(from_frame, to_frame):
+    clear_text1(Mem_ID_entry2)
+    change_frame(from_frame, to_frame)
+
+
+top_text = tk.Label(
+    Mem_delete_frame, text='To Delete A Member, Please Membership ID Below', bg='cyan')
+top_text.place(x=50, y=0, anchor="nw")
 
 ID_label = tk.Label(Mem_delete_frame, text='Membership ID')
-ID_label.place(x = 50, y = 200, anchor = "nw")
-ID_entry = tk.Entry(Mem_delete_frame, fg = 'black', width = 60)
-ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
-ID_entry.place(x = 300, y = 200, anchor = "nw")
+ID_label.place(x=50, y=200, anchor="nw")
+Mem_ID_entry2 = tk.Entry(Mem_delete_frame, fg='black', width=60)
+Mem_ID_entry2.place(x=300, y=200, anchor="nw")
 
 
-Mem_delete_button = tk.Button(Mem_delete_frame, text = "Delete Member", fg = 'black', command = delete_mem)
-Mem_delete_button.place(x = 50, y = 300, anchor = "nw")
-Back_to_mem_button = tk.Button(Mem_delete_frame, text = "Back To Membership Menu", fg = 'black', command = lambda: change_frame(Mem_delete_frame, Mem_frame))
-Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
+Mem_delete_button = tk.Button(
+    Mem_delete_frame, text="Delete Member", fg='black', command=delete_member)
+Mem_delete_button.place(x=50, y=300, anchor="nw")
+Back_to_mem_button = tk.Button(Mem_delete_frame, text="Back To Membership Menu",
+                               fg='black', command=lambda: change_frame_and_delete_entry2(Mem_delete_frame, Mem_frame))
+Back_to_mem_button.place(x=700, y=300, anchor="nw")
 
 
 # Membership update menu labels and buttons
-top_text = tk.Label(Mem_update1_frame, text='To Update A Member, Please Membership ID Below', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+def change_frame_and_update_entry(from_frame, to_frame):
+    Mem_id = Mem_ID_entry3.get()
+    if not member_exist(Mem_id):
+        messagebox.showinfo(title='Error!', message='Member Does Not Exist.')
+    else:
+        change_frame(from_frame, to_frame)
+        Mem_ID_entry4.insert(0, Mem_ID_entry3.get())
+
+
+def change_frame_and_delete_entry(from_frame, to_frame):
+    clear_text5(Mem_ID_entry4, Name_entry2, Faculty_entry2,
+               Phone_number_entry2, Email_Address_entry2)
+    change_frame(from_frame, to_frame)
+
+def change_frame_and_delete_entry3(from_frame, to_frame):
+    clear_text1(Mem_ID_entry3)
+    change_frame(from_frame, to_frame)
+
+top_text = tk.Label(
+    Mem_update1_frame, text='To Update A Member, Please Membership ID Below', bg='cyan')
+top_text.place(x=50, y=0, anchor="nw")
 
 ID_label = tk.Label(Mem_update1_frame, text='Membership ID')
-ID_label.place(x = 50, y = 200, anchor = "nw")
-ID_entry = tk.Entry(Mem_update1_frame, fg = 'black', width = 60)
-ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
-ID_entry.place(x = 300, y = 200, anchor = "nw")
+ID_label.place(x=50, y=200, anchor="nw")
+Mem_ID_entry3 = tk.Entry(Mem_update1_frame, fg='black', width=60)
+Mem_ID_entry3.place(x=300, y=200, anchor="nw")
 
+Mem_update1_button = tk.Button(Mem_update1_frame, text="Update Member", fg='black',
+                               command=lambda: change_frame_and_update_entry(Mem_update1_frame, Mem_update2_frame))
+Mem_update1_button.place(x=50, y=300, anchor="nw")
+Back_to_mem_button = tk.Button(Mem_update1_frame, text="Back To Membership Menu",
+                               fg='black', command=lambda: change_frame_and_delete_entry3(Mem_update1_frame, Mem_frame))
+Back_to_mem_button.place(x=700, y=300, anchor="nw")
 
-Mem_update1_button = tk.Button(Mem_update1_frame, text = "Update Member", fg = 'black', command = lambda: change_frame(Mem_update1_frame, Mem_update2_frame))
-Mem_update1_button.place(x = 50, y = 300, anchor = "nw")
-Back_to_mem_button = tk.Button(Mem_update1_frame, text = "Back To Membership Menu", fg = 'black', command = lambda: change_frame(Mem_update1_frame, Mem_frame))
-Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
 
 # Membership update information labels and buttons
-def update_mem():
-    None
-
-Mem_ID_label1 = tk.Label(Mem_update2_frame, text='Membership ID', fg = 'red')
-Mem_ID_label1.place(x = 50, y = 50, anchor = "nw")
-Mem_ID_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
-Mem_ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
-Mem_ID_entry.place(x = 300, y = 50, anchor = "nw")
-
-Name_label = tk.Label(Mem_update2_frame, text='Name', fg = 'black')
-Name_label.place(x = 50, y = 100, anchor = "nw")
-Name_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
-Name_entry.insert(0, "Update name")
-Name_entry.place(x = 300, y = 100, anchor = "nw")
-
-Faculty_label = tk.Label(Mem_update2_frame, text='Faculty', fg = 'black')
-Faculty_label.place(x = 50, y = 150, anchor = "nw")
-Faculty_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
-Faculty_entry.insert(0, "Update faculty")
-Faculty_entry.place(x = 300, y = 150, anchor = "nw")
-
-Phone_number_label = tk.Label(Mem_update2_frame, text='Phone Number', fg = 'black')
-Phone_number_label.place(x = 50, y = 200, anchor = "nw")
-Phone_number_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
-Phone_number_entry.insert(0, "Update phone number")
-Phone_number_entry.place(x = 300, y = 200, anchor = "nw")
-
-Email_Address_label = tk.Label(Mem_update2_frame, text='Email Address', fg = 'black')
-Email_Address_label.place(x = 50, y = 250, anchor = "nw")
-Email_Address_entry = tk.Entry(Mem_update2_frame, fg = 'black', width = 60)
-Email_Address_entry.insert(0, "Update Email")
-Email_Address_entry.place(x = 300, y = 250, anchor = "nw")
-
-Mem_update2_button = tk.Button(Mem_update2_frame, text = "Update Member", fg = 'black', command = lambda: change_frame(Mem_update2_frame, update_mem))
-Mem_update2_button.place(x = 50, y = 300, anchor = "nw")
-Back_to_mem_button = tk.Button(Mem_update2_frame, text = "Back To Previous Membership Menu", fg = 'black', command = lambda: change_frame(Mem_update2_frame, Mem_update1_frame))
-Back_to_mem_button.place(x = 700, y = 300, anchor = "nw")
+def update_member_info(Mem_id, Name, Faculty, PhoneNum, Email):
+    session_new = DBSession()
+    session_new.query(LibMember).filter_by(memberid=Mem_id).update(
+        {'memberid': Mem_id, 'name': Name, 'faculty': Faculty, 'phone_number': PhoneNum, 'email_address': Email})
+    session_new.commit()
+    session_new.close()
 
 
+def update_member():
+    Mem_id = Mem_ID_entry3.get()
+    res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
+                              + 'Member ID:  ' + Mem_id
+                              + '\n Name:  ' + Name_entry2.get()
+                              + '\n Faculty:  ' + Faculty_entry2.get()
+                              + '\n Phone Number:  ' + Phone_number_entry2.get()
+                              + '\n Email Address:  ' + Email_Address_entry2.get())
+    if res:
+        final_update_member(Mem_id)
+    else:
+        pass
+
+
+def final_update_member(Mem_id):
+    Name = Name_entry2.get()
+    Faculty = Faculty_entry2.get()
+    PhoneNum = Phone_number_entry2.get()
+    Email = Email_Address_entry2.get()
+    if Name == "" or Faculty == "" or PhoneNum == "" or Email == "":
+        messagebox.showinfo(
+            title='Error!', message='Missing or Incomplete fields.')
+    else:
+        update_member_info(Mem_id, Name, Faculty, PhoneNum, Email)
+        messagebox.showinfo(title='Success!', message='ALS Membership Update.')
+
+
+Mem_ID_label1 = tk.Label(Mem_update2_frame, text='Membership ID', fg='red')
+Mem_ID_label1.place(x=50, y=50, anchor="nw")
+Mem_ID_entry4 = tk.Entry(Mem_update2_frame, fg='black', width=60)
+Mem_ID_entry4.place(x=300, y=50, anchor="nw")
+
+Name_label = tk.Label(Mem_update2_frame, text='Name', fg='black')
+Name_label.place(x=50, y=100, anchor="nw")
+Name_entry2 = tk.Entry(Mem_update2_frame, fg='black', width=60)
+Name_entry2.place(x=300, y=100, anchor="nw")
+
+Faculty_label = tk.Label(Mem_update2_frame, text='Faculty', fg='black')
+Faculty_label.place(x=50, y=150, anchor="nw")
+Faculty_entry2 = tk.Entry(Mem_update2_frame, fg='black', width=60)
+Faculty_entry2.place(x=300, y=150, anchor="nw")
+
+Phone_number_label = tk.Label(
+    Mem_update2_frame, text='Phone Number', fg='black')
+Phone_number_label.place(x=50, y=200, anchor="nw")
+Phone_number_entry2 = tk.Entry(Mem_update2_frame, fg='black', width=60)
+Phone_number_entry2.place(x=300, y=200, anchor="nw")
+
+Email_Address_label = tk.Label(
+    Mem_update2_frame, text='Email Address', fg='black')
+Email_Address_label.place(x=50, y=250, anchor="nw")
+Email_Address_entry2 = tk.Entry(Mem_update2_frame, fg='black', width=60)
+Email_Address_entry2.place(x=300, y=250, anchor="nw")
+
+Mem_update2_button = tk.Button(
+    Mem_update2_frame, text="Update Member", fg='black', command=update_member)
+Mem_update2_button.place(x=50, y=300, anchor="nw")
+Back_to_mem_button = tk.Button(Mem_update2_frame, text="Back To Previous Membership Menu",
+                               fg='black', command=lambda: change_frame_and_delete_entry(Mem_update2_frame, Mem_update1_frame))
+Back_to_mem_button.place(x=700, y=300, anchor="nw")
+
+# Changyang's code ends
 
 #Renzhou starts
 
@@ -1074,50 +1222,107 @@ Res_cancel_Back_button = tk.Button(Res_cancel_frame, text = "Back to Reservation
 Res_cancel_Back_button.place(x = 700, y = 200, anchor = "nw")
 # Qingyang ends
 
-#Fine frame
+# Changyang's code starts
+# Fine frame
 # Fine menu labels and buttons
-Fine_payment_frame = tk.Frame(root, height = win_h, width = win_w)
+Fine_payment_frame = tk.Frame(root, height=win_h, width=win_w)
 
 top_text = tk.Label(Fine_frame, text='Select The Option Below', bg='cyan')
-top_text.place(x = 150, y = 0, anchor = "nw")
+top_text.place(x=150, y=0, anchor="nw")
 
-Fine_payment_label = tk.Label(Fine_frame, text = "Payment", fg = 'black')
-Fine_payment_label.place(x = 50, y = 50, anchor = "nw")
-Fine_payment_button = tk.Button(Fine_frame, text = "Fine Payment", fg = 'black', command = lambda: change_frame(Fine_frame, Fine_payment_frame))
-Fine_payment_button.place(x = 150, y = 47, anchor = "nw")
+Fine_payment_label = tk.Label(Fine_frame, text="Payment", fg='black')
+Fine_payment_label.place(x=50, y=50, anchor="nw")
+Fine_payment_button = tk.Button(Fine_frame, text="Fine Payment", fg='black',
+                                command=lambda: change_frame(Fine_frame, Fine_payment_frame))
+Fine_payment_button.place(x=150, y=48, anchor="nw")
 
-Back_to_mem_button = tk.Button(Fine_frame, text = "Back To Main Menu", fg = 'black', command = lambda: change_frame(Fine_frame, Root_frame))
-Back_to_mem_button.place(x = 300, y = 100, anchor = "nw")
+Back_to_mem_button = tk.Button(Fine_frame, text="Back To Main Menu",
+                               fg='black', command=lambda: change_frame(Fine_frame, Root_frame))
+Back_to_mem_button.place(x=300, y=100, anchor="nw")
 
 
 # Fine payment labels and buttons
-def pay_fine():
-    None
-top_text = tk.Label(Fine_payment_frame, text='To Pay a Fine, Please Enter Information Below:', bg='cyan')
-top_text.place(x = 50, y = 0, anchor = "nw")
+def clear_text3(entry1, entry2, entry3):
+    entry1.delete(0, END)
+    entry2.delete(0, END)
+    entry3.delete(0, END)
 
-ID_label = tk.Label(Fine_payment_frame, text='Membership ID')
-ID_label.place(x = 50, y = 50, anchor = "nw")
-ID_entry = tk.Entry(Fine_payment_frame, fg = 'black', width = 60)
-ID_entry.insert(0, "A unique alphanumeric id that distinguishes every member")
-ID_entry.place(x = 300, y = 50, anchor = "nw")
+def change_frame_and_delete_entry4(from_frame, to_frame):
+    clear_text3(Mem_ID_entry5, Payment_date_entry, Payment_amount_entry)
+    change_frame(from_frame, to_frame)
+
+def update_member_fine(Mem_id):
+    session_new = DBSession()
+    session_new.query(LibMember).filter_by(memberid=Mem_id).update(
+        {'outstanding_fee': 0})
+    session_new.commit()
+    session_new.close()
+
+def update_member_payment_date(Mem_id, Payment_date):
+    session_new = DBSession()
+    session_new.query(LibMember).filter_by(memberid=Mem_id).update(
+        {'payment_date': Payment_date})
+    session_new.commit()
+    session_new.close()
+
+def pay_fine():
+    Mem_id = Mem_ID_entry5.get()
+    payment_date = Payment_date_entry.get()
+    payment_amount = Payment_amount_entry.get()
+    if not member_exist(Mem_id):
+        messagebox.showinfo(title='Error!', message='Member Does Not Exist.')
+    else:
+        LibMember = get_member(Mem_id)
+        res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
+            + 'Payment Due (Exact Fee Only):  ' + str(LibMember.outstanding_fee)
+            + '\n Member ID:  ' + Mem_id 
+            + '\n Payment Date:  ' + payment_date)
+        if res:
+            final_pay_fine(Mem_id, payment_amount, payment_date)
+        else:
+            pass
+
+def final_pay_fine(Mem_id, payment_amount, payment_date):
+    LibMember = get_member(Mem_id)
+    if LibMember.outstanding_fee == 0:
+        messagebox.showinfo(title='Error!', message='Member Has No Fine.')
+    elif payment_amount != str(LibMember.outstanding_fee):
+        messagebox.showinfo(title='Error!', message='Incorrect fine payment amount.')
+    else:
+        update_member_fine(Mem_id)
+        database_date = get_date_object(payment_date)
+        update_member_payment_date(Mem_id, database_date)
+        messagebox.showinfo(title='Success!', message='Fine Has Been Paid')
+
+
+
+top_text = tk.Label(Fine_payment_frame,
+                    text='To Pay a Fine, Please Enter Information Below:', bg='cyan')
+top_text.place(x=50, y=0, anchor="nw")
+
+Mem_ID_label = tk.Label(Fine_payment_frame, text='Membership ID')
+Mem_ID_label.place(x=50, y=50, anchor="nw")
+Mem_ID_entry5 = tk.Entry(Fine_payment_frame, fg='black', width=60)
+Mem_ID_entry5.place(x=300, y=50, anchor="nw")
 
 Payment_date_label = tk.Label(Fine_payment_frame, text='Payment Date')
-Payment_date_label.place(x = 50, y = 100, anchor = "nw")
-Payment_date_entry = tk.Entry(Fine_payment_frame, fg = 'black', width = 60)
-Payment_date_entry.insert(0, "Date Payment Received")
-Payment_date_entry.place(x = 300, y = 100, anchor = "nw")
+Payment_date_label.place(x=50, y=100, anchor="nw")
+Payment_date_entry = tk.Entry(Fine_payment_frame, fg='black', width=60)
+Payment_date_entry.place(x=300, y=100, anchor="nw")
 
 Payment_amount_label = tk.Label(Fine_payment_frame, text='Payment Amount')
-Payment_amount_label.place(x = 50, y = 150, anchor = "nw")
-Payment_amount_entry = tk.Entry(Fine_payment_frame, fg = 'black', width = 60)
-Payment_amount_entry.insert(0, "Total fine amount")
-Payment_amount_entry.place(x = 300, y = 150, anchor = "nw")
+Payment_amount_label.place(x=50, y=150, anchor="nw")
+Payment_amount_entry = tk.Entry(Fine_payment_frame, fg='black', width=60)
+Payment_amount_entry.place(x=300, y=150, anchor="nw")
 
-Pay_fine_button = tk.Button(Fine_payment_frame, text = "Pay Fine", fg = 'black', command = pay_fine)
-Pay_fine_button.place(x = 50, y = 200, anchor = "nw")
-Back_to_fine_menu_button = tk.Button(Fine_payment_frame, text = "Back To Fines Menu", fg = 'black', command = lambda: change_frame(Fine_payment_frame, Fine_frame))
-Back_to_fine_menu_button.place(x = 700, y = 200, anchor = "nw")
+Pay_fine_button = tk.Button(
+    Fine_payment_frame, text="Pay Fine", fg='black', command=pay_fine)
+Pay_fine_button.place(x=50, y=200, anchor="nw")
+Back_to_fine_menu_button = tk.Button(Fine_payment_frame, text="Back To Fines Menu",
+                                     fg='black', command=lambda: change_frame_and_delete_entry4(Fine_payment_frame, Fine_frame))
+Back_to_fine_menu_button.place(x=700, y=200, anchor="nw")
+# Changyang's code ends
+
 
 #xunuo start
 
