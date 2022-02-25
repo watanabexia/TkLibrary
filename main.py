@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "454545hrz"
+db_password = "123456"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
@@ -1085,7 +1085,7 @@ def commit_book_reservation(mem, book, date, toplevel):
     mem_id = mem.memberid
     acc_number = book.Accession_Number
     # Check if the book is on loan
-    if (is_book_on_loan(acc_number)):
+    if (mem.outstanding_fee == 0):
         # Check if the member has already reserved the book
         try:
             get_reserve_record(mem_id, acc_number)
@@ -1096,7 +1096,7 @@ def commit_book_reservation(mem, book, date, toplevel):
             return
 
         # Check if the member has outstanding fine
-        if (mem.outstanding_fee == 0):
+        if (is_book_on_loan(acc_number)):
             # Check if no more than 2 books are reserved
             if (mem.current_books_reserved < 2):
                 insert_reserve_record(mem_id, acc_number, date)
@@ -1105,10 +1105,10 @@ def commit_book_reservation(mem, book, date, toplevel):
                 messagebox.showerror(title = "Error", message = "\"{}\" has already reserved 2 books. No more reservation is allowed.".format(mem.name))
                 return
         else:
-            messagebox.showerror(title = "Error", message = "\"{}\" has unpaid outstanding fine of {}. Please pay before any reservation.".format(mem.name, mem.outstanding_fee))
+            messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.Title))
             return
     else:
-        messagebox.showerror(title = "Error", message = "\"{}\" is available. You may go ahead and borrow it now.".format(book.Title))
+        messagebox.showerror(title = "Error", message = "\"{}\" has unpaid outstanding fine of {}. Please pay before any reservation.".format(mem.name, mem.outstanding_fee))
         return  
       
     messagebox.showinfo(title = "Success", message = "\"{}\" have successfully reserved the book \"{}\".".format(mem.name, book.Title))  
