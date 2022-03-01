@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "123456"
+db_password = "454545hrz"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
@@ -204,6 +204,18 @@ def is_book_on_loan(acc_number):
     else:
         session_new.close()
         return True
+
+def is_book_on_loan_by_member(acc_number, member_id):
+    try:
+        session_new = DBSession()
+        br_record = session_new.query(Borrow_And_Return_Record).filter_by(Accession_Number = acc_number, memberid = member_id).one()
+    except NoResultFound:
+        session_new.close()
+        return False
+    else:
+        session_new.close()
+        return True
+
 
 def get_reserve_record(member_id, acc_number):
     session_new = DBSession()
@@ -999,6 +1011,8 @@ def return_book():
             messagebox.showinfo(title='Error!', message='Member Does Not Exist.')
     elif not is_book_on_loan(acc_number):
             messagebox.showinfo(title='Error!', message='Book Is Not On Loan.')
+    elif not is_book_on_loan_by_member(acc_number, member_id):
+            messagebox.showinfo(title='Error!', message='Book Is Not On Loan By This Member.')
     else:
         book_LibBooks = get_book(acc_number)
         book_BR = get_book_BR(acc_number)
