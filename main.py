@@ -333,6 +333,13 @@ def is_quota_reached(id):
     else:
         session_new.close()
         return True
+def is_date_valid(date_string):
+    try:
+        get_date_object(date_string)
+    except ValueError:
+        return False
+    else:
+        return True
 
 def has_outstanding_fine(id):
     """
@@ -1002,9 +1009,15 @@ ID_entry_book_return = tk.Entry(Return_frame, fg = 'black', width = 60)
 # ID_entry_book_return.insert(0, "A unique alphanumeric id that distinguishes every member")
 ID_entry_book_return.place(x = 300, y = 200, anchor = "nw")
 
+Date_label_book_return = tk.Label(Return_frame, text='Date Return DD/MM/YYYY')
+Date_label_book_return.place(x = 50, y = 300, anchor = "nw")
+Date_entry_book_return = tk.Entry(Return_frame, fg = 'black', width = 60)
+Date_entry_book_return.place(x = 300, y = 300, anchor = "nw")
+
 def return_book():
     acc_number = Acc_number_entry_book_return.get()
     member_id = ID_entry_book_return.get()
+    return_date_string = Date_entry_book_return.get()
     if not book_exist(acc_number):
             messagebox.showinfo(title='Error!', message='Book Does Not Exist.')
     elif not member_exist(member_id):
@@ -1013,20 +1026,24 @@ def return_book():
             messagebox.showinfo(title='Error!', message='Book Is Not On Loan.')
     elif not is_book_on_loan_by_member(acc_number, member_id):
             messagebox.showinfo(title='Error!', message='Book Is Not On Loan By This Member.')
+    elif not is_date_valid(return_date_string):
+            messagebox.showinfo(title='Error!', message='Invalid Date.')
     else:
         book_LibBooks = get_book(acc_number)
         book_BR = get_book_BR(acc_number)
         member_LibMember = get_member(member_id)
-        Borrow_date = book_BR.Borrow_Date.strftime('%d/%m/%Y')
-        Fine = max(days_between(book_BR.Due_Date, date.today()),0)
+        Borrow_date_string = book_BR.Borrow_Date.strftime('%d/%m/%Y')
+        Return_date = get_date_object(return_date_string)
+        Return_date_string = Return_date.strftime('%d/%m/%Y')
+        Fine = max(days_between(book_BR.Due_Date, Return_date.date()),0)
 
         res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
             + 'Assession Number:  ' + acc_number  
             + '\n Book Title:  ' + book_LibBooks.Title 
-            + '\n Borrow Date:  ' + Borrow_date
+            + '\n Borrow Date:  ' + Borrow_date_string
             + '\n Membership ID:  ' + member_id 
             + '\n Member Name:  ' + member_LibMember.name
-            + '\n Return Date:  ' + today_day()
+            + '\n Return Date:  ' + Return_date_string
             + '\n Fine:  ' + str(Fine))
             # 
         if res:
@@ -1051,9 +1068,9 @@ def return_book_fine(member_id, acc_number, Fine):
 
 
 Return_book_button = tk.Button(Return_frame, text = "Return Book", fg = 'black', command = return_book)
-Return_book_button.place(x = 50, y = 300, anchor = "nw")
+Return_book_button.place(x = 50, y = 400, anchor = "nw")
 Back_to_loan_button = tk.Button(Return_frame, text = "Back To Loan", fg = 'black', command = lambda: change_frame(Return_frame, Loan_frame))
-Back_to_loan_button.place(x = 700, y = 300, anchor = "nw")
+Back_to_loan_button.place(x = 700, y = 400, anchor = "nw")
 #Renzhou ends
 
 
