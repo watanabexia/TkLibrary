@@ -1326,7 +1326,7 @@ def pay_fine():
         res = messagebox.askyesno('prompt', 'Please Confirm The Details Are Correct' + '\n'
             + 'Payment Due (Exact Fee Only):  ' + str(LibMember.outstanding_fee)
             + '\n Member ID:  ' + Mem_id 
-            + '\n Payment Date:  ' + payment_date)
+            + '\n Payment Date (DD/MM/YYYY):  ' + payment_date)
         if res:
             final_pay_fine(Mem_id, payment_amount, payment_date)
         else:
@@ -1334,6 +1334,11 @@ def pay_fine():
 
 def final_pay_fine(Mem_id, payment_amount, payment_date):
     LibMember = get_member(Mem_id)
+    try:
+        database_date = get_date_object(payment_date)
+    except ValueError:
+        messagebox.showerror(title = "Error", message = "\"{}\" is not a valid date or a valid date format.".format(payment_date))
+        return
     if LibMember.outstanding_fee == 0:
         messagebox.showinfo(title='Error!', message='Member Has No Fine.')
     elif payment_amount != str(LibMember.outstanding_fee):
@@ -1345,6 +1350,7 @@ def final_pay_fine(Mem_id, payment_amount, payment_date):
         messagebox.showinfo(title='Success!', message='Fine Has Been Paid')
 
 
+
 top_text = tk.Label(Fine_payment_frame,
                     text='To Pay a Fine, Please Enter Information Below:', bg='cyan')
 top_text.place(x=50, y=0, anchor="nw")
@@ -1354,7 +1360,7 @@ Mem_ID_label.place(x=50, y=50, anchor="nw")
 Mem_ID_entry5 = tk.Entry(Fine_payment_frame, fg='black', width=60)
 Mem_ID_entry5.place(x=300, y=50, anchor="nw")
 
-Payment_date_label = tk.Label(Fine_payment_frame, text='Payment Date')
+Payment_date_label = tk.Label(Fine_payment_frame, text='Payment Date (DD/MM/YYYY)')
 Payment_date_label.place(x=50, y=100, anchor="nw")
 Payment_date_entry = tk.Entry(Fine_payment_frame, fg='black', width=60)
 Payment_date_entry.place(x=300, y=100, anchor="nw")
