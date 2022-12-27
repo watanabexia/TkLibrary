@@ -153,10 +153,10 @@ def get_book_year_based_on_AN(acc_number):
 
 def get_member_name_based_on_id(mem_id):
     session_new = DBSession()
-    books = session_new.query(LibMember).filter_by(memberid = mem_id).all()
+    members = session_new.query(LibMember).filter_by(memberid = mem_id).all()
     res = ''
-    for book in books:
-        res += book.name
+    for member in members:
+        res += member.name
     session_new.close()
     return res
 
@@ -187,9 +187,9 @@ def get_book_BR(acc_number):
 
 def get_current_fine(member_id):
     session_new = DBSession()
-    Member = session_new.query(LibMember).filter_by(memberid = member_id).one()
+    member = session_new.query(LibMember).filter_by(memberid = member_id).one()
     session_new.close()
-    return Member.outstanding_fee
+    return member.outstanding_fee
 
 def get_date_object(date_string):
     return datetime.strptime(date_string, '%d/%m/%Y')
@@ -327,10 +327,10 @@ def is_quota_reached(id):
     try:
         session_new = DBSession()
         session_new.query(LibMember).filter_by(memberid = id, current_books_borrowed = 2).one()
-    except NoResultFound: #this member has 2 borrowed books, quota reached
+    except NoResultFound: 
         session_new.close()
         return False
-    else:
+    else: #this member has 2 borrowed books, quota reached
         session_new.close()
         return True
 def is_date_valid(date_string):
@@ -349,10 +349,10 @@ def has_outstanding_fine(id):
     try:
         session_new = DBSession()
         session_new.query(LibMember).filter_by(memberid = id, outstanding_fee = 0).one()
-    except NoResultFound: #this member has outstanding fee of 0
+    except NoResultFound: 
         session_new.close()
         return True
-    else:
+    else: #this member has outstanding fee of 0
         session_new.close()
         return False
 
