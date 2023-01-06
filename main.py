@@ -619,7 +619,7 @@ def final_delete_member(Mem_id):
         if num == 0:
             error_message += "outstanding fines"
         else:
-            error_message = "Member has loans and outstanding fines"
+            error_message += " and outstanding fines"
         num += 1
     error_message += "."
     if num == 0:
