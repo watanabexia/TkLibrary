@@ -13,7 +13,7 @@ from datetime import date, datetime, timedelta
 from dbTable import *
 # ------ Database Function ------ #
 db_user = "root"
-db_password = "454545hrz"
+db_password = "YcyCl525JE#"
 schema_name = "bt2102_as_1"
 
 # Database Connection Initialization
